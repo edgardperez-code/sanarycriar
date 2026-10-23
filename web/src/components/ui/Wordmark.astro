@@ -1,0 +1,40 @@
+---
+/**
+ * Text wordmark (brand manual p.3: no image logo). "Sanar y Criar" in
+ * Playfair Display with the "y" in italic, plus the professional line in Poppins.
+ */
+interface Props {
+  tone?: 'dark' | 'light';
+  size?: 'md' | 'lg';
+  subtitle?: boolean;
+  class?: string;
+}
+
+const { tone = 'dark', size = 'md', subtitle = true, class: className = '' } = Astro.props;
+const light = tone === 'light';
+---
+
+<span class:list={['inline-flex flex-col', className]}>
+  <span
+    class:list={[
+      'font-serif font-semibold leading-none tracking-[-0.015em]',
+      size === 'lg' ? 'text-[2rem] sm:text-[2.25rem]' : 'text-[1.375rem] sm:text-[1.5rem]',
+      light ? 'text-nube' : 'text-violeta',
+    ]}
+  >
+    Sanar <em class:list={['font-medium', light ? 'text-rosa-300' : 'text-lavanda-500']}>y</em> Criar
+  </span>
+  {
+    subtitle && (
+      <span
+        class:list={[
+          'mt-1.5 font-sans font-medium leading-tight tracking-[0.02em]',
+          size === 'lg' ? 'text-[0.8125rem]' : 'text-[0.6875rem] sm:text-[0.75rem]',
+          light ? 'text-nube/75' : 'text-violeta-500',
+        ]}
+      >
+        Hilda Hernández · Psicóloga Infanto-Juvenil
+      </span>
+    )
+  }
+</span>

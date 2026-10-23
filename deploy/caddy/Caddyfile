@@ -1,0 +1,117 @@
+# Caddy para Sanar y Criar: HTTPS automático (Let's Encrypt) para todos los dominios.
+#
+# Requisitos: los registros DNS A de cada dominio apuntan a la IP del VPS y los puertos
+# 80 y 443 están abiertos. Caddy pide y renueva los certificados solo.
+#
+# Después de editar este archivo:
+#   docker compose -f docker-compose.prod.yml exec caddy caddy validate --config /etc/caddy/Caddyfile
+#   docker compose -f docker-compose.prod.yml exec caddy caddy reload --config /etc/caddy/Caddyfile
+#
+# Si cambias un dominio aquí, cámbialo también en .env (LEARNHOUSE_*, EXTRA_CORS) y en el
+# alias de red de docker-compose.prod.yml.
+{
+	email {$SC_ACME_EMAIL}
+	{$SC_CADDY_GLOBAL}
+}
+
+# Security headers for the static marketing site (LearnHouse sets its own, see below).
+# The CSP allows inline scripts/styles because Astro hydrates islands with inline
+# scripts; scripts can still only load from this origin. connect-src/img-src allow the
+# course platform (catalog API and course thumbnails). To embed videos on the site
+# later, add e.g. "frame-src https://www.youtube-nocookie.com" to the CSP.
+(cabeceras_sitio) {
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://cursos.sanarycriarve.com; font-src 'self'; connect-src 'self' https://cursos.sanarycriarve.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests"
+		-Server
+	}
+}
+
+# ---------------------------------------------------------------------------
+# Sitio de marketing (Astro estático)
+# ---------------------------------------------------------------------------
+www.sanarycriarve.com {
+	import cabeceras_sitio
+	encode zstd gzip
+
+	root * /srv/www/current
+
+	# Hashed build assets never change; everything else revalidates.
+	header /_astro/* Cache-Control "public, max-age=31536000, immutable"
+	header ?Cache-Control "public, max-age=0, must-revalidate"
+
+	# Same routes the site links to: no trailing slash (/agenda, not /agenda/).
+	# Absolute targets on purpose: a relative "/\evil.com" (from /%5Cevil.com/) is
+	# read by browsers as //evil.com, an open redirect. Query strings (utm_*) are kept.
+	@barra_final path_regexp barra ^(.+)/$
+	redir @barra_final https://www.sanarycriarve.com{re.barra.1}{?query} permanent
+	redir /ebooks https://www.sanarycriarve.com/cursos{?query} permanent
+
+	# Pages are emitted as agenda.html, blog/<slug>.html, ...
+	try_files {path} {path}.html {path}/index.html
+	file_server
+
+	# Error responses do not keep the headers set above; repeat them.
+	handle_errors 404 {
+		import cabeceras_sitio
+		root * /srv/www/current
+		rewrite * /404.html
+		file_server
+	}
+}
+
+sanarycriarve.com {
+	import cabeceras_sitio
+	redir https://www.sanarycriarve.com{uri} permanent
+}
+
+# ---------------------------------------------------------------------------
+# Dominio anterior: 301 permanente al nuevo, conservando ruta y parámetros.
+# Si psicoinfantilve.com todavía no apunta a este VPS, comenta este bloque
+# (Caddy reintentaría el certificado sin éxito).
+# ---------------------------------------------------------------------------
+psicoinfantilve.com, www.psicoinfantilve.com {
+	header Strict-Transport-Security "max-age=31536000"
+	route {
+		# Old pages without an exact equivalent on the new site.
+		redir /cursos/* https://www.sanarycriarve.com/cursos permanent
+		redir /ebooks* https://www.sanarycriarve.com/cursos permanent
+		redir /login https://cursos.sanarycriarve.com/login permanent
+		redir /registro https://cursos.sanarycriarve.com/signup permanent
+		redir /mi-cuenta* https://cursos.sanarycriarve.com/login permanent
+		redir https://www.sanarycriarve.com{uri} permanent
+	}
+}
+
+# ---------------------------------------------------------------------------
+# Plataforma de cursos (fork de LearnHouse). Next.js ya envía sus propias
+# cabeceras de seguridad (X-Frame-Options, CSP frame-ancestors, HSTS...), así
+# que aquí no se tocan: solo HSTS si la respuesta no lo trae (p. ej. la API).
+# ---------------------------------------------------------------------------
+cursos.sanarycriarve.com {
+	header ?Strict-Transport-Security "max-age=31536000"
+
+	# Sanar y Criar: large bodies (video uploads: LearnHouse accepts up to 5 GB, its
+	# internal nginx 6G) only on the API routes that take files. Everything else
+	# (pages, login, payments webhooks, progress...) is capped at 25 MB, so an
+	# anonymous request cannot make the internal nginx spool gigabytes to disk.
+	@subidas path /api/v1/activities/* /api/v1/blocks/* /api/v1/courses/* /api/v1/assignments/* /api/v1/orgs/* /api/v1/users/* /api/v1/folders/* /api/v1/media/* /api/v1/communities/* /api/v1/podcasts/* /api/v1/boards/* /api/v1/playgrounds/* /api/v1/ai/* /api/v1/code/* /api/v1/monitoring/*
+	handle @subidas {
+		request_body {
+			max_size 6GB
+		}
+		reverse_proxy learnhouse-app:80
+	}
+
+	# WebSockets (/collab) work out of the box. X-Forwarded-* headers are set by Caddy.
+	handle {
+		request_body {
+			max_size 25MB
+		}
+		reverse_proxy learnhouse-app:80
+	}
+}

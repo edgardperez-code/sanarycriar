@@ -1,0 +1,52 @@
+{
+  "sc_learning": {
+    "resume": {
+      "toast": "Resuming at {{time}}",
+      "restart": "Start from the beginning",
+      "dismiss": "Dismiss"
+    },
+    "continue": {
+      "eyebrow": "Continue where you left off",
+      "next_eyebrow": "Keep going with the next lesson",
+      "review_eyebrow": "You finished the last lesson",
+      "chapter": "Chapter {{number}} · {{name}}",
+      "position": "At {{time}} of {{total}}",
+      "position_no_total": "At {{time}}",
+      "page": "Page {{page}}",
+      "progress_label": "{{percent}}% watched",
+      "button": "Continue",
+      "next_button": "Start lesson",
+      "review_button": "Watch again"
+    },
+    "dropdown": {
+      "watched": "{{percent}}% watched",
+      "view_all": "View all lessons"
+    },
+    "trail": {
+      "read_ebook": "Read ebook",
+      "completed": "Completed"
+    },
+    "ebook": {
+      "eyebrow": "PDF ebook",
+      "cover_alt": "Cover of {{name}}",
+      "format": "Read it right here, on your phone or computer, or download it to keep it with you.",
+      "read_now": "Read now",
+      "continue_reading": "Keep reading (p. {{page}})",
+      "download": "Download PDF",
+      "locked_hint": "Once it's yours, you can read it here and download it as a PDF.",
+      "no_pdf": "This ebook will be available very soon.",
+      "no_pdf_staff": "This ebook has no PDF yet. Add it as a PDF document activity from the course dashboard."
+    },
+    "product_type": {
+      "label": "Product type",
+      "course": "Course",
+      "ebook": "Ebook",
+      "help_course": "Course with video lessons, progress and \"Continue where you left off\".",
+      "help_ebook": "The page shows the cover, the description and the \"Read now\" and \"Download PDF\" buttons instead of the lesson list. Add a PDF document activity with the book."
+    },
+    "pdf": {
+      "no_viewer": "This browser can't show the PDF inside the page. Download it or open it with your PDF reader to read it comfortably.",
+      "open": "Open the PDF"
+    }
+  }
+}

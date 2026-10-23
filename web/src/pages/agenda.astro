@@ -1,0 +1,126 @@
+---
+import { ArrowRight, CalendarDays, MessageCircle, ShieldCheck, Video } from 'lucide-react';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import AreaIcon from '@/components/AreaIcon.astro';
+import { mainAreas, otherAreas } from '@/data/areas';
+import { breadcrumbJsonLd, businessJsonLd } from '@/lib/seo';
+import { bookingHref, freeClassHref, site } from '@/site.config';
+
+const hasBookingTool = Boolean(site.booking.url);
+
+const steps = [
+  {
+    icon: hasBookingTool ? CalendarDays : MessageCircle,
+    title: hasBookingTool ? 'Elige día y hora' : 'Escríbeme por WhatsApp',
+    text: hasBookingTool
+      ? 'Reserva tu espacio en la agenda en línea. Te llega la confirmación por correo.'
+      : 'Coordinamos el día y la hora. Te confirmo la tarifa, la duración y la forma de pago.',
+  },
+  {
+    icon: Video,
+    title: 'Nos vemos por videollamada',
+    text: 'Desde tu casa o donde estés. Solo necesitas un espacio tranquilo y buena conexión.',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Un espacio confidencial',
+    text: 'Conversamos con calma, sin juicios, sobre lo que está pasando y definimos los próximos pasos.',
+  },
+];
+---
+
+<BaseLayout
+  title="Agenda tu consulta online"
+  description="Consultas psicológicas 100% online con Hilda Hernández, psicóloga clínica infanto-juvenil (FPV 8.914): primera infancia, acompañamiento materno y crianza."
+  jsonLd={[
+    businessJsonLd(),
+    breadcrumbJsonLd([
+      { name: 'Inicio', path: '/' },
+      { name: 'Consultas', path: '/agenda' },
+    ]),
+  ]}
+>
+  <section class="watercolor" aria-labelledby="page-title">
+    <div class="mx-auto grid max-w-6xl gap-12 px-4 pb-16 pt-12 sm:px-6 sm:pb-24 sm:pt-20 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-16">
+      <div>
+        <SectionHeading
+          level="h1"
+          id="page-title"
+          eyebrow="Consultas 100% online"
+          title="Agenda tu consulta"
+          accent="consulta"
+          intro="Sesiones individuales por videollamada para acompañarte en la crianza de tus hijos y en tu camino como mamá."
+        />
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <a href={bookingHref} class="btn btn-primary" target="_blank" rel="noopener">
+            {
+              hasBookingTool ? (
+                <span class="inline-flex" aria-hidden="true"><CalendarDays size={18} strokeWidth={1.75} /></span>
+              ) : (
+                <span class="inline-flex" aria-hidden="true"><MessageCircle size={18} strokeWidth={1.75} /></span>
+              )
+            }
+            {hasBookingTool ? 'Elegir día y hora' : 'Agendar por WhatsApp'}
+          </a>
+          <a href={freeClassHref} class="btn btn-secondary" target="_blank" rel="noopener">
+            Empieza por la clase gratuita
+          </a>
+        </div>
+        <p class="note mt-5 max-w-[60ch]">
+          Por WhatsApp solo coordinamos la cita. Lo que quieras contarme sobre tu familia lo conversamos en la consulta, en un espacio confidencial.
+        </p>
+      </div>
+
+      <ol class="space-y-4">
+        {
+          steps.map(({ icon: Icon, title, text }, index) => (
+            <li class="card flex gap-5 p-6">
+              <span class="font-serif text-3xl font-semibold leading-none text-rosa-500" aria-hidden="true">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <span>
+                <span class="flex items-center gap-2 font-semibold text-violeta">
+                  <span class="text-lavanda-600" aria-hidden="true">
+                    <Icon size={20} strokeWidth={1.75} />
+                  </span>
+                  {title}
+                </span>
+                <span class="mt-1 block text-[0.9375rem] leading-relaxed text-violeta-600">{text}</span>
+              </span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="bg-lavanda-100" aria-labelledby="para-quien">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+      <SectionHeading id="para-quien" eyebrow="Para quién" title="¿En qué te puedo acompañar?" accent="acompañar" />
+      <ul class="mt-10 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          [...mainAreas, ...otherAreas].map((area) => (
+            <li class="flex items-start gap-4">
+              <span class="mt-0.5 shrink-0 text-lavanda-600">
+                <AreaIcon name={area.icon} size={22} />
+              </span>
+              <span>
+                <span class="block font-semibold leading-snug text-violeta">{area.title}</span>
+                <span class="mt-1 block text-[0.9375rem] leading-relaxed text-violeta-500">{area.description}</span>
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="mt-12 max-w-[65ch] text-violeta-600">
+        ¿Aún no sabes si es para ti? Haz el <a href="/test-de-crianza" class="text-link">test de crianza</a> o escríbeme{' '}
+        <a href={site.contact.whatsappUrl} class="text-link" target="_blank" rel="noopener">por WhatsApp</a> y lo conversamos.
+      </p>
+      <a href="/cursos" class="btn btn-secondary mt-8">
+        Prefiero aprender a mi ritmo
+        <ArrowRight size={18} strokeWidth={2} aria-hidden="true" />
+      </a>
+    </div>
+  </section>
+</BaseLayout>

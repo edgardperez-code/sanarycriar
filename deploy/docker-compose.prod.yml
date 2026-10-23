@@ -1,0 +1,161 @@
+# Producción de Sanar y Criar en un solo VPS (Ubuntu 24.04, 4 GB RAM).
+#
+#   caddy           :80/:443  HTTPS automático (Let's Encrypt). Sirve:
+#                     - www.sanarycriarve.com (+ sanarycriarve.com -> www): sitio Astro estático (./www/current)
+#                     - cursos.sanarycriarve.com: plataforma de cursos (learnhouse-app)
+#                     - psicoinfantilve.com (+ www) -> 301 a https://www.sanarycriarve.com
+#   learnhouse-app  imagen todo-en-uno del fork (nginx interno :80 -> web Next.js, API FastAPI, collab)
+#   db              Postgres 16 con pgvector
+#   redis           caché, sesiones de rate limit y cola de HLS
+#
+# Uso (en el servidor, dentro de /opt/sanarycriar):
+#   docker compose -f docker-compose.prod.yml config   # valida y muestra la configuración final
+#   ./scripts/actualizar.sh                             # primer despliegue y actualizaciones
+# Las variables vienen de .env (copia de .env.example). Guía completa: docs/despliegue.md
+
+name: sanarycriar
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+services:
+  learnhouse-app:
+    image: ${SC_LMS_IMAGE:?Define SC_LMS_IMAGE en .env}:${SC_LMS_TAG:?Define SC_LMS_TAG en .env}
+    restart: unless-stopped
+    # Sanar y Criar: no setuid/capability gain for any process in the container.
+    security_opt:
+      - no-new-privileges:true
+    env_file:
+      - ${SC_ENV_FILE:-.env}
+    environment:
+      # Fixed internal wiring; everything else comes from .env.
+      # Sanar y Criar: never development mode in production (wins over .env).
+      LEARNHOUSE_DEVELOPMENT_MODE: "false"
+      HOSTNAME: 0.0.0.0
+      LEARNHOUSE_PORT: "9000"
+      LEARNHOUSE_API_URL: http://localhost:9000
+      LEARNHOUSE_SQL_CONNECTION_STRING: postgresql://learnhouse:${POSTGRES_PASSWORD:?Define POSTGRES_PASSWORD en .env}@db:5432/learnhouse
+      LEARNHOUSE_REDIS_CONNECTION_STRING: redis://redis:6379/0
+      LEARNHOUSE_REDIS_URL: redis://redis:6379
+    volumes:
+      # Uploaded videos, PDFs, images and HLS output.
+      - content:/app/api/content
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://localhost/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    deploy:
+      resources:
+        limits:
+          # Next.js + API + collab + ffmpeg (HLS) share this budget.
+          memory: 2304M
+    logging: *logging
+
+  db:
+    # Sanar y Criar: pinned by digest (PostgreSQL 16.15, pgvector 0.8.7) so an
+    # update never pulls an image nobody chose. Bump it deliberately (security
+    # releases: about monthly): docker pull pgvector/pgvector:pg16, then copy
+    # the new digest from: docker image inspect --format '{{index .RepoDigests 0}}' pgvector/pgvector:pg16
+    image: pgvector/pgvector:pg16@sha256:7b822b0aac60967beb1ea5e576b8602c94c300a157d187f385ae3e0da199b90a
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: learnhouse
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Define POSTGRES_PASSWORD en .env}
+      POSTGRES_DB: learnhouse
+    command:
+      - postgres
+      - -c
+      - shared_buffers=192MB
+      - -c
+      - effective_cache_size=512MB
+      - -c
+      - work_mem=8MB
+      - -c
+      - maintenance_work_mem=64MB
+    shm_size: 256mb
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U learnhouse -d learnhouse"]
+      interval: 5s
+      timeout: 4s
+      retries: 20
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+    logging: *logging
+
+  redis:
+    image: redis:8.6.1-alpine@sha256:2afba59292f25f5d1af200496db41bea2c6c816b059f57ae74703a50a03a27d0
+    restart: unless-stopped
+    # Only keys with a TTL (caches) are evicted; queues and locks are kept.
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "192mb", "--maxmemory-policy", "volatile-lru"]
+    volumes:
+      - redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 4s
+      retries: 20
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    logging: *logging
+
+  caddy:
+    # Pinned by digest (Caddy 2.11.7); bump it like the db image above.
+    image: caddy:2-alpine@sha256:eb4d35b7452d1ab6171fbdbe8d9275b2301dad6dad92115d91e19fb9b24d510f
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      SC_ACME_EMAIL: ${SC_ACME_EMAIL:?Define SC_ACME_EMAIL en .env}
+      # Extra global Caddy options. Empty in production; the local smoke test sets "local_certs".
+      SC_CADDY_GLOBAL: ${SC_CADDY_GLOBAL:-}
+    volumes:
+      - ./caddy:/etc/caddy:ro
+      # Static marketing site: releases/<fecha>/ plus a "current" symlink (scripts/deploy-sitio.sh).
+      - ${SC_WWW_DIR:-./www}:/srv/www:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      # service_started (not healthy): the marketing site must stay up even if the platform is down.
+      learnhouse-app:
+        condition: service_started
+    networks:
+      default:
+        # Server-side rendering in learnhouse-app calls https://cursos.sanarycriarve.com/api/v1/...;
+        # this alias keeps that traffic inside Docker (no hairpin through the public IP).
+        aliases:
+          - cursos.sanarycriarve.com
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:2019/config/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    logging: *logging
+
+volumes:
+  content:
+  db:
+  redis:
+  caddy_data:
+  caddy_config:

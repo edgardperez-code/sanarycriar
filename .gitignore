@@ -1,0 +1,25 @@
+# learnhouse/ is a git submodule: the public fork, branch "sanarycriar".
+
+node_modules/
+dist/
+.astro/
+*.log
+
+# Secrets and local settings
+dev/api.env
+dev/*.env
+.env
+.env.*
+!.env.example
+# Marketing site dev URLs only (no secrets); its README documents it.
+!web/.env.development
+
+# Deploy kit: the real values and generated data never go to git
+deploy/sitio.env
+deploy/backups/
+deploy/www/*
+!deploy/www/.gitkeep
+
+# Internal map of the old Replit site: it documents security flaws of a site
+# that is still online, so it stays local only.
+docs/investigacion/replit-map.md

@@ -1,0 +1,33 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import QuizSection from '@/components/QuizSection.astro';
+import { breadcrumbJsonLd } from '@/lib/seo';
+---
+
+<BaseLayout
+  title="Test de crianza: ¿desde dónde estás criando?"
+  description="15 situaciones cotidianas para reconocer qué patrones aparecen en tu manera de criar. Sin registro, sin juicios y con tu resultado al instante. No es un diagnóstico."
+  jsonLd={breadcrumbJsonLd([
+    { name: 'Inicio', path: '/' },
+    { name: 'Test de crianza', path: '/test-de-crianza' },
+  ])}
+>
+  <QuizSection level="h1" eager />
+
+  <section class="bg-lavanda-100" aria-labelledby="sobre-test">
+    <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
+      <h2 id="sobre-test" class="h3 text-2xl">Antes de empezar</h2>
+      <ul class="mt-5 max-w-[68ch] list-disc space-y-2 pl-5 text-[0.9875rem] leading-relaxed text-violeta-600 marker:text-rosa-500">
+        <li>Responde pensando en lo que sueles hacer, no en lo que crees que deberías hacer.</li>
+        <li>Cada respuesta suma un punto a uno de cuatro estilos: consciente, autoritaria, permisiva o reactiva.</li>
+        <li>
+          El resultado es orientativo: no es un diagnóstico ni reemplaza una consulta. Si algo te preocupa, <a
+            href="/agenda"
+            class="text-link">conversemos</a
+          >.
+        </li>
+        <li>Tus respuestas se guardan solo en tu navegador durante 7 días para que puedas continuar después. No las enviamos a ningún lugar.</li>
+      </ul>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,46 @@
+# Entorno local de Sanar y Criar: Postgres, Redis, Mailpit, la API de LearnHouse (hot reload)
+# y un PayPal simulado (paypal-mock, solo desarrollo).
+# Uso: docker compose -f dev/docker-compose.yml up -d --build
+name: sanarycriar-dev
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment: [POSTGRES_USER=learnhouse, POSTGRES_PASSWORD=learnhouse, POSTGRES_DB=learnhouse]
+    ports: ["127.0.0.1:5433:5432"]
+    volumes: [sc_db:/var/lib/postgresql/data]
+    healthcheck: {test: ["CMD-SHELL", "pg_isready -U learnhouse"], interval: 5s, retries: 20}
+  redis:
+    image: redis:8.6.1-alpine
+    command: redis-server --appendonly yes
+    ports: ["127.0.0.1:6380:6379"]
+    volumes: [sc_redis:/data]
+  mailpit:
+    image: axllent/mailpit:v1.27
+    ports: ["127.0.0.1:1025:1025", "127.0.0.1:8025:8025"]
+  api:
+    build:
+      context: ../learnhouse/apps/api
+      dockerfile: ../../../dev/Dockerfile.api-dev
+    image: sanarycriar/api-dev
+    env_file: ./api.env
+    working_dir: /app
+    command: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "1338", "--reload", "--reload-dir", "/app/src", "--reload-dir", "/app/config"]
+    ports: ["127.0.0.1:1338:1338"]
+    volumes:
+      - ../learnhouse/apps/api:/app
+      - sc_content:/app/content
+    depends_on:
+      db: {condition: service_healthy}
+      redis: {condition: service_started}
+      paypal-mock: {condition: service_started}
+  # PayPal REST simulado para pruebas locales (ver dev/paypal-mock/README.md). Nunca en producción.
+  paypal-mock:
+    build: ./paypal-mock
+    image: sanarycriar/paypal-mock
+    environment:
+      - MOCK_WEB_BASE=http://localhost:8099
+      - MOCK_API_BASE=http://paypal-mock:8099
+      - MOCK_WEBHOOK_URL=http://api:1338/api/v1/payments/webhooks/paypal/1
+      - MOCK_WEBHOOK_ID=WH-MOCK-SANARYCRIAR
+    ports: ["127.0.0.1:8099:8099"]
+volumes: {sc_db: {}, sc_redis: {}, sc_content: {}}

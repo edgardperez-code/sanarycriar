@@ -1,0 +1,48 @@
+---
+import { ArrowRight } from 'lucide-react';
+import OrganicPhoto from '@/components/ui/OrganicPhoto.astro';
+import { freeClassHref, site } from '@/site.config';
+
+const stats = [
+  { value: '100% online', label: `desde ${site.professional.city}` },
+  { value: site.professional.license, label: 'psicóloga colegiada' },
+  { value: 'Cursos y ebooks', label: 'acceso inmediato' },
+];
+---
+
+<section class="watercolor overflow-hidden" aria-labelledby="hero-title">
+  <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-10 sm:px-6 sm:pt-14 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-14 lg:pb-24 lg:pt-20">
+    <div>
+      <p class="inline-flex rounded-full border border-borde bg-blanco-calido px-4 py-1.5">
+        <span class="eyebrow text-[0.75rem] sm:text-[0.8125rem]">{site.professional.shortTitle} · {site.professional.license}</span>
+      </p>
+      <h1 id="hero-title" class="h1 mt-6 max-w-[16ch] sm:max-w-[18ch]">
+        Antes de corregir a tu hijo, <em class="title-accent">descubre</em> qué se activa en ti.
+      </h1>
+      <p class="lead mt-6 max-w-[34rem]">
+        Acompaño a niños y a sus mamás. Muchas veces el cambio empieza por sanar tu propia historia: con calma, sin culpa y 100% online.
+      </p>
+      <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        <a href={freeClassHref} class="btn btn-primary" target="_blank" rel="noopener">
+          <span class="sm:hidden">{site.freeClass.mobileLabel}</span>
+          <span class="hidden sm:inline">{site.freeClass.label}</span>
+          <ArrowRight size={18} strokeWidth={2} aria-hidden="true" />
+        </a>
+        <a href="/agenda" class="btn btn-secondary">Agenda tu consulta</a>
+      </div>
+      <dl class="mt-10 grid max-w-xl grid-cols-3 gap-4 border-t border-borde pt-6">
+        {
+          stats.map((stat) => (
+            <div>
+              <dt class="font-serif text-[1.0625rem] font-semibold leading-tight text-violeta sm:text-xl">{stat.value}</dt>
+              <dd class="mt-1 text-[0.8125rem] leading-snug text-violeta-400 sm:text-sm">{stat.label}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+    <div class="mx-auto w-full max-w-[20rem] sm:max-w-[24rem] lg:max-w-[28rem]">
+      <OrganicPhoto priority />
+    </div>
+  </div>
+</section>

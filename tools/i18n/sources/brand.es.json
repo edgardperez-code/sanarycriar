@@ -1,0 +1,46 @@
+{
+  "sc_brand": {
+    "auth_terms_prefix": "Al continuar, aceptas los",
+    "auth_terms": "Términos y condiciones",
+    "auth_and": "y la",
+    "auth_privacy": "Política de privacidad",
+    "auth_terms_suffix": " de Sanar y Criar.",
+    "powered_by": "Plataforma basada en LearnHouse (AGPL-3.0)",
+    "source_code": "Código fuente",
+    "copyright": "© {{year}} Sanar y Criar · Hilda Hernández",
+    "legal_nav_label": "Legal",
+    "legal": {
+      "terms": "Términos",
+      "privacy": "Privacidad",
+      "refunds": "Reembolsos"
+    },
+    "home": {
+      "courses_title": "Cursos en video",
+      "ebooks_title": "Ebooks",
+      "eyebrow": "Cursos y ebooks",
+      "title_start": "Aprende a criar",
+      "title_accent": "desde la calma",
+      "lead": "Cursos en video y ebooks de {{name}}, psicóloga clínica infanto-juvenil ({{license}}). Al comprar, el acceso es inmediato y queda en tu cuenta.",
+      "store_cta": "Ver la tienda",
+      "purchases_cta": "Mis compras",
+      "login_cta": "Ya compré: iniciar sesión",
+      "count_one": "1 disponible",
+      "count_other": "{{n}} disponibles",
+      "empty_eyebrow": "Muy pronto",
+      "empty_title": "Estamos preparando los primeros cursos y ebooks.",
+      "empty_text": "Si ya compraste, inicia sesión para ver tu contenido."
+    },
+    "nav_label": "Navegación principal",
+    "home_label": "Sanar y Criar, inicio",
+    "back_to_site": "Volver al sitio",
+    "close_menu": "Cerrar menú",
+    "open_menu": "Abrir menú",
+    "mobile_nav_label": "Menú móvil",
+    "card": {
+      "ebook_type": "Ebook · PDF",
+      "course_type": "Curso en video",
+      "view_ebook": "Ver ebook",
+      "view_course": "Ver curso"
+    }
+  }
+}

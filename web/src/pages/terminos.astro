@@ -1,0 +1,106 @@
+---
+import LegalLayout from '@/layouts/LegalLayout.astro';
+import { site } from '@/site.config';
+
+const p = site.professional;
+---
+
+<LegalLayout
+  title="Términos y condiciones"
+  description="Condiciones de uso del sitio de Sanar y Criar y de la plataforma de cursos y ebooks."
+>
+  <p>
+    Estos términos regulan el uso del sitio <strong>{site.domain}</strong> y de la plataforma de cursos{' '}
+    <strong>{new URL(site.platform.url).host}</strong> (en conjunto, “Sanar y Criar”). Al navegar, crear una cuenta o comprar un
+    producto aceptas estas condiciones. Si no estás de acuerdo, por favor no uses el servicio.
+  </p>
+
+  <h2>1. Quiénes somos</h2>
+  <p>
+    Sanar y Criar es la marca de {p.name}, {p.title.toLowerCase()}, con registro {p.license} ante la {p.licenseBody}, con sede
+    en {p.city}, estado {p.region}, {p.country}. Contacto: WhatsApp {site.contact.whatsappNumber} · Instagram{' '}
+    {site.contact.instagramHandle} · correo [completar correo de contacto]. [Completar RIF o datos fiscales, si aplica.]
+  </p>
+
+  <h2>2. Naturaleza del contenido</h2>
+  <p>
+    Los cursos, ebooks, talleres, artículos y el test de crianza son recursos educativos y de orientación. <strong>No sustituyen una
+    evaluación, un diagnóstico ni un tratamiento psicológico o médico individual.</strong> El resultado del test describe tus
+    respuestas y no es un diagnóstico.
+  </p>
+  <p>
+    Si tú o un niño a tu cargo están en riesgo o atraviesan una emergencia, comunícate de inmediato con los servicios de
+    emergencia de tu localidad.
+  </p>
+
+  <h2>3. Tu cuenta en la plataforma</h2>
+  <ul>
+    <li>Para comprar y ver los contenidos necesitas una cuenta personal con datos verdaderos.</li>
+    <li>Debes ser mayor de edad [revisar edad mínima] para crear una cuenta y comprar.</li>
+    <li>Tu cuenta es personal e intransferible. Cuida tu contraseña y no la compartas.</li>
+    <li>Podemos suspender cuentas que se usen para compartir o revender el contenido, o que incumplan estos términos.</li>
+  </ul>
+
+  <h2>4. Compras y pagos</h2>
+  <ul>
+    <li>Los precios se muestran en dólares estadounidenses (USD) e incluyen [revisar impuestos aplicables].</li>
+    <li>
+      Hoy los pagos se procesan con PayPal, ya sea con tu cuenta PayPal o con tarjeta de débito o crédito. PayPal procesa los
+      datos de pago; Sanar y Criar no recibe ni guarda los datos de tu tarjeta. Más adelante se podrán agregar otros medios, como
+      Pago Móvil.
+    </li>
+    <li>
+      La compra se confirma cuando el procesador de pagos aprueba la transacción. En ese momento el contenido se habilita en tu
+      cuenta y recibes un correo de confirmación. Si el pago queda “en revisión”, el acceso se activa cuando se confirme.
+    </li>
+    <li>Las devoluciones se rigen por la <a href="/reembolsos">política de reembolsos</a>.</li>
+  </ul>
+
+  <h2>5. Licencia de uso del contenido</h2>
+  <p>
+    Al comprar recibes una licencia personal, no exclusiva e intransferible para ver los cursos y leer los ebooks con fines
+    personales y no comerciales. No está permitido copiar, grabar, descargar los videos, revender, compartir tu acceso ni publicar
+    el contenido, total o parcialmente, sin autorización escrita. Los ebooks en PDF son para tu uso personal.
+  </p>
+  <p>
+    Duración del acceso: [definir, por ejemplo: “mientras la plataforma esté activa” o “durante X meses desde la compra”].
+  </p>
+
+  <h2>6. Consultas y talleres</h2>
+  <p>
+    Las consultas individuales y los talleres se coordinan por separado (WhatsApp o la herramienta de agenda indicada en el sitio).
+    La tarifa, la duración, la forma de pago y las condiciones de cancelación o reprogramación se informan al agendar o cotizar.
+    [Completar política de cancelación de consultas.] Lo conversado en consulta está protegido por el secreto profesional.
+  </p>
+
+  <h2>7. Propiedad intelectual</h2>
+  <p>
+    Los textos, videos, ebooks, imágenes, la marca Sanar y Criar y el resto del contenido pertenecen a {p.name} o se usan con
+    autorización. El software de la plataforma de cursos es un desarrollo basado en LearnHouse, distribuido bajo licencia
+    AGPL-3.0; su código fuente está disponible en el enlace “Código fuente” de la plataforma.
+  </p>
+
+  <h2>8. Disponibilidad y responsabilidad</h2>
+  <p>
+    Hacemos lo posible para que el sitio y la plataforma funcionen sin interrupciones, pero pueden presentarse fallas técnicas o
+    mantenimientos. Si un problema técnico te impide acceder a algo que compraste, escríbenos y lo resolvemos. En la medida que
+    permita la ley, no somos responsables por daños indirectos derivados del uso del contenido. [Revisar con asesoría legal.]
+  </p>
+
+  <h2>9. Cambios en estos términos</h2>
+  <p>
+    Podemos actualizar estos términos. Publicaremos la versión vigente en esta página con su fecha. Los cambios no afectan las
+    compras ya realizadas en lo que respecta a su acceso.
+  </p>
+
+  <h2>10. Ley aplicable</h2>
+  <p>
+    Estos términos se rigen por las leyes de la República Bolivariana de Venezuela. [Revisar jurisdicción y normas de protección al
+    consumidor aplicables, incluidas las de los países desde donde compran tus clientes.]
+  </p>
+
+  <h2>11. Contacto</h2>
+  <p>
+    Para cualquier duda escríbenos por WhatsApp al {site.contact.whatsappNumber} o al correo [completar correo de contacto].
+  </p>
+</LegalLayout>

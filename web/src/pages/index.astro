@@ -1,0 +1,99 @@
+---
+import { ArrowRight } from 'lucide-react';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/home/Hero.astro';
+import About from '@/components/home/About.astro';
+import Areas from '@/components/home/Areas.astro';
+import Workshops from '@/components/Workshops.astro';
+import QuizSection from '@/components/QuizSection.astro';
+import FaqList from '@/components/FaqList.astro';
+import FinalCta from '@/components/FinalCta.astro';
+import TestimonialCards from '@/components/TestimonialCards.astro';
+import PostCards from '@/components/PostCards.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import CatalogIsland from '@/components/islands/CatalogIsland';
+import { homeFaqs } from '@/data/faqs';
+import { getServerCatalog } from '@/lib/catalog.server';
+import { getPublishedPosts, getTestimonials } from '@/lib/content';
+import { businessJsonLd, websiteJsonLd } from '@/lib/seo';
+import { site } from '@/site.config';
+
+const catalog = await getServerCatalog();
+const posts = (await getPublishedPosts()).slice(0, 3);
+const testimonials = getTestimonials().slice(0, 3);
+---
+
+<BaseLayout
+  description="Antes de corregir a tu hijo, descubre qué se activa en ti. Hilda Hernández, psicóloga clínica infanto-juvenil (FPV 8.914): consultas online, cursos, ebooks y talleres para criar desde la calma."
+  jsonLd={[businessJsonLd(), websiteJsonLd()]}
+>
+  <Hero />
+  <About />
+  <Areas />
+
+  <Workshops tone="blanco" />
+
+  <section id="cursos" class="bg-lavanda-100" aria-labelledby="cursos-title">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+      <SectionHeading
+        id="cursos-title"
+        eyebrow="Aprende a tu ritmo"
+        title="Cursos y ebooks"
+        accent="ebooks"
+        intro={`Cursos en video y ebooks creados por Hilda. Pagas en línea, ${site.payments.short}, y el acceso es inmediato.`}
+      />
+      <div class="mt-12">
+        <CatalogIsland client:visible initial={catalog} variant="home" />
+      </div>
+    </div>
+  </section>
+
+  <QuizSection />
+
+  {
+    testimonials.length > 0 && (
+      <section id="testimonios" class="bg-lavanda-100" aria-labelledby="testimonios-title">
+        <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+          <SectionHeading id="testimonios-title" eyebrow="Lo que dicen" title="Familias que confían" accent="confían" />
+          <div class="mt-12">
+            <TestimonialCards items={testimonials} />
+          </div>
+          <a href="/testimonios" class="btn btn-secondary mt-10">
+            Ver todos los testimonios
+          </a>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    posts.length > 0 && (
+      <section id="blog" aria-labelledby="blog-title">
+        <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+          <SectionHeading id="blog-title" eyebrow="Artículos recientes" title="Del blog" accent="blog" />
+          <div class="mt-12">
+            <PostCards posts={posts} />
+          </div>
+          <a href="/blog" class="btn btn-secondary mt-10">
+            Ver todos los artículos
+          </a>
+        </div>
+      </section>
+    )
+  }
+
+  <section id="preguntas" class="bg-blanco-calido" aria-labelledby="faq-title">
+    <div class="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16">
+      <div>
+        <SectionHeading id="faq-title" eyebrow="Resolvemos tus dudas" title="Preguntas frecuentes" accent="frecuentes" />
+        <a href="/preguntas-frecuentes" class="text-link mt-6 inline-flex items-center gap-1.5">
+          Ver todas las preguntas
+          <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
+        </a>
+      </div>
+      <FaqList items={homeFaqs} />
+    </div>
+  </section>
+
+  <FinalCta />
+</BaseLayout>

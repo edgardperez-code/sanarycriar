@@ -1,0 +1,52 @@
+{
+  "sc_learning": {
+    "resume": {
+      "toast": "Reanudando en {{time}}",
+      "restart": "Empezar desde el inicio",
+      "dismiss": "Cerrar aviso"
+    },
+    "continue": {
+      "eyebrow": "Continuar donde lo dejaste",
+      "next_eyebrow": "Sigue con la próxima lección",
+      "review_eyebrow": "Terminaste la última lección",
+      "chapter": "Capítulo {{number}} · {{name}}",
+      "position": "Vas en {{time}} de {{total}}",
+      "position_no_total": "Vas en {{time}}",
+      "page": "Página {{page}}",
+      "progress_label": "{{percent}}% visto",
+      "button": "Continuar",
+      "next_button": "Empezar lección",
+      "review_button": "Ver de nuevo"
+    },
+    "dropdown": {
+      "watched": "{{percent}}% visto",
+      "view_all": "Ver todas las lecciones"
+    },
+    "trail": {
+      "read_ebook": "Leer ebook",
+      "completed": "Completado"
+    },
+    "ebook": {
+      "eyebrow": "Ebook en PDF",
+      "cover_alt": "Portada de {{name}}",
+      "format": "Léelo aquí mismo, desde tu teléfono o computadora, o descárgalo para tenerlo siempre contigo.",
+      "read_now": "Leer ahora",
+      "continue_reading": "Seguir leyendo (pág. {{page}})",
+      "download": "Descargar PDF",
+      "locked_hint": "Cuando sea tuyo, podrás leerlo aquí mismo y descargarlo en PDF.",
+      "no_pdf": "Este ebook estará disponible muy pronto.",
+      "no_pdf_staff": "Este ebook todavía no tiene su PDF. Agrégalo como actividad de documento PDF desde el panel del curso."
+    },
+    "product_type": {
+      "label": "Tipo de producto",
+      "course": "Curso",
+      "ebook": "Ebook",
+      "help_course": "Curso con lecciones en video, progreso y \"Continuar donde lo dejaste\".",
+      "help_ebook": "La página muestra la portada, la descripción y los botones \"Leer ahora\" y \"Descargar PDF\" en lugar de la lista de lecciones. Agrega una actividad de documento PDF con el libro."
+    },
+    "pdf": {
+      "no_viewer": "Este navegador no puede mostrar el PDF dentro de la página. Descárgalo o ábrelo con tu lector de PDF para leerlo con comodidad.",
+      "open": "Abrir el PDF"
+    }
+  }
+}

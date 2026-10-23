@@ -1,0 +1,38 @@
+---
+import { ArrowRight } from 'lucide-react';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+const links = [
+  { href: '/cursos', label: 'Cursos y ebooks' },
+  { href: '/agenda', label: 'Agenda tu consulta' },
+  { href: '/test-de-crianza', label: 'Test de crianza' },
+  { href: '/preguntas-frecuentes', label: 'Preguntas frecuentes' },
+];
+---
+
+<BaseLayout title="Página no encontrada" description="La página que buscas no existe o cambió de dirección." noindex canonical={false}>
+  <section class="watercolor" aria-labelledby="page-title">
+    <div class="mx-auto max-w-6xl px-4 pb-20 pt-16 sm:px-6 sm:pb-28 sm:pt-24">
+      <p class="eyebrow">Error 404</p>
+      <h1 id="page-title" class="h1 mt-4 max-w-[18ch]">Esta página se nos <em class="title-accent">perdió</em>.</h1>
+      <p class="lead mt-6">
+        Puede que el enlace haya cambiado o que la dirección tenga un error. Respira: desde aquí te ayudamos a encontrar lo que buscas.
+      </p>
+      <a href="/" class="btn btn-primary mt-8">
+        Volver al inicio
+        <ArrowRight size={18} strokeWidth={2} aria-hidden="true" />
+      </a>
+      <ul class="mt-10 flex flex-wrap gap-x-6 gap-y-3">
+        {
+          links.map((link) => (
+            <li>
+              <a href={link.href} class="text-link">
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</BaseLayout>

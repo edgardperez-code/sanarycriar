@@ -1,0 +1,131 @@
+---
+import LegalLayout from '@/layouts/LegalLayout.astro';
+import { site } from '@/site.config';
+
+const p = site.professional;
+---
+
+<LegalLayout
+  title="Política de privacidad"
+  description="Cómo Sanar y Criar trata tus datos personales, con especial cuidado de los datos de salud, y qué cookies usa."
+>
+  <p>
+    Tu confianza es parte del acompañamiento. Esta política explica qué datos tratamos en el sitio <strong>{site.domain}</strong> y
+    en la plataforma de cursos <strong>{new URL(site.platform.url).host}</strong>, para qué los usamos y cómo los cuidamos.
+  </p>
+
+  <h2>1. Responsable</h2>
+  <p>
+    {p.name}, {p.title.toLowerCase()} ({p.license}), {p.city}, {p.region}, {p.country}. Contacto para temas de privacidad: [completar
+    correo de contacto] o WhatsApp {site.contact.whatsappNumber}.
+  </p>
+
+  <h2>2. Qué datos tratamos</h2>
+  <h3>En este sitio</h3>
+  <ul>
+    <li>
+      <strong>No tiene formularios ni cuentas.</strong> No te pedimos datos personales para navegar.
+    </li>
+    <li>
+      <strong>Test de crianza:</strong> tus respuestas se guardan solo en tu navegador (almacenamiento local) durante 7 días para que
+      puedas continuar después. No se envían a ningún servidor y puedes borrarlas con “Volver a empezar” o limpiando los datos del
+      navegador.
+    </li>
+    <li>
+      <strong>Catálogo:</strong> para mostrar los cursos y ebooks, tu navegador consulta la lista pública de productos de la
+      plataforma de cursos. Esa consulta no incluye datos personales.
+    </li>
+    <li>
+      <strong>WhatsApp e Instagram:</strong> si nos escribes por estos medios, tratamos lo que nos envíes para responderte. Estos
+      servicios pertenecen a Meta y tienen sus propias políticas.
+    </li>
+    <li>
+      <strong>Registros técnicos:</strong> el servicio de alojamiento puede registrar datos técnicos básicos (como la dirección IP)
+      por seguridad. [Completar proveedor de alojamiento.]
+    </li>
+  </ul>
+
+  <h3>En la plataforma de cursos</h3>
+  <ul>
+    <li>Datos de tu cuenta: nombre, correo electrónico y contraseña (guardada cifrada).</li>
+    <li>Tus compras: producto, monto, fecha, estado del pago e identificadores de la transacción.</li>
+    <li>Tu progreso: lecciones vistas y el punto donde te quedaste en cada video o ebook, para que puedas retomarlo.</li>
+    <li>
+      Pagos: los procesa PayPal. Nosotros no recibimos ni guardamos los datos de tu tarjeta; solo la confirmación del pago que nos
+      envía PayPal.
+    </li>
+  </ul>
+
+  <h2>3. Datos de salud: cuidado especial</h2>
+  <p>
+    La información sobre tu salud emocional o la de tus hijos es especialmente sensible. Por eso:
+  </p>
+  <ul>
+    <li>No pedimos datos de salud en el sitio, en el test ni en la plataforma de cursos.</li>
+    <li>
+      Por WhatsApp solo coordinamos citas. Te pedimos no enviar por ese medio detalles clínicos; los conversamos en consulta.
+    </li>
+    <li>
+      Lo que compartes en consulta está protegido por el secreto profesional y el código de ética de la psicología. No se comparte
+      con terceros sin tu consentimiento, salvo obligación legal o riesgo grave para ti o para otra persona.
+    </li>
+    <li>
+      Las notas de consulta se guardan con medidas de seguridad adecuadas y separadas de la plataforma de cursos. [Completar dónde y
+      por cuánto tiempo se conservan.]
+    </li>
+    <li>
+      En el trabajo con niños y adolescentes, el consentimiento lo otorgan sus representantes, y se respeta la confidencialidad del
+      menor según su edad y el criterio profesional.
+    </li>
+  </ul>
+
+  <h2>4. Para qué usamos tus datos</h2>
+  <ul>
+    <li>Darte acceso a los cursos y ebooks que compraste y guardar tu progreso.</li>
+    <li>Procesar tus pagos y enviarte confirmaciones y avisos sobre tus compras.</li>
+    <li>Responder tus mensajes y coordinar consultas o talleres.</li>
+    <li>Cumplir obligaciones legales y prevenir fraudes o usos indebidos.</li>
+  </ul>
+  <p>No vendemos tus datos ni los usamos para publicidad de terceros.</p>
+
+  <h2>5. Con quién los compartimos</h2>
+  <p>
+    Solo con proveedores necesarios para prestar el servicio, que actúan bajo sus propias obligaciones de confidencialidad:
+    procesador de pagos (PayPal), alojamiento de la plataforma y del sitio, y envío de correos. [Completar nombres de los
+    proveedores.] Algunos pueden estar fuera de Venezuela.
+  </p>
+
+  <h2>6. Cookies y almacenamiento local</h2>
+  <ul>
+    <li>
+      <strong>Este sitio no usa cookies de publicidad ni de analítica.</strong> Solo usa el almacenamiento local de tu navegador para
+      guardar el avance del test de crianza.
+    </li>
+    <li>
+      La plataforma de cursos usa cookies técnicas imprescindibles para mantener tu sesión iniciada y proteger tu cuenta.
+    </li>
+    <li>Si en el futuro agregamos herramientas de medición, actualizaremos esta política y te lo indicaremos.</li>
+  </ul>
+
+  <h2>7. Cuánto tiempo los conservamos</h2>
+  <p>
+    Mientras tengas una cuenta activa, y después el tiempo necesario para cumplir obligaciones legales o resolver reclamos. [Definir
+    plazos.] Puedes pedir que eliminemos tu cuenta cuando quieras.
+  </p>
+
+  <h2>8. Tus derechos</h2>
+  <p>
+    Puedes pedirnos acceder a tus datos, corregirlos, eliminarlos o dejar de recibir comunicaciones. Escríbenos a [completar correo
+    de contacto] o por WhatsApp; respondemos en un plazo de [definir] días hábiles. La Constitución venezolana reconoce el derecho a
+    conocer y actualizar los datos que otros tengan sobre ti (habeas data). [Revisar normativa aplicable.]
+  </p>
+
+  <h2>9. Seguridad</h2>
+  <p>
+    Usamos conexiones cifradas (HTTPS), contraseñas cifradas y accesos restringidos. Ningún sistema es infalible: si detectamos un
+    incidente que afecte tus datos, te lo informaremos.
+  </p>
+
+  <h2>10. Cambios</h2>
+  <p>Publicaremos en esta página cualquier cambio a esta política, con su fecha de actualización.</p>
+</LegalLayout>

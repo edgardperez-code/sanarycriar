@@ -1,0 +1,13 @@
+# Solo para la prueba local (local-smoke/smoke.sh). NUNCA en producción.
+# Se aplica encima de docker-compose.prod.yml con el proyecto "sanarycriar-smoke".
+services:
+  learnhouse-app:
+    environment:
+      # Caddy signs with its internal CA here (SC_CADDY_GLOBAL=local_certs), so the
+      # server-side fetches to https://cursos.sanarycriarve.com must accept it.
+      NODE_TLS_REJECT_UNAUTHORIZED: "0"
+  caddy:
+    # Loopback only, so nothing is exposed to the network.
+    ports: !override
+      - "${SC_SMOKE_HTTP:-127.0.0.1:80}:80"
+      - "${SC_SMOKE_HTTPS:-127.0.0.1:443}:443"

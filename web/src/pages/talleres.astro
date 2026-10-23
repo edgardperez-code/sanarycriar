@@ -1,0 +1,18 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Workshops from '@/components/Workshops.astro';
+import FinalCta from '@/components/FinalCta.astro';
+import { breadcrumbJsonLd } from '@/lib/seo';
+---
+
+<BaseLayout
+  title="Talleres y cursos presenciales"
+  description="Talleres para instituciones educativas, empresas y familias: neurodiversidad, cerebro adolescente, bienestar emocional, límites y más. Presencial o virtual en vivo, con cotización personalizada."
+  jsonLd={breadcrumbJsonLd([
+    { name: 'Inicio', path: '/' },
+    { name: 'Talleres', path: '/talleres' },
+  ])}
+>
+  <Workshops full level="h1" />
+  <FinalCta />
+</BaseLayout>

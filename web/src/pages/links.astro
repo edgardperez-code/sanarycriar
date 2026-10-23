@@ -1,0 +1,88 @@
+---
+import { ArrowUpRight, BookOpen, CalendarDays, ClipboardCheck, Globe, MessageCircle, Presentation, Sparkles } from 'lucide-react';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import OrganicPhoto from '@/components/ui/OrganicPhoto.astro';
+import Wordmark from '@/components/ui/Wordmark.astro';
+import InstagramIcon from '@/components/ui/InstagramIcon.astro';
+import { freeClassHref, site } from '@/site.config';
+
+/** Link-in-bio page for Instagram (@sanarycriarve). */
+const links = [
+  { href: freeClassHref, label: site.freeClass.label, sub: 'Tu primer paso, sin costo', icon: Sparkles, primary: true, external: true },
+  { href: '/agenda', label: 'Agenda tu consulta online', sub: 'Sesión individual con Hilda', icon: CalendarDays },
+  { href: '/cursos', label: 'Cursos y ebooks', sub: 'Aprende a tu ritmo, acceso inmediato', icon: BookOpen },
+  { href: '/test-de-crianza', label: '¿Desde dónde estás criando?', sub: 'Test gratuito de 15 situaciones', icon: ClipboardCheck },
+  { href: '/talleres', label: 'Talleres para colegios y empresas', sub: 'Presenciales o virtuales en vivo', icon: Presentation },
+  { href: site.contact.whatsappUrl, label: 'WhatsApp', sub: site.contact.whatsappNumber, icon: MessageCircle, external: true },
+  { href: '/', label: 'Sitio web', sub: site.domain, icon: Globe },
+];
+---
+
+<BaseLayout
+  title="Links"
+  description="Clase gratuita, consultas online, cursos, ebooks y test de crianza de Hilda Hernández, psicóloga infanto-juvenil."
+  bare
+>
+  <div class="watercolor min-h-dvh">
+    <div class="mx-auto flex max-w-md flex-col px-4 pb-12 pt-10">
+      <div class="flex flex-col items-start">
+        <div class="w-36">
+          <OrganicPhoto priority sizes="144px" />
+        </div>
+        <h1 class="sr-only">Sanar y Criar: enlaces</h1>
+        <div class="mt-6">
+          <Wordmark size="lg" />
+        </div>
+        <p class="mt-3 text-[0.9375rem] text-violeta-500">
+          {site.professional.title} · {site.professional.license}<br />
+          {site.professional.city}, Venezuela · 100% online
+        </p>
+      </div>
+
+      <ul class="mt-8 flex flex-col gap-3">
+        {
+          links.map(({ href, label, sub, icon: Icon, primary, external }) => (
+            <li>
+              <a
+                href={href}
+                target={external ? '_blank' : undefined}
+                rel={external ? 'noopener' : undefined}
+                class:list={[
+                  'flex min-h-[4.25rem] items-center gap-4 rounded-[var(--radius-card)] border px-5 py-3.5 transition-colors',
+                  primary
+                    ? 'border-violeta bg-violeta text-nube hover:bg-violeta-600'
+                    : 'border-borde bg-blanco-calido text-violeta hover:border-lavanda-300',
+                ]}
+              >
+                <span class:list={['shrink-0', primary ? 'text-rosa-300' : 'text-lavanda-600']} aria-hidden="true">
+                  <Icon size={22} strokeWidth={1.75} />
+                </span>
+                <span class="min-w-0 flex-1">
+                  <span class="block font-semibold leading-snug">{label}</span>
+                  <span class:list={['block text-sm', primary ? 'text-nube/80' : 'text-violeta-500']}>{sub}</span>
+                </span>
+                {external && (
+                  <span class="shrink-0 opacity-70" aria-hidden="true">
+                    <ArrowUpRight size={18} strokeWidth={2} />
+                  </span>
+                )}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <a
+        href={site.contact.instagramUrl}
+        target="_blank"
+        rel="noopener"
+        class="mt-8 inline-flex items-center gap-2 self-start text-[0.9375rem] font-semibold text-violeta-600 hover:text-violeta"
+      >
+        <InstagramIcon size={18} />
+        {site.contact.instagramHandle}
+      </a>
+
+      <p class="note mt-10">© {new Date().getFullYear()} {site.name} · <a href="/privacidad" class="underline underline-offset-4">Privacidad</a></p>
+    </div>
+  </div>
+</BaseLayout>

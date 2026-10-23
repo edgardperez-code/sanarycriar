@@ -1,0 +1,30 @@
+---
+import { splitAccent } from '@/lib/nav';
+
+/**
+ * Eyebrow + title (one italic accent word) + optional intro, left aligned.
+ */
+interface Props {
+  eyebrow?: string;
+  title: string;
+  /** Word (or short phrase) of the title shown in Playfair italic. */
+  accent?: string;
+  intro?: string;
+  level?: 'h1' | 'h2';
+  id?: string;
+  class?: string;
+}
+
+const { eyebrow, title, accent, intro, level = 'h2', id, class: className = '' } = Astro.props;
+const [before, accented, after] = splitAccent(title, accent);
+const Tag = level;
+---
+
+<div class:list={['max-w-3xl', className]}>
+  {eyebrow && <p class="eyebrow mb-4">{eyebrow}</p>}
+  <Tag id={id} class={level === 'h1' ? 'h1' : 'h2'}>
+    {before}{accented && <em class="title-accent">{accented}</em>}{after}
+  </Tag>
+  {intro && <p class="lead mt-5">{intro}</p>}
+  <slot />
+</div>

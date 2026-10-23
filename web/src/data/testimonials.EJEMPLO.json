@@ -1,0 +1,11 @@
+[
+  {
+    "_nota": "EJEMPLO: este archivo NO se publica. Copia el formato a testimonials.json solo con testimonios reales y con permiso escrito de quien lo da.",
+    "nombre": "Nombre e inicial del apellido (ej.: Ana P.)",
+    "ciudad": "Ciudad, país",
+    "frase": "Frase corta destacada, en palabras de la mamá o el papá.",
+    "texto": "Texto completo del testimonio, tal como lo escribió la persona.",
+    "permiso": false,
+    "fecha": "2026-10"
+  }
+]

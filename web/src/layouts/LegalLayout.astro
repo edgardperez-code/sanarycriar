@@ -1,0 +1,40 @@
+---
+import { TriangleAlert } from 'lucide-react';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { legalDraft, legalUpdated } from '@/data/legal';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} noindex={legalDraft}>
+  <article class="mx-auto max-w-6xl px-4 pb-16 pt-10 sm:px-6 sm:pb-24 sm:pt-14">
+    {
+      legalDraft && (
+        <div role="note" class="mb-10 flex max-w-3xl items-start gap-4 rounded-[var(--radius-card)] border border-rosa-300 bg-rosa-200 p-5 sm:p-6">
+          <span class="mt-0.5 shrink-0 text-rosa-600" aria-hidden="true">
+            <TriangleAlert size={22} strokeWidth={1.75} />
+          </span>
+          <div>
+            <p class="font-semibold text-violeta">Borrador: revisar con asesoría legal</p>
+            <p class="mt-1 text-[0.9375rem] leading-relaxed text-violeta-600">
+              Este texto es una plantilla de trabajo y todavía no ha sido revisado por un abogado. Los datos entre [corchetes] deben completarse antes de publicarlo como definitivo.
+            </p>
+          </div>
+        </div>
+      )
+    }
+    <header class="max-w-3xl">
+      <p class="eyebrow">Legal</p>
+      <h1 class="h1 mt-4">{title}</h1>
+      <p class="note mt-4">Última actualización: {legalUpdated}{legalDraft && ' (borrador)'}</p>
+    </header>
+    <div class="prose-brand mt-10 text-[1.0625rem] leading-relaxed">
+      <slot />
+    </div>
+  </article>
+</BaseLayout>

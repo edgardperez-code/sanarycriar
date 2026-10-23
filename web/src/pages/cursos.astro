@@ -1,0 +1,89 @@
+---
+import { CirclePlay, CreditCard, MousePointerClick } from 'lucide-react';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import CatalogIsland from '@/components/islands/CatalogIsland';
+import FinalCta from '@/components/FinalCta.astro';
+import { getServerCatalog } from '@/lib/catalog.server';
+import { breadcrumbJsonLd } from '@/lib/seo';
+import { site } from '@/site.config';
+
+const catalog = await getServerCatalog();
+
+const steps = [
+  {
+    icon: MousePointerClick,
+    title: 'Elige tu curso o ebook',
+    text: 'Cada tarjeta te lleva a su página en la plataforma de cursos, con el detalle y el precio.',
+  },
+  {
+    icon: CreditCard,
+    title: 'Crea tu cuenta y paga en línea',
+    text: `Pagas con ${site.payments.now}. Muy pronto también con ${site.payments.soon}.`,
+  },
+  {
+    icon: CirclePlay,
+    title: 'Empieza de inmediato',
+    text: 'Al confirmarse el pago, el contenido queda en tu cuenta. Avanzas a tu ritmo y la plataforma recuerda dónde te quedaste.',
+  },
+];
+---
+
+<BaseLayout
+  title="Cursos y ebooks"
+  description="Cursos en video y ebooks de Hilda Hernández, psicóloga infanto-juvenil, para criar desde la calma. Pago en línea y acceso inmediato."
+  jsonLd={breadcrumbJsonLd([
+    { name: 'Inicio', path: '/' },
+    { name: 'Cursos y ebooks', path: '/cursos' },
+  ])}
+>
+  <section class="watercolor" aria-labelledby="page-title">
+    <div class="mx-auto max-w-6xl px-4 pb-12 pt-12 sm:px-6 sm:pt-20">
+      <SectionHeading
+        level="h1"
+        id="page-title"
+        eyebrow="Aprende a tu ritmo"
+        title="Cursos y ebooks para criar desde la calma"
+        accent="calma"
+        intro="Contenidos creados por Hilda para acompañarte en casa: cursos en video que ves cuando puedas y ebooks en PDF para leer y volver a ellos."
+      />
+    </div>
+  </section>
+
+  <section class="pb-16 sm:pb-24" aria-label="Catálogo">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <CatalogIsland client:load initial={catalog} variant="full" />
+    </div>
+  </section>
+
+  <section class="bg-lavanda-100" aria-labelledby="como-funciona">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+      <SectionHeading id="como-funciona" eyebrow="Cómo funciona" title="Del clic a tu primera lección" accent="primera" />
+      <ol class="mt-10 grid gap-5 md:grid-cols-3">
+        {
+          steps.map(({ icon: Icon, title, text }, index) => (
+            <li class="card p-7">
+              <div class="flex items-center gap-3">
+                <span class="font-serif text-3xl font-semibold leading-none text-rosa-500" aria-hidden="true">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <span class="text-lavanda-600" aria-hidden="true">
+                  <Icon size={24} strokeWidth={1.75} />
+                </span>
+              </div>
+              <h3 class="h3 mt-4">{title}</h3>
+              <p class="mt-2 text-[0.9875rem] leading-relaxed text-violeta-600">{text}</p>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="note mt-8 max-w-[65ch]">
+        Los cursos y ebooks son recursos de aprendizaje y no sustituyen una evaluación ni una terapia individual.
+        ¿Tienes dudas? Revisa las <a href="/preguntas-frecuentes" class="text-link">preguntas frecuentes</a> o la{' '}
+        <a href="/reembolsos" class="text-link">política de reembolsos</a>.
+      </p>
+    </div>
+  </section>
+
+  <FinalCta />
+</BaseLayout>

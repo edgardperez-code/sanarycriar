@@ -1,0 +1,15 @@
+{
+  "name": "Sanar y Criar",
+  "short_name": "Sanar y Criar",
+  "description": "Hilda Hernández, psicóloga infanto-juvenil. Consultas online, cursos y ebooks.",
+  "lang": "es",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#FDF5EE",
+  "theme_color": "#FDF5EE",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

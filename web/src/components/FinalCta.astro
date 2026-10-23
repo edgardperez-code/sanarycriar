@@ -1,0 +1,41 @@
+---
+import { ArrowRight } from 'lucide-react';
+import { freeClassHref, site } from '@/site.config';
+
+interface Props {
+  title?: string;
+  accent?: string;
+  text?: string;
+}
+
+const {
+  title = 'Demos el primer paso juntos.',
+  accent = 'juntos',
+  text = 'Criar no tiene que ser un camino solitario. Reserva tu lugar en la clase gratuita o agenda una consulta, y construyamos un espacio de bienestar para tu familia.',
+} = Astro.props;
+
+const index = title.indexOf(accent);
+const before = index >= 0 ? title.slice(0, index) : title;
+const after = index >= 0 ? title.slice(index + accent.length) : '';
+---
+
+<section class="on-dark bg-violeta" aria-labelledby="cta-title">
+  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+    <div class="max-w-3xl">
+      <p class="eyebrow mb-4">Clase gratuita</p>
+      <h2 id="cta-title" class="h2 text-nube">
+        {before}{index >= 0 && <em class="title-accent">{accent}</em>}{after}
+      </h2>
+      <p class="mt-5 max-w-[60ch] text-[1.0625rem] leading-relaxed text-nube/85 sm:text-lg">{text}</p>
+      <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        <a href={freeClassHref} class="btn btn-blush" target="_blank" rel="noopener">
+          <span class="sm:hidden">{site.freeClass.mobileLabel}</span>
+          <span class="hidden sm:inline">{site.freeClass.label}</span>
+          <ArrowRight size={18} strokeWidth={2} aria-hidden="true" />
+        </a>
+        <a href="/agenda" class="btn btn-ghost-light">Agenda tu consulta</a>
+      </div>
+      <p class="mt-6 text-sm text-nube/70">100% online · Desde {site.professional.city} para donde estés</p>
+    </div>
+  </div>
+</section>

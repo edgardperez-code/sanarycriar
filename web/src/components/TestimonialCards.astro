@@ -1,0 +1,30 @@
+---
+import type { Testimonial } from '@/lib/content';
+
+/** Real testimonials only (with permission). Big pink quote = the section's decorative element. */
+interface Props {
+  items: Testimonial[];
+}
+
+const { items } = Astro.props;
+---
+
+<ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+  {
+    items.map((t) => (
+      <li class="flex">
+        <figure class="card flex w-full flex-col p-7">
+          <span class="big-quote block" aria-hidden="true">“</span>
+          <blockquote class="mt-2 flex-1">
+            <p class="font-serif text-xl font-semibold leading-snug text-violeta">{t.frase}</p>
+            <p class="mt-3 text-[0.9375rem] leading-relaxed text-violeta-600">{t.texto}</p>
+          </blockquote>
+          <figcaption class="mt-6 border-t border-borde pt-4">
+            <span class="block font-semibold text-violeta">{t.nombre}</span>
+            {t.ciudad && <span class="note block">{t.ciudad}</span>}
+          </figcaption>
+        </figure>
+      </li>
+    ))
+  }
+</ul>

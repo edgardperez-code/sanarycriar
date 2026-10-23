@@ -1,0 +1,168 @@
+---
+import { ArrowRight, ArrowUpRight, ChevronDown, Clock, MapPin, MessageCircle, MonitorPlay, Shapes, UsersRound } from 'lucide-react';
+import { splitAccent } from '@/lib/nav';
+import { whatsappLink } from '@/site.config';
+import { customWorkshopMessage, workshopCost, workshopQuoteMessage, workshops } from '@/data/workshops';
+
+/**
+ * In-person / live workshops catalog (9 workshops, quotes via WhatsApp).
+ * `full` adds the "Modalidad" and custom-topic boxes (used on /talleres).
+ */
+interface Props {
+  full?: boolean;
+  level?: 'h1' | 'h2';
+  /** Section background: "nube" with watercolor, or plain "blanco" (warm white). */
+  tone?: 'nube' | 'blanco';
+}
+
+const { full = false, level = 'h2', tone = 'nube' } = Astro.props;
+const Heading = level;
+const ItemHeading = level === 'h1' ? 'h2' : 'h3';
+const [before, accent, after] = splitAccent('Talleres y cursos presenciales', 'presenciales');
+const count = String(workshops.length).padStart(2, '0');
+---
+
+<section
+  id="talleres"
+  class:list={[tone === 'nube' ? 'watercolor bg-nube' : 'border-y border-borde bg-blanco-calido']}
+  aria-labelledby="talleres-title"
+>
+  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+    <div class="grid gap-8 border-b border-borde pb-12 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-end lg:gap-16">
+      <div>
+        <p class="eyebrow mb-4">Formación en vivo · Para aprender juntos</p>
+        <Heading id="talleres-title" class={level === 'h1' ? 'h1' : 'h2'}>
+          {before}<em class="title-accent">{accent}</em>{after}
+        </Heading>
+        <p class="mt-5 max-w-[60ch] text-lg font-semibold text-violeta">
+          Formación para instituciones educativas, empresas y familias.
+        </p>
+        <p class="lead mt-3">
+          Diseñados para brindar herramientas prácticas, actualizadas y basadas en evidencia que favorezcan el bienestar emocional, el desarrollo infantil y adolescente, y la construcción de entornos educativos más saludables.
+        </p>
+      </div>
+      <div class="flex items-end gap-4 lg:flex-col lg:items-start">
+        <span class="font-serif text-6xl font-semibold leading-none text-rosa-500 sm:text-7xl" aria-hidden="true">{count}</span>
+        <p>
+          <span class="block text-[0.8125rem] font-semibold uppercase tracking-[0.14em] text-violeta">Encuentros para compartir</span>
+          <span class="note mt-1 block">Experiencias participativas en vivo, no cursos grabados.</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="grid gap-8 pt-10 lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-14">
+      <div>
+        <p class="eyebrow">Explora el catálogo</p>
+        <p class="note mt-3 max-w-sm">
+          Abre cada taller para conocer su objetivo, a quién está dirigido y cómo solicitar una propuesta.
+        </p>
+      </div>
+      <div class="space-y-3">
+        {
+          workshops.map((workshop, index) => (
+            <details class="accordion card group overflow-hidden open:border-lavanda-300">
+              <summary class="flex min-h-[5.5rem] cursor-pointer items-center gap-4 px-5 py-4 sm:gap-6 sm:px-7">
+                <span class="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full bg-lavanda-100 font-serif text-sm font-semibold text-lavanda-700 sm:flex" aria-hidden="true">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <span class="min-w-0 flex-1">
+                  <span class="mb-1 block text-[0.75rem] font-semibold uppercase tracking-[0.16em] text-rosa-600">{workshop.category}</span>
+                  <ItemHeading class="font-serif text-[1.0625rem] font-semibold leading-snug text-violeta sm:text-xl">{workshop.title}</ItemHeading>
+                </span>
+                <span class="accordion-icon flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-nube text-violeta" aria-hidden="true">
+                  <ChevronDown size={18} strokeWidth={2} />
+                </span>
+              </summary>
+              <div class="mx-5 border-t border-borde pb-7 pt-6 sm:mx-7">
+                <div class="grid gap-7 md:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] md:gap-10">
+                  <div>
+                    <p class="eyebrow text-[0.75rem]">Objetivo</p>
+                    <p class="mt-2 max-w-[62ch] text-[0.9875rem] leading-relaxed text-violeta-600">{workshop.objective}</p>
+                  </div>
+                  <div>
+                    <p class="eyebrow inline-flex items-center gap-2 text-[0.75rem]">
+                      <UsersRound size={15} strokeWidth={1.75} aria-hidden="true" /> Dirigido a
+                    </p>
+                    <ul class="mt-3 flex flex-wrap gap-2">
+                      {workshop.audience.map((group) => (
+                        <li class="rounded-full bg-lavanda-100 px-3 py-1.5 text-[0.8125rem] font-medium text-violeta-600">{group}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                <dl class="mt-7 grid gap-5 rounded-[var(--radius-field)] bg-nube p-5 sm:grid-cols-2">
+                  <div>
+                    <dt class="flex items-center gap-2 text-[0.8125rem] font-semibold text-violeta">
+                      <span class="text-lavanda-600" aria-hidden="true"><Clock size={16} strokeWidth={1.75} /></span> Duración
+                    </dt>
+                    <dd class="mt-1 text-[0.9375rem] text-violeta-600">{workshop.duration}</dd>
+                  </div>
+                  <div>
+                    <dt class="text-[0.8125rem] font-semibold text-violeta">Costo</dt>
+                    <dd class="mt-1 text-[0.9375rem] text-violeta-600">{workshopCost}</dd>
+                  </div>
+                </dl>
+                <a
+                  href={whatsappLink(workshopQuoteMessage(workshop.title))}
+                  target="_blank"
+                  rel="noopener"
+                  class="btn btn-primary btn-sm mt-6"
+                >
+                  Solicitar cotización
+                  <ArrowUpRight size={17} strokeWidth={2} aria-hidden="true" />
+                </a>
+              </div>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+
+    {
+      full ? (
+        <div class="mt-16 grid overflow-hidden rounded-[var(--radius-card)] border border-borde lg:grid-cols-[0.8fr_1.2fr]">
+          <div class="bg-lavanda-100 p-7 sm:p-10">
+            <p class="eyebrow">Nos adaptamos a tu espacio</p>
+            <h2 class="h3 mt-3 text-2xl sm:text-3xl">Modalidad</h2>
+            <ul class="mt-6 space-y-3 font-medium text-violeta-600">
+              <li class="flex items-center gap-3">
+                <span class="text-lavanda-600" aria-hidden="true"><MapPin size={20} strokeWidth={1.75} /></span> Presencial
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-lavanda-600" aria-hidden="true"><MonitorPlay size={20} strokeWidth={1.75} /></span> Virtual en vivo
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-lavanda-600" aria-hidden="true"><Shapes size={20} strokeWidth={1.75} /></span> Formato híbrido (según disponibilidad)
+              </li>
+            </ul>
+            <p class="note mt-6">Todos los talleres pueden adaptarse a las necesidades de cada institución, empresa o grupo.</p>
+          </div>
+          <div class="bg-blanco-calido p-7 sm:p-10 lg:p-12">
+            <p class="eyebrow">Una propuesta para tu equipo</p>
+            <h2 class="h3 mt-3 text-2xl sm:text-3xl">¿Buscas un tema diferente?</h2>
+            <div class="mt-4 max-w-[62ch] space-y-3 text-violeta-600">
+              <p>
+                Si tu institución o empresa necesita formación en un tema específico relacionado con crianza, salud mental, desarrollo infantil y adolescente, bienestar emocional, educación, neurodiversidad o acompañamiento familiar, podemos diseñar un taller o curso a la medida.
+              </p>
+              <p>
+                Cada propuesta se ajusta a los objetivos de la organización, al perfil de los participantes, a la modalidad y al tiempo disponible.
+              </p>
+            </div>
+            <a href={whatsappLink(customWorkshopMessage)} target="_blank" rel="noopener" class="btn btn-primary mt-7">
+              <MessageCircle size={18} strokeWidth={1.75} aria-hidden="true" />
+              Hablemos de tu idea
+            </a>
+          </div>
+        </div>
+      ) : (
+        <div class="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <a href="/talleres" class="btn btn-secondary">
+            <span class="sm:hidden">Modalidades y más</span>
+            <span class="hidden sm:inline">Modalidades y talleres a la medida</span>
+            <ArrowRight size={17} strokeWidth={2} aria-hidden="true" />
+          </a>
+        </div>
+      )
+    }
+  </div>
+</section>

@@ -1,0 +1,37 @@
+---
+import { ChevronDown } from 'lucide-react';
+import type { Faq } from '@/data/faqs';
+
+/** Accessible accordion built on native <details>/<summary> (works without JS). */
+interface Props {
+  items: Faq[];
+  headingLevel?: 'h2' | 'h3';
+  openFirst?: boolean;
+}
+
+const { items, headingLevel = 'h3', openFirst = false } = Astro.props;
+const Q = headingLevel;
+---
+
+<div class="space-y-3">
+  {
+    items.map((faq, index) => (
+      <details class="accordion card group open:border-lavanda-300" open={openFirst && index === 0} id={faq.id}>
+        <summary class="flex cursor-pointer items-center justify-between gap-4 px-5 py-4 sm:px-6 sm:py-5">
+          <Q class="font-serif text-[1.0625rem] font-semibold leading-snug text-violeta sm:text-lg">{faq.question}</Q>
+          <span class="accordion-icon flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-nube text-violeta" aria-hidden="true">
+            <ChevronDown size={18} strokeWidth={2} />
+          </span>
+        </summary>
+        <div class="px-5 pb-5 sm:px-6 sm:pb-6">
+          <p class="max-w-[65ch] text-[0.9875rem] leading-relaxed text-violeta-600">{faq.answer}</p>
+          {faq.link && (
+            <a href={faq.link.href} class="text-link mt-3 inline-block text-[0.9375rem]">
+              {faq.link.label}
+            </a>
+          )}
+        </div>
+      </details>
+    ))
+  }
+</div>

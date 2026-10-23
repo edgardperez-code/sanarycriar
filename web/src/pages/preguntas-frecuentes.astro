@@ -1,0 +1,47 @@
+---
+import { MessageCircle } from 'lucide-react';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import FaqList from '@/components/FaqList.astro';
+import { faqs } from '@/data/faqs';
+import { breadcrumbJsonLd, faqJsonLd } from '@/lib/seo';
+import { site, whatsappLink } from '@/site.config';
+---
+
+<BaseLayout
+  title="Preguntas frecuentes"
+  description="Cómo comprar cursos y ebooks, métodos de pago (PayPal ahora, Pago Móvil pronto), acceso inmediato, cuenta en la plataforma y consultas online."
+  jsonLd={[
+    faqJsonLd(faqs),
+    breadcrumbJsonLd([
+      { name: 'Inicio', path: '/' },
+      { name: 'Preguntas frecuentes', path: '/preguntas-frecuentes' },
+    ]),
+  ]}
+>
+  <section class="watercolor" aria-labelledby="page-title">
+    <div class="mx-auto grid max-w-6xl gap-10 px-4 pb-16 pt-12 sm:px-6 sm:pb-24 sm:pt-20 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)] lg:gap-16">
+      <div>
+        <SectionHeading
+          level="h1"
+          id="page-title"
+          eyebrow="Resolvemos tus dudas"
+          title="Preguntas frecuentes"
+          accent="frecuentes"
+          intro="Si no encuentras tu respuesta, escríbeme y te respondo personalmente."
+        />
+        <a
+          href={whatsappLink('Hola, Hilda. Tengo una pregunta.')}
+          target="_blank"
+          rel="noopener"
+          class="btn btn-primary mt-8"
+        >
+          <MessageCircle size={18} strokeWidth={1.75} aria-hidden="true" />
+          Escríbeme por WhatsApp
+        </a>
+        <p class="note mt-4">{site.contact.whatsappNumber}</p>
+      </div>
+      <FaqList items={faqs} headingLevel="h2" openFirst />
+    </div>
+  </section>
+</BaseLayout>

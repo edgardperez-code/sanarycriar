@@ -1,0 +1,136 @@
+---
+import { ArrowRight, BadgeCheck, HeartHandshake, MapPin, MonitorSmartphone, Sprout } from 'lucide-react';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import OrganicPhoto from '@/components/ui/OrganicPhoto.astro';
+import AreaIcon from '@/components/AreaIcon.astro';
+import FinalCta from '@/components/FinalCta.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import { mainAreas, otherAreas } from '@/data/areas';
+import { breadcrumbJsonLd, businessJsonLd } from '@/lib/seo';
+import { site } from '@/site.config';
+
+const principles = [
+  {
+    icon: Sprout,
+    title: 'Mirar primero hacia adentro',
+    text: 'Antes de corregir a tu hijo, te invito a descubrir qué se activa en ti. Muchas veces el cambio empieza por sanar tu propia historia.',
+  },
+  {
+    icon: HeartHandshake,
+    title: 'Sin culpa y sin juicios',
+    text: 'No existen manuales perfectos. Aquí no vienes a que te califiquen, sino a encontrar herramientas que funcionen para tu familia.',
+  },
+  {
+    icon: BadgeCheck,
+    title: 'Herramientas basadas en evidencia',
+    text: 'Herramientas prácticas que, aplicadas con amor y empatía, pueden transformar la dinámica de tu hogar.',
+  },
+];
+---
+
+<BaseLayout
+  title="Sobre mí"
+  description="Soy Hilda Hernández, psicóloga clínica infanto-juvenil (FPV 8.914). Acompaño a niños y a sus mamás desde Lechería, 100% online."
+  jsonLd={[
+    businessJsonLd(),
+    breadcrumbJsonLd([
+      { name: 'Inicio', path: '/' },
+      { name: 'Sobre mí', path: '/sobre-mi' },
+    ]),
+  ]}
+>
+  <section class="watercolor overflow-hidden" aria-labelledby="page-title">
+    <div class="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-16 pt-12 sm:px-6 sm:pt-20 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-16">
+      <div>
+        <p class="eyebrow mb-4">Sobre mí</p>
+        <h1 id="page-title" class="h1">Hola, soy <em class="title-accent">Hilda</em> Hernández.</h1>
+        <p class="mt-3 font-semibold text-violeta-500">{site.professional.title} · {site.professional.license}</p>
+        <div class="mt-6 max-w-[65ch] space-y-4 text-[1.0625rem] leading-relaxed text-violeta-600 sm:text-lg">
+          <p>
+            Mi propósito es ser un puente de calma y claridad en el hermoso, pero desafiante, camino de criar. Trabajo junto a ti para entender el mundo interno de tus hijos y fortalecer el vínculo que los une.
+          </p>
+          <p>
+            Creo firmemente que no existen manuales perfectos, pero sí herramientas basadas en evidencia que, aplicadas con amor y empatía, pueden transformar la dinámica de cualquier hogar.
+          </p>
+          <p>
+            Desde mi práctica en Lechería hacia el mundo, te ofrezco un espacio libre de juicios donde tú y tu familia pueden sentirse seguros, escuchados y guiados.
+          </p>
+        </div>
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+          <a href="/agenda" class="btn btn-primary">
+            Agenda tu consulta
+            <ArrowRight size={18} strokeWidth={2} aria-hidden="true" />
+          </a>
+          <a href="/cursos" class="btn btn-secondary">Ver cursos y ebooks</a>
+        </div>
+      </div>
+      <div class="mx-auto w-full max-w-[20rem] sm:max-w-[24rem] lg:max-w-[27rem]">
+        <OrganicPhoto priority />
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-lavanda-100" aria-labelledby="datos-title">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+      <h2 id="datos-title" class="sr-only">Datos profesionales</h2>
+      <ul class="grid gap-5 md:grid-cols-3">
+        <li class="card flex items-start gap-4 p-6">
+          <span class="text-lavanda-600" aria-hidden="true"><BadgeCheck size={24} strokeWidth={1.75} /></span>
+          <span>
+            <span class="block font-semibold text-violeta">Psicóloga colegiada</span>
+            <span class="note block">{site.professional.license} · {site.professional.licenseBody}</span>
+          </span>
+        </li>
+        <li class="card flex items-start gap-4 p-6">
+          <span class="text-lavanda-600" aria-hidden="true"><MapPin size={24} strokeWidth={1.75} /></span>
+          <span>
+            <span class="block font-semibold text-violeta">{site.professional.city}, {site.professional.region}</span>
+            <span class="note block">Venezuela</span>
+          </span>
+        </li>
+        <li class="card flex items-start gap-4 p-6">
+          <span class="text-lavanda-600" aria-hidden="true"><MonitorSmartphone size={24} strokeWidth={1.75} /></span>
+          <span>
+            <span class="block font-semibold text-violeta">100% online</span>
+            <span class="note block">Consultas por videollamada, donde estés</span>
+          </span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section aria-labelledby="enfoque-title">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+      <SectionHeading id="enfoque-title" eyebrow="Mi enfoque" title="Sanar tu historia para criar distinto" accent="distinto" />
+      <ul class="mt-12 grid gap-5 md:grid-cols-3">
+        {
+          principles.map(({ icon: Icon, title, text }) => (
+            <li class="card p-7">
+              <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-lavanda-100 text-lavanda-600" aria-hidden="true">
+                <Icon size={24} strokeWidth={1.75} />
+              </span>
+              <h3 class="h3 mt-5">{title}</h3>
+              <p class="mt-2 text-[0.9875rem] leading-relaxed text-violeta-600">{text}</p>
+            </li>
+          ))
+        }
+      </ul>
+
+      <h3 class="mt-16 font-sans text-base font-semibold text-violeta">Áreas en las que acompaño</h3>
+      <ul class="mt-5 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          [...mainAreas, ...otherAreas].map((area) => (
+            <li class="flex items-start gap-4">
+              <span class="mt-0.5 shrink-0 text-lavanda-600">
+                <AreaIcon name={area.icon} size={22} />
+              </span>
+              <span class="block font-semibold leading-snug text-violeta">{area.title}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <FinalCta />
+</BaseLayout>

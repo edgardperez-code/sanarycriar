@@ -1,0 +1,418 @@
+@import "tailwindcss";
+
+/*
+ * Brand tokens (docs/spec-tecnica.md §1, brand manual "Hilda Hernández").
+ * Only these colors are used across the site.
+ */
+@theme {
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-white: #ffffff;
+
+  --color-violeta: #190933;
+  --color-violeta-600: #41375b;
+  --color-violeta-500: #584f72;
+  --color-violeta-400: #6d6485;
+  --color-nube: #fdf5ee;
+  --color-blanco-calido: #fffcf9;
+  --color-lavanda-100: #eeedff;
+  --color-lavanda-300: #bbbbff;
+  --color-lavanda-500: #7d75e2;
+  --color-lavanda-600: #6559ca;
+  --color-lavanda-700: #4f43a4;
+  --color-rosa-200: #f9ddf0;
+  --color-rosa-300: #f0b4df;
+  --color-rosa-500: #cd64b0;
+  --color-rosa-600: #ac4691;
+  --color-borde: #eae8f2;
+
+  --font-sans: "Poppins", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Playfair Display", ui-serif, Georgia, "Times New Roman", serif;
+
+  --radius-field: 12px;
+  --radius-card: 20px;
+
+  --container-prose: 68ch;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-nube);
+    color: var(--color-violeta-600);
+    font-family: var(--font-sans);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    scroll-padding-top: 6rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    min-height: 100dvh;
+    font-size: 1.0625rem; /* 17px */
+    line-height: 1.6;
+    background-color: var(--color-nube);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    color: var(--color-violeta);
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  /* Playfair defaults to old-style figures; stats, prices and step numbers read better lining. */
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-serif {
+    font-variant-numeric: lining-nums;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: var(--color-rosa-300);
+    color: var(--color-violeta);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-lavanda-600);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  [id] {
+    scroll-margin-top: 6rem;
+  }
+}
+
+@layer components {
+  /* Eyebrow label: Poppins 600, uppercase, letter-spaced, rosa-600. */
+  .eyebrow {
+    display: inline-block;
+    font-family: var(--font-sans);
+    font-size: 0.8125rem; /* 13px */
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-rosa-600);
+  }
+
+  .on-dark .eyebrow,
+  .eyebrow.on-dark {
+    color: var(--color-rosa-300);
+  }
+
+  /* The single italic word of a title (Playfair italic, lavanda-500). */
+  .title-accent {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--color-lavanda-500);
+  }
+
+  .on-dark .title-accent {
+    color: var(--color-rosa-300);
+  }
+
+  /* Rosa-200 marker under one keyword (max once per section). */
+  .marker {
+    background-image: linear-gradient(transparent 62%, var(--color-rosa-200) 62%, var(--color-rosa-200) 92%, transparent 92%);
+    padding-inline: 0.08em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+
+  .h1 {
+    font-size: clamp(2rem, 1.35rem + 2.6vw, 3.5rem); /* 32px -> 56px */
+    line-height: 1.12;
+  }
+
+  .h2 {
+    font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem); /* 28px -> 40px */
+    line-height: 1.15;
+  }
+
+  .h3 {
+    font-size: 1.25rem;
+    line-height: 1.3;
+  }
+
+  .lead {
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--color-violeta-600);
+    max-width: var(--container-prose);
+  }
+
+  @media (min-width: 640px) {
+    .lead {
+      font-size: 1.125rem; /* 18px */
+    }
+  }
+
+  .note {
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--color-violeta-400);
+  }
+
+  /* Buttons: pills, Poppins 600 16px. */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 999px;
+    border: 1.5px solid transparent;
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.25;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .btn-primary {
+    background-color: var(--color-violeta);
+    border-color: var(--color-violeta);
+    color: var(--color-nube);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--color-violeta-600);
+    border-color: var(--color-violeta-600);
+  }
+
+  .btn-secondary {
+    background-color: transparent;
+    border-color: var(--color-violeta);
+    color: var(--color-violeta);
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--color-lavanda-100);
+  }
+
+  /* On violet backgrounds (brand manual p.1: pink pill). */
+  .btn-blush {
+    background-color: var(--color-rosa-300);
+    border-color: var(--color-rosa-300);
+    color: var(--color-violeta);
+  }
+
+  .btn-blush:hover {
+    background-color: var(--color-rosa-200);
+    border-color: var(--color-rosa-200);
+  }
+
+  .btn-ghost-light {
+    background-color: transparent;
+    border-color: color-mix(in srgb, var(--color-nube) 70%, transparent);
+    color: var(--color-nube);
+  }
+
+  .btn-ghost-light:hover {
+    background-color: color-mix(in srgb, var(--color-nube) 10%, transparent);
+  }
+
+  .btn-sm {
+    min-height: 2.5rem;
+    padding: 0.5rem 1.125rem;
+    font-size: 0.9375rem;
+  }
+
+  .text-link {
+    color: var(--color-lavanda-600);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  .text-link:hover {
+    color: var(--color-lavanda-700);
+  }
+
+  .card {
+    background-color: var(--color-blanco-calido);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radius-card);
+  }
+
+  /*
+   * Watercolor: soft lavender/pink stains in the corners of light sections.
+   * Never behind text blocks and never on violet backgrounds.
+   */
+  .watercolor {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .watercolor::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(28rem 22rem at 100% 0%, color-mix(in srgb, var(--color-lavanda-300) 26%, transparent), transparent 70%),
+      radial-gradient(24rem 20rem at 0% 100%, color-mix(in srgb, var(--color-rosa-300) 18%, transparent), transparent 70%);
+    /* Fade out near the bottom so the stain never ends in a hard line when the next section shares the background. */
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 7rem), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 7rem), transparent);
+  }
+
+  .watercolor-tl::before {
+    background:
+      radial-gradient(26rem 20rem at 0% 0%, color-mix(in srgb, var(--color-rosa-300) 20%, transparent), transparent 70%),
+      radial-gradient(26rem 22rem at 100% 100%, color-mix(in srgb, var(--color-lavanda-300) 22%, transparent), transparent 70%);
+  }
+
+  /* Organic photo frame (lavender to pink). */
+  .organic-frame {
+    border-radius: 47% 53% 44% 56% / 42% 44% 56% 58%;
+    background-image: linear-gradient(160deg, var(--color-lavanda-300) 0%, var(--color-lavanda-100) 45%, var(--color-rosa-200) 75%, var(--color-rosa-300) 100%);
+  }
+
+  .organic-frame-alt {
+    border-radius: 55% 45% 52% 48% / 46% 52% 48% 54%;
+  }
+
+  /* Large quotation mark (rosa-500). */
+  .big-quote {
+    font-family: var(--font-serif);
+    font-size: 5rem;
+    line-height: 0.6;
+    color: var(--color-rosa-500);
+  }
+
+  /* Long-form text (legal pages, blog posts). */
+  .prose-brand {
+    max-width: var(--container-prose);
+    color: var(--color-violeta-600);
+  }
+
+  .prose-brand > * + * {
+    margin-top: 1rem;
+  }
+
+  .prose-brand h2 {
+    font-size: 1.625rem;
+    line-height: 1.25;
+    margin-top: 2.5rem;
+  }
+
+  .prose-brand h3 {
+    font-size: 1.25rem;
+    line-height: 1.3;
+    margin-top: 2rem;
+  }
+
+  .prose-brand ul,
+  .prose-brand ol {
+    padding-left: 1.25rem;
+  }
+
+  .prose-brand ul {
+    list-style: disc;
+  }
+
+  .prose-brand ol {
+    list-style: decimal;
+  }
+
+  .prose-brand li + li {
+    margin-top: 0.4rem;
+  }
+
+  .prose-brand li::marker {
+    color: var(--color-rosa-500);
+  }
+
+  .prose-brand a {
+    color: var(--color-lavanda-600);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .prose-brand a:hover {
+    color: var(--color-lavanda-700);
+  }
+
+  .prose-brand strong {
+    color: var(--color-violeta);
+    font-weight: 600;
+  }
+
+  .prose-brand blockquote {
+    border-left: 3px solid var(--color-lavanda-300);
+    padding-left: 1rem;
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    color: var(--color-violeta);
+  }
+
+  .prose-brand img {
+    border-radius: var(--radius-card);
+  }
+
+  .prose-brand hr {
+    border-color: var(--color-borde);
+    margin-block: 2rem;
+  }
+
+  /* Native accordion marker removal. */
+  .accordion > summary {
+    list-style: none;
+  }
+
+  .accordion > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .accordion[open] .accordion-icon {
+    transform: rotate(180deg);
+  }
+
+  .accordion-icon {
+    transition: transform 0.25s ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .btn:hover {
+    transform: none;
+  }
+}

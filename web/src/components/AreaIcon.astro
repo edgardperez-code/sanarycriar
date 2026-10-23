@@ -1,0 +1,23 @@
+---
+import { Baby, Brain, Heart, Infinity as InfinityIcon, MessagesSquare, Sprout, Wind } from 'lucide-react';
+import type { AreaIcon } from '@/data/areas';
+
+interface Props {
+  name: AreaIcon;
+  size?: number;
+}
+
+const { name, size = 24 } = Astro.props;
+const icons = {
+  baby: Baby,
+  heart: Heart,
+  sprout: Sprout,
+  wind: Wind,
+  brain: Brain,
+  infinity: InfinityIcon,
+  messages: MessagesSquare,
+} as const;
+const Icon = icons[name];
+---
+
+<Icon size={size} strokeWidth={1.75} aria-hidden="true" />

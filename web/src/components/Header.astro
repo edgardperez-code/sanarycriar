@@ -1,0 +1,129 @@
+---
+import { Menu, X } from 'lucide-react';
+import Wordmark from '@/components/ui/Wordmark.astro';
+import { freeClassHref, site, whatsappLink } from '@/site.config';
+import { isCurrent, mainNav } from '@/lib/nav';
+import { getPublishedPosts } from '@/lib/content';
+
+const posts = await getPublishedPosts();
+const nav = mainNav({ hasPosts: posts.length > 0 });
+const pathname = Astro.url.pathname;
+---
+
+<header class="sticky top-0 z-40 border-b border-borde/80 bg-nube/92 backdrop-blur-md supports-[backdrop-filter]:bg-nube/85">
+  <div class="mx-auto flex h-[4.5rem] max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+    <a href="/" class="shrink-0 rounded-md" aria-label="Sanar y Criar, inicio">
+      <Wordmark />
+    </a>
+
+    <nav aria-label="Principal" class="hidden xl:block">
+      <ul class="flex items-center gap-7">
+        {
+          nav.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                aria-current={isCurrent(pathname, item.href) ? 'page' : undefined}
+                class="text-[0.9375rem] font-medium text-violeta-600 underline-offset-[0.4em] decoration-rosa-300 decoration-2 hover:text-violeta hover:underline aria-[current=page]:text-violeta aria-[current=page]:underline"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-2 sm:gap-4">
+      <a
+        href={site.platform.loginUrl}
+        class="hidden text-[0.9375rem] font-medium text-violeta-600 hover:text-violeta hover:underline underline-offset-[0.4em] decoration-rosa-300 decoration-2 xl:inline"
+      >
+        Entrar
+      </a>
+      <a href={freeClassHref} class="btn btn-primary btn-sm hidden sm:inline-flex" target="_blank" rel="noopener">
+        {site.freeClass.shortLabel}
+      </a>
+      <button
+        type="button"
+        class="inline-flex h-11 w-11 items-center justify-center rounded-full text-violeta hover:bg-lavanda-100 xl:hidden"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        data-menu-toggle
+      >
+        <span class="sr-only" data-menu-label>Abrir menú</span>
+        <span data-icon-open aria-hidden="true"><Menu size={24} strokeWidth={1.75} /></span>
+        <span data-icon-close aria-hidden="true" class="hidden"><X size={24} strokeWidth={1.75} /></span>
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="border-t border-borde bg-nube xl:hidden" hidden>
+    <nav aria-label="Menú móvil" class="mx-auto max-w-6xl px-4 pb-8 pt-4 sm:px-6">
+      <ul class="flex flex-col">
+        {
+          nav.map((item) => (
+            <li class="border-b border-borde last:border-b-0">
+              <a
+                href={item.href}
+                aria-current={isCurrent(pathname, item.href) ? 'page' : undefined}
+                class="flex min-h-12 items-center py-3 font-serif text-[1.375rem] font-semibold text-violeta aria-[current=page]:text-lavanda-600"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+        <li>
+          <a href={site.platform.loginUrl} class="flex min-h-12 items-center py-3 text-base font-medium text-violeta-600">
+            Entrar a mis cursos
+          </a>
+        </li>
+      </ul>
+      <div class="mt-5 flex flex-col gap-3">
+        <a href={freeClassHref} class="btn btn-primary" target="_blank" rel="noopener">
+          <span class="sm:hidden">{site.freeClass.mobileLabel}</span>
+          <span class="hidden sm:inline">{site.freeClass.label}</span>
+        </a>
+        <a href="/agenda" class="btn btn-secondary">Agenda tu consulta</a>
+      </div>
+      <p class="note mt-5">
+        ¿Prefieres escribir? <a class="text-link" href={whatsappLink(site.booking.whatsappMessage)} target="_blank" rel="noopener">WhatsApp {site.contact.whatsappNumber}</a>
+      </p>
+    </nav>
+  </div>
+</header>
+
+<script>
+  function setupMenu() {
+    const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+    const menu = document.getElementById('mobile-menu');
+    if (!toggle || !menu) return;
+    const label = toggle.querySelector('[data-menu-label]');
+    const iconOpen = toggle.querySelector('[data-icon-open]');
+    const iconClose = toggle.querySelector('[data-icon-close]');
+
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      menu.hidden = !open;
+      if (label) label.textContent = open ? 'Cerrar menú' : 'Abrir menú';
+      iconOpen?.classList.toggle('hidden', open);
+      iconClose?.classList.toggle('hidden', !open);
+    };
+
+    toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+    menu.addEventListener('click', (event) => {
+      if ((event.target as HTMLElement).closest('a')) setOpen(false);
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+    window.matchMedia('(min-width: 1280px)').addEventListener('change', (event) => {
+      if (event.matches) setOpen(false);
+    });
+  }
+  setupMenu();
+</script>

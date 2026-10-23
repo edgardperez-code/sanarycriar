@@ -1,0 +1,45 @@
+---
+import { Picture } from 'astro:assets';
+import hilda from '@/assets/hilda-nobg.png';
+
+/**
+ * Hilda's cut-out photo inside an organic lavender-to-pink frame
+ * (brand manual p.2-3). The frame clips only the body, never the face.
+ */
+interface Props {
+  priority?: boolean;
+  sizes?: string;
+  class?: string;
+  alt?: string;
+}
+
+const {
+  priority = false,
+  sizes = '(min-width: 1024px) 460px, (min-width: 640px) 60vw, 82vw',
+  class: className = '',
+  alt = 'Hilda Hernández, psicóloga infanto-juvenil, sonriendo con la mano en el mentón',
+} = Astro.props;
+---
+
+<div class:list={['relative aspect-[100/108] w-full', className]}>
+  <div
+    class="absolute inset-[5%_-3%_-2%_7%] rounded-[52%_48%_46%_54%/44%_50%_50%_56%] bg-[linear-gradient(150deg,var(--color-lavanda-300)_0%,var(--color-rosa-300)_100%)] opacity-80"
+    aria-hidden="true"
+  >
+  </div>
+  <div
+    class="absolute inset-0 overflow-hidden rounded-[47%_53%_44%_56%/42%_44%_56%_58%] bg-[linear-gradient(165deg,var(--color-lavanda-100)_0%,var(--color-lavanda-100)_35%,var(--color-rosa-200)_100%)]"
+  >
+    <Picture
+      src={hilda}
+      formats={['avif', 'webp']}
+      widths={[400, 600, 800, 1100]}
+      sizes={sizes}
+      alt={alt}
+      loading={priority ? 'eager' : 'lazy'}
+      fetchpriority={priority ? 'high' : 'auto'}
+      decoding={priority ? 'sync' : 'async'}
+      class="absolute left-[-8.5%] top-[4.5%] h-auto w-[110%] max-w-none select-none"
+    />
+  </div>
+</div>

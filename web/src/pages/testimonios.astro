@@ -1,0 +1,38 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import TestimonialCards from '@/components/TestimonialCards.astro';
+import EmptyState from '@/components/EmptyState.astro';
+import FinalCta from '@/components/FinalCta.astro';
+import { getTestimonials } from '@/lib/content';
+
+// Only real testimonials published with permission (src/data/testimonials.json).
+// While the list is empty the page stays out of menus, the sitemap and search engines.
+const testimonials = getTestimonials();
+const empty = testimonials.length === 0;
+---
+
+<BaseLayout
+  title="Testimonios"
+  description="Lo que dicen las familias que han trabajado con Hilda Hernández, psicóloga infanto-juvenil."
+  noindex={empty}
+>
+  <section class="watercolor" aria-labelledby="page-title">
+    <div class="mx-auto max-w-6xl px-4 pb-16 pt-12 sm:px-6 sm:pb-24 sm:pt-20">
+      <SectionHeading level="h1" id="page-title" eyebrow="Lo que dicen" title="Familias que confían" accent="confían" />
+      <div class="mt-12">
+        {
+          empty ? (
+            <EmptyState
+              title="Pronto compartiremos las voces de las familias."
+              text="Solo publicamos testimonios reales y con el permiso de quien los escribe. Mientras tanto, puedes conocer cómo trabajo en la clase gratuita."
+            />
+          ) : (
+            <TestimonialCards items={testimonials} />
+          )
+        }
+      </div>
+    </div>
+  </section>
+  <FinalCta />
+</BaseLayout>

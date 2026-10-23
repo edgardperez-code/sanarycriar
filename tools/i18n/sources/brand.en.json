@@ -1,0 +1,46 @@
+{
+  "sc_brand": {
+    "auth_terms_prefix": "By continuing, you agree to the",
+    "auth_terms": "Terms and conditions",
+    "auth_and": "and the",
+    "auth_privacy": "Privacy policy",
+    "auth_terms_suffix": " of Sanar y Criar.",
+    "powered_by": "Platform based on LearnHouse (AGPL-3.0)",
+    "source_code": "Source code",
+    "copyright": "© {{year}} Sanar y Criar · Hilda Hernández",
+    "legal_nav_label": "Legal",
+    "legal": {
+      "terms": "Terms",
+      "privacy": "Privacy",
+      "refunds": "Refunds"
+    },
+    "home": {
+      "courses_title": "Video courses",
+      "ebooks_title": "Ebooks",
+      "eyebrow": "Courses and ebooks",
+      "title_start": "Learn to parent",
+      "title_accent": "from a place of calm",
+      "lead": "Video courses and ebooks by {{name}}, child and adolescent clinical psychologist ({{license}}). When you buy, access is immediate and stays in your account.",
+      "store_cta": "Visit the store",
+      "purchases_cta": "My purchases",
+      "login_cta": "Already bought? Log in",
+      "count_one": "1 available",
+      "count_other": "{{n}} available",
+      "empty_eyebrow": "Coming soon",
+      "empty_title": "We're preparing the first courses and ebooks.",
+      "empty_text": "If you already bought, log in to see your content."
+    },
+    "nav_label": "Main navigation",
+    "home_label": "Sanar y Criar, home",
+    "back_to_site": "Back to the website",
+    "close_menu": "Close menu",
+    "open_menu": "Open menu",
+    "mobile_nav_label": "Mobile menu",
+    "card": {
+      "ebook_type": "Ebook · PDF",
+      "course_type": "Video course",
+      "view_ebook": "View ebook",
+      "view_course": "View course"
+    }
+  }
+}
