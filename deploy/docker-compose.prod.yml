@@ -3,7 +3,6 @@
 #   caddy           :80/:443  HTTPS automático (Let's Encrypt). Sirve:
 #                     - www.sanarycriarve.com (+ sanarycriarve.com -> www): sitio Astro estático (./www/current)
 #                     - cursos.sanarycriarve.com: plataforma de cursos (learnhouse-app)
-#                     - psicoinfantilve.com (+ www) -> 301 a https://www.sanarycriarve.com
 #   learnhouse-app  imagen todo-en-uno del fork (nginx interno :80 -> web Next.js, API FastAPI, collab)
 #   db              Postgres 16 con pgvector
 #   redis           caché, sesiones de rate limit y cola de HLS

@@ -24,6 +24,7 @@ Si ya lo clonaste sin submódulos: `git submodule update --init`. El submódulo 
 - [`docs/spec-tecnica.md`](docs/spec-tecnica.md): contrato técnico compartido y tokens de marca.
 - [`docs/desarrollo-local.md`](docs/desarrollo-local.md): cómo levantar todo en tu computadora.
 - [`docs/despliegue.md`](docs/despliegue.md): VPS, DNS, primer despliegue, PayPal Live, correo, copias de seguridad, actualizaciones y lista para salir en vivo.
+- [`docs/despliegue-railway.md`](docs/despliegue-railway.md): el despliegue actual en Railway (servicios, variables, DNS en Namecheap y operación).
 - [`web/README.md`](web/README.md): el sitio de marketing (contenido, blog, testimonios, legales).
 - `docs/investigacion/`: investigación con referencias al código de LearnHouse. El mapa del sitio anterior (Replit) no se publica: describe fallos de seguridad de un sitio que aún está en línea.
 - `docs/progreso/`: bitácoras de cada área de trabajo.

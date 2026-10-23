@@ -5,7 +5,7 @@ Todo lo necesario para correr Sanar y Criar en un VPS. La guía paso a paso est�
 | Archivo | Para qué |
 |---|---|
 | `docker-compose.prod.yml` | Servicios: `learnhouse-app` (plataforma), `db` (Postgres 16 + pgvector), `redis`, `caddy` (HTTPS) |
-| `caddy/Caddyfile` | Dominios, HTTPS, cabeceras de seguridad, redirecciones de `sanarycriarve.com` y `psicoinfantilve.com` |
+| `caddy/Caddyfile` | Dominios, HTTPS, cabeceras de seguridad, redirección de `sanarycriarve.com` a www |
 | `.env.example` | Todas las variables de producción, comentadas. Se copia a `.env` en el servidor |
 | `sitio.env.example` | Variables públicas del sitio Astro para `scripts/deploy-sitio.sh` |
 | `scripts/actualizar.sh` | Primer despliegue y actualizaciones (copia, imagen nueva, migraciones Alembic, arranque) |

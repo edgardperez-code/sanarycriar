@@ -6,7 +6,6 @@ Guía paso a paso para poner en línea Sanar y Criar en un solo VPS. Todo lo que
 Internet ──► Caddy :80/:443 (HTTPS automático)
               ├─ www.sanarycriarve.com ........ sitio Astro estático (/opt/sanarycriar/www/current)
               ├─ sanarycriarve.com ............ 301 → www
-              ├─ psicoinfantilve.com (+ www) .. 301 → www.sanarycriarve.com (misma ruta)
               └─ cursos.sanarycriarve.com ..... learnhouse-app (Next.js + API + collab, imagen del fork)
                                                  ├─ db (Postgres 16 + pgvector)
                                                  └─ redis
@@ -19,7 +18,7 @@ Rutas: "en tu PC" = la carpeta del proyecto `sanarycriar/`; "en el servidor" = `
 ## 1. Antes de empezar
 
 - **VPS**: Ubuntu 24.04, 4 GB de RAM, 2–3 vCPU, 80 GB de SSD o más (los videos ocupan espacio: cuenta ~1,5× el tamaño de los originales por la versión HLS). Con IPv4 fija.
-- **Dominios**: `sanarycriarve.com` y, para la redirección, `psicoinfantilve.com`, con acceso a su DNS.
+- **Dominio**: `sanarycriarve.com` (en Namecheap), con acceso a su DNS. El dominio anterior, `psicoinfantilve.com`, se da de baja y no forma parte del despliegue.
 - **Cuentas**: GitHub (para el repositorio público del fork y la imagen), PayPal **Business** verificada, Resend (o cualquier SMTP) para el correo.
 - **En tu PC**: Git, Docker (solo si quieres probar en local), Node 22.12+ y npm (para compilar el sitio), `ssh`.
 
@@ -48,8 +47,6 @@ Crea estos registros (TTL 300 mientras pruebas):
 | A | `sanarycriarve.com` (`@`) | IP del VPS |
 | A | `www` | IP del VPS |
 | A | `cursos` | IP del VPS |
-| A | `psicoinfantilve.com` (`@`) | IP del VPS |
-| A | `www.psicoinfantilve.com` | IP del VPS |
 
 - Si el VPS tiene IPv6, añade también registros AAAA; si no, no los crees.
 - **Cloudflare**: deja los registros en **"DNS only" (nube gris)**, como mínimo `cursos`. El proxy gratuito de Cloudflare corta las subidas de más de 100 MB, y los videos pesan más. Caddy ya pone HTTPS.
@@ -231,18 +228,15 @@ La plataforma es software libre (LearnHouse, AGPL-3.0) y se ofrece a usuarias po
 - No hace falta publicar los datos, el `.env` ni el contenido de los cursos: la licencia cubre el código.
 - El sitio de marketing (`web/`) es un programa aparte que solo enlaza a la plataforma; no le aplica esta obligación.
 
-## 12. Redirección de psicoinfantilve.com
+## 12. Dominio anterior (psicoinfantilve.com)
 
-- Con los registros A de la sección 3, Caddy obtiene certificados para `psicoinfantilve.com` y `www.psicoinfantilve.com` y responde **301 permanente** a `https://www.sanarycriarve.com` **con la misma ruta y parámetros** (`/preguntas-frecuentes?x=1` → `https://www.sanarycriarve.com/preguntas-frecuentes?x=1`).
-- Páginas viejas sin equivalente exacto: `/cursos/<algo>` y `/ebooks…` van a `/cursos`; `/login`, `/registro` y `/mi-cuenta` van a la plataforma (`cursos.sanarycriarve.com/login` o `/signup`).
-- Si `psicoinfantilve.com` todavía no apunta al VPS, comenta su bloque en `caddy/Caddyfile` y recarga Caddy, para que no reintente certificados.
-- En Google Search Console, verifica ambos dominios y usa "Cambio de dirección" de `psicoinfantilve.com` a `sanarycriarve.com`. Renueva `psicoinfantilve.com` al menos uno o dos años más para no perder la redirección.
+`psicoinfantilve.com` se da de baja: el despliegue no lo sirve ni lo redirige, y Caddy no pide certificados para él. Los enlaces viejos (biografía de Instagram, publicaciones, Google) dejarán de funcionar cuando el dominio desaparezca, así que actualízalos a `www.sanarycriarve.com` antes. Antes de borrarlo, apaga también el backend anterior (Replit/Supabase).
 
 ## 13. Lista para salir en vivo
 
 - [ ] Repositorio del fork público, rama y etiqueta `sc-v…` subidas; imagen publicada y `SC_LMS_TAG` apuntando a esa etiqueta.
-- [ ] DNS de los cinco nombres apuntando al VPS; `cursos` sin proxy de Cloudflare.
-- [ ] `https://` funciona en los cinco nombres; las redirecciones de `sanarycriarve.com` y `psicoinfantilve.com` llevan a www.
+- [ ] DNS de los tres nombres (`@`, `www`, `cursos`) apuntando al VPS.
+- [ ] `https://` funciona en los tres nombres; `sanarycriarve.com` redirige a www.
 - [ ] `.env` sin `CAMBIAR`, con `chmod 600`, copia guardada en un gestor de contraseñas; contraseña inicial de la administradora cambiada y borrada de `.env`.
 - [ ] Organización configurada con `configurar-organizacion.py` (español, marca, menú, funciones no usadas apagadas).
 - [ ] Correo verificado (SPF/DKIM/DMARC) y probado con "¿Olvidaste tu contraseña?".

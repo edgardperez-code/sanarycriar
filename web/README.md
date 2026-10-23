@@ -50,7 +50,7 @@ La API debe permitir CORS desde el dominio del sitio (`LEARNHOUSE_EXTRA_CORS_ORI
 1. `npm run build`.
 2. Sube la carpeta `dist/` a cualquier hosting estático (Cloudflare Pages, Netlify, Vercel, un bucket con CDN o nginx).
 3. Las páginas se generan como `agenda.html`, `cursos.html`, etc., y las direcciones públicas no llevan `/` final (`/agenda`). Cloudflare Pages, Netlify y Vercel sirven `/agenda` desde `agenda.html` sin configurar nada. En nginx usa `try_files $uri $uri.html $uri/ =404;` y `error_page 404 /404.html;`.
-4. Redirige `sanarycriarve.com` a `www.sanarycriarve.com` (y, si aplica, `psicoinfantilve.com/*` al dominio nuevo con 301).
+4. Redirige `sanarycriarve.com` a `www.sanarycriarve.com`.
 
 Para que el catálogo del HTML esté al día, vuelve a compilar de vez en cuando (por ejemplo, con un deploy programado); el navegador igual lo actualiza solo.
 

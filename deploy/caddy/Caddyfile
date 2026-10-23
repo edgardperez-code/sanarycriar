@@ -70,24 +70,6 @@ sanarycriarve.com {
 }
 
 # ---------------------------------------------------------------------------
-# Dominio anterior: 301 permanente al nuevo, conservando ruta y parámetros.
-# Si psicoinfantilve.com todavía no apunta a este VPS, comenta este bloque
-# (Caddy reintentaría el certificado sin éxito).
-# ---------------------------------------------------------------------------
-psicoinfantilve.com, www.psicoinfantilve.com {
-	header Strict-Transport-Security "max-age=31536000"
-	route {
-		# Old pages without an exact equivalent on the new site.
-		redir /cursos/* https://www.sanarycriarve.com/cursos permanent
-		redir /ebooks* https://www.sanarycriarve.com/cursos permanent
-		redir /login https://cursos.sanarycriarve.com/login permanent
-		redir /registro https://cursos.sanarycriarve.com/signup permanent
-		redir /mi-cuenta* https://cursos.sanarycriarve.com/login permanent
-		redir https://www.sanarycriarve.com{uri} permanent
-	}
-}
-
-# ---------------------------------------------------------------------------
 # Plataforma de cursos (fork de LearnHouse). Next.js ya envía sus propias
 # cabeceras de seguridad (X-Frame-Options, CSP frame-ancestors, HSTS...), así
 # que aquí no se tocan: solo HSTS si la respuesta no lo trae (p. ej. la API).

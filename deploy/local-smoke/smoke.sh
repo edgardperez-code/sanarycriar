@@ -90,7 +90,7 @@ probar() {
   if "$@"; then printf '  OK     %s\n' "$desc"; ok=$((ok + 1))
   else printf '  FALLA  %s\n' "$desc"; mal=$((mal + 1)); fi
 }
-hosts=(www.sanarycriarve.com sanarycriarve.com cursos.sanarycriarve.com psicoinfantilve.com www.psicoinfantilve.com)
+hosts=(www.sanarycriarve.com sanarycriarve.com cursos.sanarycriarve.com)
 resolve=()
 for h in "${hosts[@]}"; do
   resolve+=(--resolve "$h:$puerto_https:127.0.0.1" --resolve "$h:$puerto_http:127.0.0.1")
@@ -155,12 +155,6 @@ comprobar() {
   probar "http:// -> https://" destino_es "$(url http www.sanarycriarve.com /cursos)" "308 https://www.sanarycriarve.com/cursos"
   probar "sanarycriarve.com -> 301 www (ruta y query)" \
     destino_es "$(url https sanarycriarve.com '/blog/x?utm=1')" "301 https://www.sanarycriarve.com/blog/x?utm=1"
-  probar "psicoinfantilve.com -> 301 misma ruta" \
-    destino_es "$(url https psicoinfantilve.com '/preguntas-frecuentes?a=1')" "301 https://www.sanarycriarve.com/preguntas-frecuentes?a=1"
-  probar "www.psicoinfantilve.com/cursos/slug -> /cursos" \
-    destino_es "$(url https www.psicoinfantilve.com /cursos/curso-viejo)" "301 https://www.sanarycriarve.com/cursos"
-  probar "psicoinfantilve.com/login -> plataforma" \
-    destino_es "$(url https psicoinfantilve.com /login)" "301 https://cursos.sanarycriarve.com/login"
   probar "URL del webhook que muestra el panel" bash -c '[[ "$1" == "https://cursos.sanarycriarve.com/api/v1/payments/webhooks/paypal/1" ]]' _ \
     "$(dc exec -T learnhouse-app sh -c 'cd /app/api && .venv/bin/python -c "from src.services.payments.configs import webhook_url; print(webhook_url(None, \"paypal\", 1))"' 2>/dev/null | tail -n 1 | tr -d '\r')"
   probar "ffmpeg en el contenedor" dc exec -T learnhouse-app sh -c 'command -v ffmpeg >/dev/null'
