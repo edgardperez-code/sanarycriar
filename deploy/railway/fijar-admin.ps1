@@ -1,4 +1,4 @@
-# Sanar y Criar: define la cuenta administradora inicial de la plataforma en Railway.
+﻿# Sanar y Criar: define la cuenta administradora inicial de la plataforma en Railway.
 #
 # Uso (desde la carpeta sanarycriar):
 #   powershell -ExecutionPolicy Bypass -File deploy\railway\fijar-admin.ps1

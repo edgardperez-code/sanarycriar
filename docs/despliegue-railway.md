@@ -17,10 +17,18 @@ Internet ──► Railway (HTTPS)
 |---|---|---|---|
 | `plataforma` | imagen `ghcr.io/edgardperez-code/sanarycriar-lms:<etiqueta>` | `/app/api/content` (videos, PDF, imágenes) | Dominio con puerto de destino **80** (nginx interno). `PORT=8000` fijo: es el puerto del web interno; si Railway inyectara otro, nginx no lo encontraría. |
 | `postgres` | imagen `pgvector/pgvector:pg16` (fijada por digest) | `/var/lib/postgresql/data` | `PGDATA=/var/lib/postgresql/data/pgdata`: el volumen trae `lost+found` y `initdb` no acepta una carpeta no vacía. |
-| `redis` | imagen `redis:8.6.1-alpine` (fijada por digest) | `/data` | **`RAILWAY_RUN_UID=0` obligatorio.** Sin él Redis no puede escribir en el volumen ("Permission denied"), bloquea todas las escrituras (MISCONF) y el inicio de sesión da error 500. |
+| `redis` | imagen `redis:8.6.1-alpine` (fijada por digest) | `/data` | **Comando de inicio propio y `RAILWAY_RUN_UID=0`**, ver abajo. |
 | `sitio` | `web/` subido con la CLI (`web/Dockerfile`) | — | Compila Astro y lo sirve con Caddy (`web/deploy/Caddyfile`) en el puerto 8080. |
 
 Postgres y Redis no tienen dominio público: la plataforma los alcanza por la red privada (`postgres.railway.internal`, `redis.railway.internal`).
+
+**Redis y su volumen.** El volumen de Railway trae una carpeta `lost+found`. Al verla, el arranque de la imagen de Redis no le cambia el dueño a `/data` ("Unknown file './lost+found' found in data dir. Permissions will not be modified") y después baja al usuario `redis`, que no puede escribir ahí. Durante la primera hora no se nota; en el primer guardado falla ("Permission denied"), Redis bloquea todas las escrituras (MISCONF) y la plataforma da error 500 al iniciar sesión o al pedir un código. Reiniciar Redis solo lo tapa otra hora. El arreglo, el mismo de la plantilla de Redis de Railway, es este comando de inicio (Settings → Deploy → Custom Start Command), junto con `RAILWAY_RUN_UID=0` para que el contenedor arranque como root y pueda borrar la carpeta:
+
+```
+/bin/sh -c "rm -rf /data/lost+found && exec docker-entrypoint.sh redis-server --appendonly yes --maxmemory 192mb --maxmemory-policy volatile-lru"
+```
+
+Las opciones de `redis-server` son las de `deploy/docker-compose.prod.yml`. La CLI 5.27 no aplica este cambio (`railway environment edit --service-config redis deploy.startCommand …` responde "No changes to apply"): hazlo desde el panel. Tras cambiarlo, despliega Redis de nuevo y comprueba en sus registros que no aparece el aviso de `lost+found` y sí "BGSAVE done" o "Creating AOF base file".
 
 ## Variables
 
@@ -33,7 +41,8 @@ Se gestionan con `railway variable set -s <servicio> ...` o desde el panel. Los 
 - Cableado interno: `PORT=8000`, `HOSTNAME=0.0.0.0`, `LEARNHOUSE_PORT=9000`, `LEARNHOUSE_API_URL=http://localhost:9000`, `LEARNHOUSE_REDIS_CONNECTION_STRING=redis://redis.railway.internal:6379/0`, `LEARNHOUSE_REDIS_URL=redis://redis.railway.internal:6379`, y `LEARNHOUSE_SQL_CONNECTION_STRING=postgresql://learnhouse:${{postgres.POSTGRES_PASSWORD}}@postgres.railway.internal:5432/learnhouse` (referencia de Railway: la contraseña no se copia).
 - Secretos: `LEARNHOUSE_AUTH_JWT_SECRET_KEY`, `LEARNHOUSE_MFA_ENCRYPTION_KEY`, `COLLAB_INTERNAL_KEY`.
 - Organización y administradora iniciales (solo el primer arranque): `LEARNHOUSE_INITIAL_ORG_NAME`, `LEARNHOUSE_INITIAL_ORG_SLUG`, `LEARNHOUSE_INITIAL_ADMIN_EMAIL`, `LEARNHOUSE_INITIAL_ADMIN_PASSWORD`. Las dos últimas las escribe la administradora con `deploy/railway/fijar-admin.ps1`.
-- Video y otras: las de HLS, `LEARNHOUSE_CONTENT_DELIVERY_TYPE=filesystem`, `LEARNHOUSE_IS_AI_ENABLED=false`, `LEARNHOUSE_PAYMENTS_RECONCILE=1`, remitente de correo. **Pendiente:** `LEARNHOUSE_EMAIL_PROVIDER` + `LEARNHOUSE_RESEND_API_KEY` (sin esto no salen correos).
+- Video y otras: las de HLS, `LEARNHOUSE_CONTENT_DELIVERY_TYPE=filesystem`, `LEARNHOUSE_IS_AI_ENABLED=false`, `LEARNHOUSE_PAYMENTS_RECONCILE=1`.
+- Correo: `LEARNHOUSE_EMAIL_PROVIDER=resend`, `LEARNHOUSE_SYSTEM_EMAIL_ADDRESS=no-responder@sanarycriarve.com`, `LEARNHOUSE_SYSTEM_EMAIL_SENDER_NAME`, y `LEARNHOUSE_RESEND_API_KEY`, que se carga con `deploy/railway/fijar-resend.ps1` (comprueba la clave con Resend antes de guardarla). Si la cargas desde el panel, que sea en el servicio `plataforma`: en `sitio` no la usa nadie. Sin la clave, o con el dominio sin verificar en Resend, no sale ningún correo (registro, recuperación de contraseña, recibos).
 
 **sitio**:
 - Compilación (`ARG` del Dockerfile): `PUBLIC_LH_PLATFORM=https://cursos.sanarycriarve.com`, `PUBLIC_LH_API=https://cursos.sanarycriarve.com/api/v1`, `PUBLIC_LH_ORG_ID=1`, `PUBLIC_SITE_URL=https://www.sanarycriarve.com`, y opcionales `PUBLIC_FREE_CLASS_URL`, `PUBLIC_BOOKING_URL`.
@@ -49,6 +58,11 @@ Cada dominio propio se agrega en Railway (`railway domain <dominio> -s <servicio
 | ALIAS | `@` | destino que da Railway (Namecheap no permite CNAME en la raíz) |
 | CNAME | `cursos` | destino que da Railway para `plataforma` |
 | TXT | `_railway-verify.www`, `_railway-verify`, `_railway-verify.cursos` | `railway-verify=…` de cada dominio |
+| TXT | `resend._domainkey` | DKIM de Resend (`p=…`, lo muestra Resend → Domains) |
+| CNAME | `send`, `rsend` | `send.forge.rmta.net`, `rsend.forge.rmta.net` (envío de Resend) |
+| TXT | `_dmarc` | `v=DMARC1; p=none;` |
+
+Los registros de Resend no tocan el correo entrante: el TXT `v=spf1 include:spf.efwd…` de la raíz es el del reenvío de correo de Namecheap (Mail Settings → Email Forwarding) y se queda como está.
 
 - Si borras y vuelves a agregar un dominio en Railway, **cambia el destino del CNAME/ALIAS** (el TXT se mantiene): actualiza el registro en Namecheap.
 - Crea los registros DNS **en cuanto agregues el dominio**. Si Railway intenta validar antes de que existan, Let's Encrypt cuenta los intentos fallidos y puede bloquear el certificado de ese nombre unas horas ("Let's Encrypt rate limit reached"). Se resuelve solo; `railway domain certificate retry <dominio> -s <servicio>` reintenta cuando el bloqueo ya pasó.
@@ -70,5 +84,5 @@ Cada dominio propio se agrega en Railway (`railway domain <dominio> -s <servicio
 ## Pendiente
 
 - Certificado de `sanarycriarve.com` (raíz): bloqueado temporalmente por Let's Encrypt; los DNS ya están bien.
-- Correo saliente (Resend con el dominio verificado: SPF/DKIM) y buzón para el correo de la administradora.
+- Correo de la administradora: su dirección `@sanarycriarve.com` (la de `LEARNHOUSE_INITIAL_ADMIN_EMAIL`) se reenvía a un Gmail personal (Namecheap → Domain → Redirect Email). Cualquier dirección `@sanarycriarve.com` que deba recibir correo necesita su reenvío ahí; sin él, Namecheap rechaza los correos ("554 5.7.1 Relay access denied") y Resend los marca como rebotados. Antes de salir en vivo, cambia la cuenta administradora a la dirección definitiva de Hilda.
 - Credenciales de PayPal (primero sandbox) en el panel: Pagos → Configuración. La URL del webhook la muestra esa misma pantalla.
