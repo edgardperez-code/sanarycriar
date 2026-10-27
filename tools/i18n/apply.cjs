@@ -84,6 +84,8 @@ const SC_BUNDLES = [
   ['sc_errors', 'errors'],
   ['sc_brand', 'brand'],
   ['sc_ui', 'ui'],
+  ['sc_newsletter', 'newsletter'],
+  ['sc_blog', 'blog'],
 ]
 const scKeys = SC_BUNDLES.map(([key]) => key)
 const enCore = { ...en }

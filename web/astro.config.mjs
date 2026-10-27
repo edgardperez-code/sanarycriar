@@ -1,8 +1,7 @@
 // @ts-check
-import { readdirSync, readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { defineConfig } from 'astro/config';
+import { defineConfig, envField } from 'astro/config';
 import { loadEnv } from 'vite';
+import node from '@astrojs/node';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
@@ -14,28 +13,14 @@ const env = loadEnv(mode, process.cwd(), 'PUBLIC_');
 const siteUrl = (env.PUBLIC_SITE_URL || 'https://www.sanarycriarve.com').replace(/\/+$/, '');
 
 // Pages that only exist as a friendly "coming soon" state stay out of the sitemap
-// until they have real content (see src/data/testimonials.json and src/content/blog).
-const blogDir = fileURLToPath(new URL('./src/content/blog/', import.meta.url));
-// Same rules as getPublishedPosts() (src/lib/content.ts): top-level .md files,
-// no "_" templates, no drafts, no future dates.
-let hasPosts = false;
-try {
-  hasPosts = readdirSync(blogDir).some((name) => {
-    if (!name.endsWith('.md') || name.startsWith('_')) return false;
-    const text = readFileSync(blogDir + name, 'utf8');
-    if (/^draft:\s*true\s*$/m.test(text)) return false;
-    const date = text.match(/^date:\s*["']?([^"'\r\n]+)/m)?.[1];
-    return !date || !(new Date(date).getTime() > Date.now());
-  });
-} catch {
-  hasPosts = false;
-}
+// until they have real content (see src/data/testimonials.json).
 /** @type {Array<{ permiso?: unknown }>} */
 const testimonialList = Array.isArray(testimonials) ? testimonials : [];
 const hasTestimonials = testimonialList.some((t) => t && t.permiso === true);
 
-const excluded = ['/404'];
-if (!hasPosts) excluded.push('/blog');
+// /blog is rendered on demand but the sitemap integration still lists it: it goes
+// in the blog's own sitemap instead, and only when there are articles.
+const excluded = ['/404', '/blog'];
 if (!hasTestimonials) excluded.push('/testimonios');
 // Legal templates stay out of the sitemap until reviewed (src/data/legal.json).
 if (legal.draft === true) excluded.push('/terminos', '/privacidad', '/reembolsos');
@@ -43,7 +28,12 @@ if (legal.draft === true) excluded.push('/terminos', '/privacidad', '/reembolsos
 // https://docs.astro.build/en/reference/configuration-reference/
 export default defineConfig({
   site: siteUrl,
+  // Sanar y Criar: every page is prerendered except the blog (/blog, /blog/*) and
+  // the "Del blog" server island of the home page, rendered by Node on each request
+  // from the platform's blog API (src/lib/blog.server.ts). Node runs behind Caddy
+  // in the same container (Dockerfile, deploy/start.sh).
   output: 'static',
+  adapter: node({ mode: 'standalone' }),
   // URLs without a trailing slash everywhere (links, canonical and sitemap):
   // pages are emitted as /agenda.html and served as /agenda by static hosts.
   trailingSlash: 'never',
@@ -53,6 +43,13 @@ export default defineConfig({
   redirects: {
     '/ebooks': '/cursos',
   },
+  env: {
+    schema: {
+      // Server-only, read when Node starts: URL the site's server uses to reach the
+      // blog API (e.g. a private network address). Empty = PUBLIC_LH_API.
+      LH_API_INTERNAL: envField.string({ context: 'server', access: 'secret', optional: true }),
+    },
+  },
   integrations: [
     react(),
     sitemap({
@@ -60,6 +57,9 @@ export default defineConfig({
         const path = new URL(page).pathname.replace(/\/+$/, '') || '/';
         return !excluded.some((prefix) => path === prefix || path.startsWith(`${prefix}/`));
       },
+      // Articles are not known at build time: the blog serves its own sitemap
+      // (src/pages/blog/sitemap.xml.ts) and the index points to it.
+      customSitemaps: [`${siteUrl}/blog/sitemap.xml`],
     }),
   ],
   vite: {

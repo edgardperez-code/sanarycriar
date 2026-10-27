@@ -47,6 +47,8 @@ docker compose -f dev/docker-compose.yml run --rm --no-deps -T \
 - **El código va montado en `/srv/api`, no en `/app`.** En `/app`, `/app/__init__.py` hace que `import app` cargue el paquete en vez de `app.py`, y fallan 7 tests por razones de entorno.
 - La suite completa (`src/tests`) tarda unos 16 minutos. Hay un fallo previo que también ocurre en upstream: `test_email_unsubscribe_support::…forwards_headers_to_the_provider`.
 - Pagos y progreso: `pytest src/tests/payments -q -p no:cacheprovider`.
+- Boletín: `pytest src/tests/newsletter -q -p no:cacheprovider`.
+- Blog: `pytest src/tests/blog -q -p no:cacheprovider` (nunca llama a Anthropic: usa el modo de prueba y un cliente falso).
 
 ## Web de LearnHouse (Next.js)
 - Dependencias: `cd learnhouse/apps/web && bun install --frozen-lockfile`. Se usa bun 1.4.3, instalado con `npm i -g bun@1.4.3`.
@@ -74,7 +76,21 @@ python deploy/scripts/configurar-organizacion.py --env-file dev/api.env --web ht
 
 ## Sitio de marketing (Astro)
 - `cd web && npm install && npm run dev`. Queda en http://localhost:4321; la configuración se llama `sitio-marketing`.
-- `npm run build` genera el sitio estático en `web/dist`.
+- `npm run build` genera `web/dist/client` (páginas estáticas) y `web/dist/server` (Node, para `/blog`). `npm run preview -- --port 4322` lo sirve como en producción; con `LH_API_INTERNAL=http://localhost:1338/api/v1` lee la API local. En `npm run dev` el blog usa `PUBLIC_LH_API` de `.env.development`.
+
+## Blog con IA
+Los artículos del blog se escriben en el panel (Blog) y la API los guarda en `sc_blog_post`. "Crear con IA" y "Mejorar con IA" corren en segundo plano: el panel consulta la tarea cada 3 s.
+- **En local la IA va en modo de prueba por defecto.** `dev/docker-compose.yml` pone `SC_BLOG_AI_MOCK=1`: la API no llama a Anthropic y devuelve en unos 3 s un artículo fijo (rabietas si es informativo, un taller si es novedad o taller). El panel lo indica con "Modo de prueba".
+- **Para probar con Claude de verdad:**
+  1. Pon `ANTHROPIC_API_KEY=…` en `dev/api.env`. No la compartas ni la pegues en documentos o chats.
+  2. Recrea la API sin el modo de prueba:
+     ```bash
+     SC_BLOG_AI_MOCK=0 docker compose -f dev/docker-compose.yml up -d --force-recreate api
+     ```
+  3. Al terminar, vuelve al modo de prueba con `docker compose -f dev/docker-compose.yml up -d --force-recreate api`.
+- `SC_BLOG_AI_MODEL` es opcional; por defecto se usa `claude-opus-5-5`.
+- Cada artículo con Claude cuesta unos US$0,10–0,30. Hay un límite de 15 usos de la IA por hora por organización y una sola tarea a la vez.
+- Tests del blog: `pytest src/tests/blog -q -p no:cacheprovider` (con el comando de "Tests de la API").
 
 ## PayPal en local
 Hay un PayPal simulado en `dev/paypal-mock`, en http://localhost:8099. Su `README.md` tiene todos los detalles.

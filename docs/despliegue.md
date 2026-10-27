@@ -181,6 +181,8 @@ deploy/scripts/deploy-sitio.sh sanarycriar@IP-DEL-VPS
 - Volver a la versión anterior (en el servidor): `cd /opt/sanarycriar/www && ls releases && ln -sfn releases/FECHA current`.
 - Publica de nuevo cada vez que cambies textos, artículos del blog, testimonios o legales (`web/README.md`).
 
+> **Pendiente (blog):** el sitio ya no es solo estático: `/blog`, `/blog/*` y el bloque «Del blog» del inicio los genera Node (Astro bajo demanda) leyendo la API del blog de la plataforma. Este kit VPS (`deploy/`, `deploy-sitio.sh`, `local-smoke/smoke.sh`) copia `web/dist` como archivos estáticos, así que **no sirve el blog** (y el build ahora queda en `web/dist/client` + `web/dist/server`). Para usarlo habría que añadir un servicio `sitio` con la imagen de `web/Dockerfile` (Caddy + Node) en `docker-compose.prod.yml` y cambiar el sitio de `deploy/caddy/Caddyfile` por `reverse_proxy sitio:8080`. Hoy el despliegue soportado es Railway (`docs/despliegue-railway.md`). Los artículos del blog se publican desde el panel de la plataforma, sin volver a publicar el sitio.
+
 ## 10. Actualizaciones y copias de seguridad
 
 ### Actualizar la plataforma

@@ -23,6 +23,10 @@ services:
       dockerfile: ../../../dev/Dockerfile.api-dev
     image: sanarycriar/api-dev
     env_file: ./api.env
+    # Sanar y Criar: blog con IA en modo de prueba (artículo fijo, sin llamar a Anthropic).
+    # Para usar Claude de verdad: ANTHROPIC_API_KEY en dev/api.env y SC_BLOG_AI_MOCK=0 al levantar.
+    environment:
+      - SC_BLOG_AI_MOCK=${SC_BLOG_AI_MOCK:-1}
     working_dir: /app
     command: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "1338", "--reload", "--reload-dir", "/app/src", "--reload-dir", "/app/config"]
     ports: ["127.0.0.1:1338:1338"]

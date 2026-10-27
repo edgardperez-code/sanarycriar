@@ -103,6 +103,42 @@ export function breadcrumbJsonLd(items: { name: string; path: string }[]) {
   };
 }
 
+export interface BlogPostingInput {
+  url: string;
+  title: string;
+  description: string;
+  publishedAt: Date;
+  updatedAt: Date;
+  image?: string | null;
+  keywords: string[];
+  section: string;
+  wordCount: number;
+}
+
+/** BlogPosting of a blog article (author Hilda, publisher the practice). */
+export function blogPostingJsonLd(p: BlogPostingInput) {
+  // Google shows up to 110 characters of the headline.
+  const headline = p.title.length > 110 ? `${p.title.slice(0, 109).trimEnd()}…` : p.title;
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    '@id': `${p.url}#articulo`,
+    headline,
+    description: p.description,
+    datePublished: p.publishedAt.toISOString(),
+    dateModified: p.updatedAt.toISOString(),
+    inLanguage: 'es',
+    mainEntityOfPage: p.url,
+    url: p.url,
+    image: p.image ?? absoluteUrl(OG_IMAGE),
+    ...(p.keywords.length > 0 ? { keywords: p.keywords.join(', ') } : {}),
+    ...(p.section ? { articleSection: p.section } : {}),
+    ...(p.wordCount > 0 ? { wordCount: p.wordCount } : {}),
+    author: { '@type': 'Person', '@id': personId, name: site.professional.name, url: absoluteUrl('/sobre-mi') },
+    publisher: { '@id': businessId },
+  };
+}
+
 /** Safe JSON for <script type="application/ld+json">. */
 export function serializeJsonLd(data: unknown): string {
   return JSON.stringify(data).replace(/</g, '\\u003c');

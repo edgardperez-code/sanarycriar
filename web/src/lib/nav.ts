@@ -3,16 +3,20 @@ export interface NavItem {
   label: string;
 }
 
-export function mainNav(options: { hasPosts: boolean }): NavItem[] {
-  const items: NavItem[] = [
+/**
+ * Main menu. "Blog" is always there: the blog lives in the course platform and
+ * prerendered pages cannot know at once whether it has articles (an empty /blog
+ * is a friendly "coming soon" page with noindex).
+ */
+export function mainNav(): NavItem[] {
+  return [
     { href: '/sobre-mi', label: 'Sobre mí' },
     { href: '/agenda', label: 'Consultas' },
     { href: '/cursos', label: 'Cursos y ebooks' },
     { href: '/talleres', label: 'Talleres' },
     { href: '/test-de-crianza', label: 'Test de crianza' },
+    { href: '/blog', label: 'Blog' },
   ];
-  if (options.hasPosts) items.push({ href: '/blog', label: 'Blog' });
-  return items;
 }
 
 /**

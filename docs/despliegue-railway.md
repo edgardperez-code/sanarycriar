@@ -4,7 +4,9 @@ Así está montado Sanar y Criar en Railway (proyecto `sanarycriar`, entorno `pr
 
 ```
 Internet ──► Railway (HTTPS)
-              ├─ www.sanarycriarve.com ....... servicio "sitio"       (Astro estático + Caddy, :8080)
+              ├─ www.sanarycriarve.com ....... servicio "sitio"       (Caddy :8080 + Node interno :4321)
+              │                                   ├─ páginas estáticas de Astro (Caddy)
+              │                                   └─ /blog, /blog/*, /_server-islands/* (Node) ──► API del blog de "plataforma"
               ├─ sanarycriarve.com ........... servicio "sitio"       (301 → www)
               └─ cursos.sanarycriarve.com .... servicio "plataforma"  (imagen del fork, nginx interno :80)
                                                  ├─ postgres  (pgvector, red privada)
@@ -18,7 +20,7 @@ Internet ──► Railway (HTTPS)
 | `plataforma` | imagen `ghcr.io/edgardperez-code/sanarycriar-lms:<etiqueta>` | `/app/api/content` (videos, PDF, imágenes) | Dominio con puerto de destino **80** (nginx interno). `PORT=8000` fijo: es el puerto del web interno; si Railway inyectara otro, nginx no lo encontraría. |
 | `postgres` | imagen `pgvector/pgvector:pg16` (fijada por digest) | `/var/lib/postgresql/data` | `PGDATA=/var/lib/postgresql/data/pgdata`: el volumen trae `lost+found` y `initdb` no acepta una carpeta no vacía. |
 | `redis` | imagen `redis:8.6.1-alpine` (fijada por digest) | `/data` | **Comando de inicio propio y `RAILWAY_RUN_UID=0`**, ver abajo. |
-| `sitio` | `web/` subido con la CLI (`web/Dockerfile`) | — | Compila Astro y lo sirve con Caddy (`web/deploy/Caddyfile`) en el puerto 8080. |
+| `sitio` | `web/` subido con la CLI (`web/Dockerfile`) | — | Compila Astro. Caddy (`web/deploy/Caddyfile`) sirve las páginas estáticas en el puerto 8080 y pasa `/blog`, `/blog/*` y `/_server-islands/*` a Node (Astro bajo demanda) en `127.0.0.1:4321`, dentro del mismo contenedor. Arranca con tini + `web/deploy/start.sh`; si Node o Caddy se caen, el contenedor sale y Railway lo reinicia. |
 
 Postgres y Redis no tienen dominio público: la plataforma los alcanza por la red privada (`postgres.railway.internal`, `redis.railway.internal`).
 
@@ -42,11 +44,13 @@ Se gestionan con `railway variable set -s <servicio> ...` o desde el panel. Los 
 - Secretos: `LEARNHOUSE_AUTH_JWT_SECRET_KEY`, `LEARNHOUSE_MFA_ENCRYPTION_KEY`, `COLLAB_INTERNAL_KEY`.
 - Organización y administradora iniciales (solo el primer arranque): `LEARNHOUSE_INITIAL_ORG_NAME`, `LEARNHOUSE_INITIAL_ORG_SLUG`, `LEARNHOUSE_INITIAL_ADMIN_EMAIL`, `LEARNHOUSE_INITIAL_ADMIN_PASSWORD`. Las dos últimas las escribe la administradora con `deploy/railway/fijar-admin.ps1`.
 - Video y otras: las de HLS, `LEARNHOUSE_CONTENT_DELIVERY_TYPE=filesystem`, `LEARNHOUSE_IS_AI_ENABLED=false`, `LEARNHOUSE_PAYMENTS_RECONCILE=1`.
+- Blog con IA: `ANTHROPIC_API_KEY`, que se carga con `deploy/railway/fijar-anthropic.ps1`; opcional `SC_BLOG_AI_MODEL` (por defecto `claude-opus-5-5`). Nunca `SC_BLOG_AI_MOCK` en producción. Pon un tope de gasto mensual en la consola de Anthropic. Sin la clave, el panel muestra los botones de IA desactivados.
 - Correo: `LEARNHOUSE_EMAIL_PROVIDER=resend`, `LEARNHOUSE_SYSTEM_EMAIL_ADDRESS=no-responder@sanarycriarve.com`, `LEARNHOUSE_SYSTEM_EMAIL_SENDER_NAME`, y `LEARNHOUSE_RESEND_API_KEY`, que se carga con `deploy/railway/fijar-resend.ps1` (comprueba la clave con Resend antes de guardarla). Si la cargas desde el panel, que sea en el servicio `plataforma`: en `sitio` no la usa nadie. Sin la clave, o con el dominio sin verificar en Resend, no sale ningún correo (registro, recuperación de contraseña, recibos).
 
 **sitio**:
 - Compilación (`ARG` del Dockerfile): `PUBLIC_LH_PLATFORM=https://cursos.sanarycriarve.com`, `PUBLIC_LH_API=https://cursos.sanarycriarve.com/api/v1`, `PUBLIC_LH_ORG_ID=1`, `PUBLIC_SITE_URL=https://www.sanarycriarve.com`, y opcionales `PUBLIC_FREE_CLASS_URL`, `PUBLIC_BOOKING_URL`.
 - Ejecución (Caddy): `PORT=8080`, `SITE_ORIGIN=https://www.sanarycriarve.com`, `PLATFORM_ORIGIN=https://cursos.sanarycriarve.com`, `APEX_HOST=sanarycriarve.com`.
+- Ejecución (Node, blog): `LH_API_INTERNAL` opcional, la URL con la que el servidor del sitio lee la API del blog (p. ej. `http://plataforma.railway.internal/api/v1`, **sin verificar**: déjala vacía hasta probarla). Si falta se usa `PUBLIC_LH_API`. `SSR_PORT` (4321) lo fija el Dockerfile.
 
 ## Dominios y DNS (Namecheap)
 
@@ -71,7 +75,8 @@ Los registros de Resend no tocan el correo entrante: el TXT `v=spf1 include:spf.
 ## Operación
 
 - **Actualizar la plataforma:** publica una etiqueta nueva del fork (`sc-vX.Y.Z`, la imagen la construye GitHub Actions) y cambia la imagen: `railway service source connect --image ghcr.io/edgardperez-code/sanarycriar-lms:sc-vX.Y.Z -s plataforma`. Las tablas nuevas las crea el arranque; si una versión trae migraciones de Alembic sobre tablas existentes, ejecútalas antes (ver `docs/despliegue.md` §10).
-- **Actualizar el sitio:** desde la carpeta `sanarycriar`: `railway up web --path-as-root -s sitio -d`. Cambiar variables `PUBLIC_*` también exige volver a subirlo (se usan al compilar).
+- **Actualizar el sitio:** desde la carpeta `sanarycriar`: `railway up web --path-as-root -s sitio -d`. Cambiar variables `PUBLIC_*` también exige volver a subirlo (se usan al compilar). Los artículos del blog no: se publican desde el panel y se ven al instante.
+- **Blog:** la plataforma debe desplegarse con el blog (imagen nueva) **antes** que el sitio. Si la plataforma cae, `/blog` sirve la última copia que Node guarda en memoria y, sin copia (por ejemplo, justo después de reiniciar el sitio), responde 503 con `Retry-After: 60`; el inicio oculta el bloque «Del blog».
 - **Configurar la organización** (idempotente; usa las credenciales guardadas en Railway sin mostrarlas):
   ```bash
   railway run -s plataforma python deploy/scripts/configurar-organizacion.py --api https://cursos.sanarycriarve.com/api/v1 --web https://cursos.sanarycriarve.com
@@ -86,3 +91,4 @@ Los registros de Resend no tocan el correo entrante: el TXT `v=spf1 include:spf.
 - Certificado de `sanarycriarve.com` (raíz): bloqueado temporalmente por Let's Encrypt; los DNS ya están bien.
 - Correo de la administradora: su dirección `@sanarycriarve.com` (la de `LEARNHOUSE_INITIAL_ADMIN_EMAIL`) se reenvía a un Gmail personal (Namecheap → Domain → Redirect Email). Cualquier dirección `@sanarycriarve.com` que deba recibir correo necesita su reenvío ahí; sin él, Namecheap rechaza los correos ("554 5.7.1 Relay access denied") y Resend los marca como rebotados. Antes de salir en vivo, cambia la cuenta administradora a la dirección definitiva de Hilda.
 - Credenciales de PayPal (primero sandbox) en el panel: Pagos → Configuración. La URL del webhook la muestra esa misma pantalla.
+- Blog: probar `LH_API_INTERNAL` por la red privada (`http://plataforma.railway.internal/api/v1`) antes de dejarla puesta; mientras tanto, vacía (el sitio usa `PUBLIC_LH_API`).

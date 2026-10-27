@@ -1,19 +1,6 @@
-import { getCollection, type CollectionEntry } from 'astro:content';
 import testimonialsData from '@/data/testimonials.json';
 
-export type BlogPost = CollectionEntry<'blog'>;
-
-// Markdown files that the collection would load (skips "_EJEMPLO" templates).
-// Checked first so an empty blog does not trigger Astro's "empty collection" warning.
-const postFiles = import.meta.glob('/src/content/blog/[^_]*.md');
-
-/** Published posts (not drafts, not dated in the future), newest first. */
-export async function getPublishedPosts(): Promise<BlogPost[]> {
-  if (Object.keys(postFiles).length === 0) return [];
-  const now = Date.now();
-  const posts = await getCollection('blog', (entry) => !entry.data.draft && entry.data.date.getTime() <= now);
-  return posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
-}
+// Blog articles come from the course platform's API (src/lib/blog.ts).
 
 export interface Testimonial {
   nombre: string;
@@ -41,6 +28,7 @@ export function getTestimonials(): Testimonial[] {
   return list.filter(isTestimonial);
 }
 
-export function formatDate(date: Date): string {
-  return new Intl.DateTimeFormat('es-VE', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(date);
+/** "26 de octubre de 2026". Blog dates use timeZone 'America/Caracas'. */
+export function formatDate(date: Date, timeZone = 'UTC'): string {
+  return new Intl.DateTimeFormat('es-VE', { day: 'numeric', month: 'long', year: 'numeric', timeZone }).format(date);
 }

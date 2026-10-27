@@ -384,6 +384,46 @@
     margin-block: 2rem;
   }
 
+  /* Blog articles (HTML from the platform's API): h4, tables and inline code. */
+  .prose-brand h4 {
+    font-size: 1.0625rem;
+    line-height: 1.35;
+    margin-top: 1.75rem;
+  }
+
+  .prose-brand .table-wrap {
+    overflow-x: auto;
+  }
+
+  .prose-brand table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  .prose-brand th,
+  .prose-brand td {
+    border: 1px solid var(--color-borde);
+    padding: 0.625rem 0.875rem;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .prose-brand thead th {
+    background-color: var(--color-lavanda-100);
+    color: var(--color-violeta);
+    font-weight: 600;
+  }
+
+  .prose-brand :not(pre) > code {
+    border-radius: 6px;
+    background-color: var(--color-lavanda-100);
+    padding: 0.1em 0.35em;
+    font-size: 0.9em;
+    color: var(--color-violeta);
+  }
+
   /* Native accordion marker removal. */
   .accordion > summary {
     list-style: none;

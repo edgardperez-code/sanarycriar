@@ -2,10 +2,10 @@
 import { MapPin, MessageCircle, BadgeCheck, MonitorSmartphone } from 'lucide-react';
 import Wordmark from '@/components/ui/Wordmark.astro';
 import InstagramIcon from '@/components/ui/InstagramIcon.astro';
+import NewsletterFooterForm from '@/components/islands/NewsletterFooterForm';
 import { site } from '@/site.config';
-import { getPublishedPosts, getTestimonials } from '@/lib/content';
+import { getTestimonials } from '@/lib/content';
 
-const posts = await getPublishedPosts();
 const testimonials = getTestimonials();
 const year = new Date().getFullYear();
 
@@ -16,7 +16,7 @@ const explore = [
   { href: '/talleres', label: 'Talleres' },
   { href: '/test-de-crianza', label: 'Test de crianza' },
   ...(testimonials.length > 0 ? [{ href: '/testimonios', label: 'Testimonios' }] : []),
-  ...(posts.length > 0 ? [{ href: '/blog', label: 'Blog' }] : []),
+  { href: '/blog', label: 'Blog' },
   { href: '/preguntas-frecuentes', label: 'Preguntas frecuentes' },
   { href: '/links', label: 'Links' },
 ];
@@ -66,8 +66,8 @@ const legal = [
         </ul>
       </div>
 
-      <nav aria-labelledby="footer-explora">
-        <p id="footer-explora" class="eyebrow">Explora</p>
+      <nav aria-labelledby="footer_explora">
+        <p id="footer_explora" class="eyebrow">Explora</p>
         <ul class="mt-5 space-y-2.5">
           {
             explore.map((item) => (
@@ -82,8 +82,8 @@ const legal = [
       </nav>
 
       <div>
-        <nav aria-labelledby="footer-legal">
-          <p id="footer-legal" class="eyebrow">Legal</p>
+        <nav aria-labelledby="footer_legal">
+          <p id="footer_legal" class="eyebrow">Legal</p>
           <ul class="mt-5 space-y-2.5">
             {
               legal.map((item) => (
@@ -107,6 +107,8 @@ const legal = [
         </ul>
       </div>
     </div>
+
+    <NewsletterFooterForm client:visible />
 
     <div class="mt-14 flex flex-col gap-3 border-t border-nube/15 pt-6 text-sm text-nube/70 sm:flex-row sm:items-center sm:justify-between">
       <p>© {year} {site.name} · {site.professional.name}, psicóloga ({site.professional.license}).</p>

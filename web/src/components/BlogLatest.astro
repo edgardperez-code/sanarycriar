@@ -1,0 +1,31 @@
+---
+import PostCards from '@/components/PostCards.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import { getLatestPosts } from '@/lib/blog.server';
+
+/**
+ * "Del blog" section of the home page, as a server island
+ * (`<BlogLatest server:defer />`): the home page stays prerendered and the
+ * browser asks Node for this block, so new articles show up without rebuilding.
+ * No props, so Astro requests it with a GET. Without articles, or
+ * when the API fails without a saved copy, it renders nothing.
+ */
+const result = await getLatestPosts(3);
+const posts = result.status === 'ok' ? result.data.items : [];
+---
+
+{
+  posts.length > 0 && (
+    <section id="blog" aria-labelledby="blog-title">
+      <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+        <SectionHeading id="blog-title" eyebrow="Artículos recientes" title="Del blog" accent="blog" />
+        <div class="mt-12">
+          <PostCards posts={posts} />
+        </div>
+        <a href="/blog" class="btn btn-secondary mt-10">
+          Ver todos los artículos
+        </a>
+      </div>
+    </section>
+  )
+}

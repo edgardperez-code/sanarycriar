@@ -1,80 +1,155 @@
 ---
-import { render } from 'astro:content';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Check, Info } from 'lucide-react';
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import FaqList from '@/components/FaqList.astro';
 import FinalCta from '@/components/FinalCta.astro';
-import { formatDate, getPublishedPosts, type BlogPost } from '@/lib/content';
+import BlogUnavailable from '@/components/BlogUnavailable.astro';
+import { BLOG_KIND_LABELS, isBlogSlug } from '@/lib/blog';
+import { getBlogPost } from '@/lib/blog.server';
+import { formatDate } from '@/lib/content';
+import { blogPostingJsonLd, breadcrumbJsonLd, faqJsonLd } from '@/lib/seo';
 import { absoluteUrl, site } from '@/site.config';
-import { breadcrumbJsonLd } from '@/lib/seo';
 
-export async function getStaticPaths() {
-  const posts = await getPublishedPosts();
-  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+// Sanar y Criar: rendered by Node on every request from the platform's blog API.
+// The article HTML comes already sanitized by the API (allow-list, no images or
+// scripts), so it is rendered as is.
+export const prerender = false;
+
+const slug = Astro.params.slug ?? '';
+if (!isBlogSlug(slug)) return new Response(null, { status: 404 });
+
+const result = await getBlogPost(slug);
+if (result.status === 'not_found') return new Response(null, { status: 404 });
+
+const post = result.status === 'ok' ? result.data : null;
+if (!post) {
+  Astro.response.status = 503;
+  Astro.response.statusText = 'Service Unavailable';
+  Astro.response.headers.set('Retry-After', '60');
+  Astro.response.headers.set('Cache-Control', 'no-store');
+} else if (result.status === 'ok' && result.stale) {
+  Astro.response.headers.set('X-Blog-Stale', '1');
 }
 
-interface Props {
-  post: BlogPost;
-}
-
-const { post } = Astro.props;
-const { Content } = await render(post);
-const url = absoluteUrl(`/blog/${post.id}`);
-
-const articleJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'BlogPosting',
-  headline: post.data.title,
-  description: post.data.description,
-  datePublished: post.data.date.toISOString(),
-  dateModified: (post.data.updated ?? post.data.date).toISOString(),
-  inLanguage: 'es',
-  mainEntityOfPage: url,
-  url,
-  image: post.data.cover ? absoluteUrl(post.data.cover) : absoluteUrl('/og-image.png'),
-  author: { '@type': 'Person', '@id': `${site.url}/#hilda`, name: site.professional.name },
-  publisher: { '@id': `${site.url}/#consulta` },
-};
+const path = `/blog/${slug}`;
+const url = absoluteUrl(path);
+const tags = post ? [post.categoryLabel, post.kind !== 'informativo' ? BLOG_KIND_LABELS[post.kind] : ''].filter(Boolean) : [];
+const faqItems = post ? post.faq.map((f, i) => ({ id: `pregunta_${i + 1}`, question: f.question, answer: f.answer })) : [];
+const hasSummary = post ? post.summary.length > 0 || post.keyTakeaways.length > 0 : false;
+const jsonLd = post
+  ? [
+      blogPostingJsonLd({
+        url,
+        title: post.title,
+        description: post.metaDescription,
+        publishedAt: post.publishedAt,
+        updatedAt: post.updatedAt,
+        image: post.ogImageUrl ?? post.coverUrl,
+        keywords: post.keywords,
+        section: post.categoryLabel,
+        wordCount: post.wordCount,
+      }),
+      breadcrumbJsonLd([
+        { name: 'Inicio', path: '/' },
+        { name: 'Blog', path: '/blog' },
+        { name: post.title, path },
+      ]),
+      ...(post.faq.length ? [faqJsonLd(post.faq)] : []),
+    ]
+  : undefined;
 ---
 
-<BaseLayout
-  title={post.data.title}
-  description={post.data.description}
-  type="article"
-  image={post.data.cover}
-  jsonLd={[
-    articleJsonLd,
-    breadcrumbJsonLd([
-      { name: 'Inicio', path: '/' },
-      { name: 'Blog', path: '/blog' },
-      { name: post.data.title, path: `/blog/${post.id}` },
-    ]),
-  ]}
->
-  <article class="mx-auto max-w-6xl px-4 pb-16 pt-10 sm:px-6 sm:pb-24 sm:pt-16">
-    <a href="/blog" class="text-link inline-flex items-center gap-1.5 text-[0.9375rem]">
-      <ArrowLeft size={16} strokeWidth={2} aria-hidden="true" />
-      Volver al blog
-    </a>
-    <header class="mt-8 max-w-3xl">
-      <time class="eyebrow" datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
-      <h1 class="h1 mt-4">{post.data.title}</h1>
-      <p class="lead mt-5">{post.data.description}</p>
-      <p class="note mt-4">Por {site.professional.name}, {site.professional.title.toLowerCase()}</p>
-    </header>
-    {
-      post.data.cover && (
-        <img
-          src={post.data.cover}
-          alt={post.data.coverAlt ?? ''}
-          class="mt-10 aspect-[16/9] w-full max-w-4xl rounded-[var(--radius-card)] object-cover"
-          width="1200"
-          height="675"
-        />
-      )
-    }
-    <div class="prose-brand mt-10 text-[1.0625rem] leading-relaxed sm:text-lg">
-      <Content />
-    </div>
-  </article>
-  <FinalCta />
-</BaseLayout>
+{
+  post ? (
+    <BaseLayout
+      title={post.metaTitle}
+      description={post.metaDescription || undefined}
+      type="article"
+      image={post.ogImageUrl ?? post.coverUrl ?? undefined}
+      imageAlt={post.coverAlt || post.title}
+      jsonLd={jsonLd}
+    >
+      <link slot="head" rel="alternate" type="application/rss+xml" title="Blog de Sanar y Criar" href="/blog/rss.xml" />
+      <article class="mx-auto max-w-6xl px-4 pb-16 pt-10 sm:px-6 sm:pb-24 sm:pt-16">
+        <a href="/blog" class="text-link inline-flex items-center gap-1.5 text-[0.9375rem]">
+          <ArrowLeft size={16} strokeWidth={2} aria-hidden="true" />
+          Volver al blog
+        </a>
+        <header class="mt-8 max-w-3xl">
+          {tags.length > 0 && <p class="eyebrow">{tags.join(' · ')}</p>}
+          <h1 class="h1 mt-4">{post.title}</h1>
+          {post.excerpt && <p class="lead mt-5">{post.excerpt}</p>}
+          <p class="note mt-4">
+            Por {site.professional.name}, {site.professional.title.toLowerCase()} ·{' '}
+            <time datetime={post.publishedAt.toISOString()}>{formatDate(post.publishedAt, 'America/Caracas')}</time> ·{' '}
+            {post.readingMinutes} min de lectura
+          </p>
+        </header>
+        {post.coverUrl && (
+          <img
+            src={post.coverUrl}
+            alt={post.coverAlt}
+            class="mt-10 aspect-[16/9] w-full max-w-4xl rounded-[var(--radius-card)] object-cover"
+            width="1200"
+            height="675"
+            fetchpriority="high"
+          />
+        )}
+        {hasSummary && (
+          <aside class="mt-10 max-w-[68ch] rounded-[var(--radius-card)] border border-lavanda-300/60 bg-lavanda-100 p-6 sm:p-8" aria-labelledby="en_resumen">
+            <h2 id="en_resumen" class="eyebrow">
+              En resumen
+            </h2>
+            {post.summary && <p class="mt-3 text-[1.0625rem] leading-relaxed text-violeta">{post.summary}</p>}
+            {post.keyTakeaways.length > 0 && (
+              <>
+                <h3 class="mt-6 font-serif text-lg font-semibold text-violeta">Ideas clave</h3>
+                <ul class="mt-3 space-y-2.5">
+                  {post.keyTakeaways.map((item) => (
+                    <li class="flex gap-3 text-[0.9875rem] leading-relaxed text-violeta-600">
+                      <span class="mt-1 inline-flex shrink-0 text-lavanda-600" aria-hidden="true"><Check size={18} strokeWidth={2.25} /></span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </aside>
+        )}
+        <div class="prose-brand mt-10 text-[1.0625rem] leading-relaxed sm:text-lg" set:html={post.contentHtml} />
+        {faqItems.length > 0 && (
+          <section class="mt-14 max-w-[68ch]" aria-labelledby="preguntas_frecuentes">
+            <h2 id="preguntas_frecuentes" class="h2 text-[1.75rem] sm:text-[2rem]">
+              Preguntas frecuentes
+            </h2>
+            <div class="mt-6">
+              <FaqList items={faqItems} headingLevel="h3" />
+            </div>
+          </section>
+        )}
+        <p class="note mt-12 flex max-w-[68ch] gap-2.5 border-t border-borde pt-6">
+          <span class="mt-0.5 inline-flex shrink-0" aria-hidden="true"><Info size={18} strokeWidth={1.75} /></span>
+          <span>Este artículo es informativo y no sustituye una consulta profesional.</span>
+        </p>
+      </article>
+      <FinalCta />
+    </BaseLayout>
+  ) : (
+    <BaseLayout title="Blog" noindex>
+      <section class="watercolor" aria-labelledby="page-title">
+        <div class="mx-auto max-w-6xl px-4 pb-16 pt-10 sm:px-6 sm:pb-24 sm:pt-16">
+          <a href="/blog" class="text-link inline-flex items-center gap-1.5 text-[0.9375rem]">
+            <ArrowLeft size={16} strokeWidth={2} aria-hidden="true" />
+            Volver al blog
+          </a>
+          <h1 id="page-title" class="sr-only">
+            Blog de Sanar y Criar
+          </h1>
+          <div class="mt-8">
+            <BlogUnavailable />
+          </div>
+        </div>
+      </section>
+    </BaseLayout>
+  )
+}

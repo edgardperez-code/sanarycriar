@@ -123,7 +123,7 @@ const dynamic = []
 for (const f of files) {
   const src = fs.readFileSync(f, 'utf8')
   const usesSc = /useScT|ScTranslate/.test(src)
-  for (const m of src.matchAll(/\bt\(\s*['"`]((sc_commerce|sc_learning|sc_fixes|sc_errors|sc_brand|sc_ui)\.[^'"`]+)['"`]/g)) {
+  for (const m of src.matchAll(/\bt\(\s*['"`]((sc_commerce|sc_learning|sc_fixes|sc_errors|sc_brand|sc_ui|sc_newsletter|sc_blog)\.[^'"`]+)['"`]/g)) {
     checked++
     if (m[1].includes('${')) dynamic.push(`${path.relative(WEB, f)}: ${m[1]}`)
     else if (!(m[1] in es) && !(`${m[1]}_other` in es)) errors.push(`${path.relative(WEB, f)} uses missing ${m[1]}`)
@@ -134,6 +134,24 @@ for (const f of files) {
       checked++
       const key = `sc_fixes.${m[2]}`
       if (m[2].includes('${')) dynamic.push(`${path.relative(WEB, f)}: fx(${m[2]})`)
+      else if (!(key in es) && !(`${key}_other` in es)) errors.push(`${path.relative(WEB, f)} uses missing ${key}`)
+    }
+  }
+  // sc_newsletter via useNewsletterT `nl('…')`.
+  if (/useNewsletterT|NewsletterTranslate/.test(src)) {
+    for (const m of src.matchAll(/\bnl\(\s*(['"`])([^'"`]+)\1/g)) {
+      checked++
+      const key = `sc_newsletter.${m[2]}`
+      if (m[2].includes('${')) dynamic.push(`${path.relative(WEB, f)}: nl(${m[2]})`)
+      else if (!(key in es) && !(`${key}_other` in es)) errors.push(`${path.relative(WEB, f)} uses missing ${key}`)
+    }
+  }
+  // sc_blog via useBlogT `bt('…')`.
+  if (/useBlogT|BlogTranslate/.test(src)) {
+    for (const m of src.matchAll(/\bbt\(\s*(['"`])([^'"`]+)\1/g)) {
+      checked++
+      const key = `sc_blog.${m[2]}`
+      if (m[2].includes('${')) dynamic.push(`${path.relative(WEB, f)}: bt(${m[2]})`)
       else if (!(key in es) && !(`${key}_other` in es)) errors.push(`${path.relative(WEB, f)} uses missing ${key}`)
     }
   }
@@ -168,7 +186,7 @@ for (const s of ['created', 'approved', 'pending', 'paid', 'accredited', 'failed
 }
 
 // 9. locales-sc bundles that code imports directly must match the merged copy.
-for (const [key, stem] of [['sc_commerce', 'commerce'], ['sc_fixes', 'fixes'], ['sc_errors', 'errors']]) {
+for (const [key, stem] of [['sc_commerce', 'commerce'], ['sc_fixes', 'fixes'], ['sc_errors', 'errors'], ['sc_newsletter', 'newsletter'], ['sc_blog', 'blog']]) {
   for (const [lng, dict] of [['es', es], ['en', en]]) {
     const p = path.join(WEB, 'locales-sc', `${stem}.${lng}.json`)
     if (!fs.existsSync(p)) continue

@@ -1,11 +1,14 @@
 # Caddy del contenedor del sitio (ver ../Dockerfile). Sirve el build estático por HTTP;
 # el HTTPS lo pone la plataforma delante. En el VPS se usa deploy/caddy/Caddyfile.
+# /blog, /blog/* y /_server-islands/* los genera Node (Astro bajo demanda) en el mismo
+# contenedor (deploy/start.sh); Caddy se los pasa y les pone las mismas cabeceras.
 #
 # Variables de entorno (en tiempo de ejecución):
 #   PORT             puerto de escucha (8080 por defecto)
 #   SITE_ORIGIN      origen público del sitio, p. ej. https://www.sanarycriarve.com
-#   PLATFORM_ORIGIN  origen de la plataforma de cursos (catálogo y miniaturas, para la CSP)
+#   PLATFORM_ORIGIN  origen de la plataforma de cursos (catálogo, miniaturas y portadas del blog, para la CSP)
 #   APEX_HOST        dominio raíz (p. ej. sanarycriarve.com) que redirige a SITE_ORIGIN; opcional
+#   SSR_PORT         puerto de Node en 127.0.0.1 (4321 por defecto; lo fija el Dockerfile)
 {
 	admin off
 	auto_https off
@@ -27,13 +30,14 @@
 :{$PORT:8080} {
 	import cabeceras_sitio
 	encode zstd gzip
-	root * /srv
+	root * /app/dist/client
 
 	# Root domain -> www, keeping path and query.
 	@apex host {$APEX_HOST:apex.invalid}
 	redir @apex {$SITE_ORIGIN}{uri} permanent
 
-	# Hashed build assets never change; everything else revalidates.
+	# Hashed build assets never change; everything else revalidates (also Node's
+	# responses that do not set their own Cache-Control).
 	header /_astro/* Cache-Control "public, max-age=31536000, immutable"
 	header ?Cache-Control "public, max-age=0, must-revalidate"
 
@@ -43,8 +47,20 @@
 	redir @barra_final {$SITE_ORIGIN}{re.barra.1}{?query} permanent
 	redir /ebooks {$SITE_ORIGIN}/cursos{?query} permanent
 
-	try_files {path} {path}.html {path}/index.html
-	file_server
+	# Sanar y Criar: the blog and the server islands are rendered by Node (Astro
+	# on demand) on every request, so what is published shows up at once.
+	@ssr path /blog /blog/* /_server-islands/*
+	handle @ssr {
+		reverse_proxy 127.0.0.1:{$SSR_PORT:4321} {
+			lb_try_duration 10s
+			lb_try_interval 250ms
+		}
+	}
+
+	handle {
+		try_files {path} {path}.html {path}/index.html
+		file_server
+	}
 
 	handle_errors 404 {
 		import cabeceras_sitio

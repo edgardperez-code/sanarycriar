@@ -11,6 +11,7 @@ import playfair600 from '@fontsource/playfair-display/files/playfair-display-lat
 import poppins400 from '@fontsource/poppins/files/poppins-latin-400-normal.woff2?url';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
+import NewsletterPopup from '@/components/islands/NewsletterPopup';
 import { absoluteUrl, site } from '@/site.config';
 import { OG_IMAGE, serializeJsonLd } from '@/lib/seo';
 import { routePath } from '@/lib/nav';
@@ -29,6 +30,11 @@ interface Props {
   jsonLd?: unknown | unknown[];
   /** Minimal chrome (no header/footer), e.g. the Instagram links page. */
   bare?: boolean;
+  /**
+   * Newsletter pop-up (settings in the platform panel > Boletín). On by
+   * default, also on `bare` pages; off on the legal pages and the 404.
+   */
+  newsletter?: boolean;
 }
 
 const {
@@ -41,6 +47,7 @@ const {
   canonical: withCanonical = true,
   jsonLd,
   bare = false,
+  newsletter = true,
 } = Astro.props;
 
 const fullTitle = title ? `${title} | ${site.name}` : `${site.name} · Hilda Hernández, Psicóloga Infanto-Juvenil`;
@@ -90,15 +97,16 @@ const jsonLdList = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
   </head>
   <body class="bg-nube font-sans text-violeta-600 antialiased">
     <a
-      href="#contenido"
+      href="#contenido_principal"
       class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-violeta focus:px-5 focus:py-3 focus:text-nube"
     >
       Saltar al contenido
     </a>
     {!bare && <Header />}
-    <main id="contenido" tabindex="-1" class="outline-none">
+    <main id="contenido_principal" tabindex="-1" class="outline-none">
       <slot />
     </main>
     {!bare && <Footer />}
+    {newsletter && <NewsletterPopup client:load />}
   </body>
 </html>

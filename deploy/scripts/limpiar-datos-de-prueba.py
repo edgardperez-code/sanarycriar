@@ -7,7 +7,8 @@ Qué cuenta como dato de prueba:
     con sus órdenes e inscripciones;
   - grupos de pago cuyo nombre contiene "(borrar)";
   - cuentas con correo @example.com (nunca superadmin, Admin ni Maintainer de la
-    organización), con sus órdenes, progreso y archivos.
+    organización), con sus órdenes, progreso y archivos;
+  - suscriptores del boletín con correo @example.com (el mismo --dominio-correo).
 
 Por defecto es una SIMULACIÓN: solo muestra lo que borraría. Con --aplicar borra todo
 en una sola transacción, quita los archivos y limpia la caché de cursos en Redis.
@@ -114,6 +115,12 @@ def collect(cur, marca, dominio):
 
     offer_ids = [row[0] for row in data["offers"]]
     user_ids = [row[0] for row in data["users"]]
+    data["newsletter"] = []
+    if table_exists(cur, "sc_newsletter_subscriber"):
+        data["newsletter"] = fetch(cur, """
+            select id, email from sc_newsletter_subscriber
+            where email ilike '%%@' || %s order by id""", (dominio.lower(),))
+
     data["orders"] = 0
     if table_exists(cur, "sc_pay_order"):
         cur.execute("select count(*) from sc_pay_order where offer_id = any(%s) or user_id = any(%s)",
@@ -138,6 +145,9 @@ def report(data):
     for email in data["skipped_users"]:
         print(f"  (se conserva {email}: es admin, maintainer o superadmin)")
     print(f"Órdenes afectadas (se borran en cascada): {data['orders']}")
+    print(f"Suscriptores de prueba del boletín: {len(data['newsletter'])}")
+    for sid, email in data["newsletter"]:
+        print(f"  - [{sid}] {email}")
 
 
 def delete(cur, data):
@@ -155,6 +165,9 @@ def delete(cur, data):
         cur.execute("delete from course where id = any(%s)", (course_ids,))
     if data["users"]:
         cur.execute('delete from "user" where id = any(%s)', ([row[0] for row in data["users"]],))
+    if data["newsletter"]:
+        cur.execute("delete from sc_newsletter_subscriber where id = any(%s)",
+                    ([row[0] for row in data["newsletter"]],))
 
 
 def remove_files(base, data):
@@ -204,7 +217,8 @@ def main(argv):
             with conn.cursor() as cur:
                 data = collect(cur, args.marca, args.dominio_correo)
                 report(data)
-                nothing = not (data["courses"] or data["offers"] or data["groups"] or data["users"])
+                nothing = not (data["courses"] or data["offers"] or data["groups"] or data["users"]
+                               or data["newsletter"])
                 if nothing:
                     print("No hay datos de prueba. Nada que hacer.")
                     return 0

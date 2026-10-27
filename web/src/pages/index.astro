@@ -9,17 +9,16 @@ import QuizSection from '@/components/QuizSection.astro';
 import FaqList from '@/components/FaqList.astro';
 import FinalCta from '@/components/FinalCta.astro';
 import TestimonialCards from '@/components/TestimonialCards.astro';
-import PostCards from '@/components/PostCards.astro';
+import BlogLatest from '@/components/BlogLatest.astro';
 import SectionHeading from '@/components/ui/SectionHeading.astro';
 import CatalogIsland from '@/components/islands/CatalogIsland';
 import { homeFaqs } from '@/data/faqs';
 import { getServerCatalog } from '@/lib/catalog.server';
-import { getPublishedPosts, getTestimonials } from '@/lib/content';
+import { getTestimonials } from '@/lib/content';
 import { businessJsonLd, websiteJsonLd } from '@/lib/seo';
 import { site } from '@/site.config';
 
 const catalog = await getServerCatalog();
-const posts = (await getPublishedPosts()).slice(0, 3);
 const testimonials = getTestimonials().slice(0, 3);
 ---
 
@@ -66,21 +65,8 @@ const testimonials = getTestimonials().slice(0, 3);
     )
   }
 
-  {
-    posts.length > 0 && (
-      <section id="blog" aria-labelledby="blog-title">
-        <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
-          <SectionHeading id="blog-title" eyebrow="Artículos recientes" title="Del blog" accent="blog" />
-          <div class="mt-12">
-            <PostCards posts={posts} />
-          </div>
-          <a href="/blog" class="btn btn-secondary mt-10">
-            Ver todos los artículos
-          </a>
-        </div>
-      </section>
-    )
-  }
+  {/* Sanar y Criar: latest articles, asked to Node after the page loads (server island). */}
+  <BlogLatest server:defer />
 
   <section id="preguntas" class="bg-blanco-calido" aria-labelledby="faq-title">
     <div class="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16">

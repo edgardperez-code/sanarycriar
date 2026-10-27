@@ -1,21 +1,53 @@
 ---
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import SectionHeading from '@/components/ui/SectionHeading.astro';
 import PostCards from '@/components/PostCards.astro';
 import EmptyState from '@/components/EmptyState.astro';
-import { getPublishedPosts } from '@/lib/content';
+import BlogUnavailable from '@/components/BlogUnavailable.astro';
+import { BLOG_DESCRIPTION } from '@/lib/blog';
+import { getBlogPage } from '@/lib/blog.server';
+import { breadcrumbJsonLd } from '@/lib/seo';
 
-// Markdown articles in src/content/blog. While there are none, the page is a
-// friendly "coming soon" (noindex) and the menu link stays hidden.
-const posts = await getPublishedPosts();
-const empty = posts.length === 0;
+// Sanar y Criar: rendered by Node on every request from the platform's blog API
+// (articles are written in the panel), so what is published shows up at once.
+export const prerender = false;
+
+// ?pagina=N (whole number from 1); anything else is page 1.
+const rawPage = Astro.url.searchParams.get('pagina') ?? '';
+const page = /^[1-9]\d{0,5}$/.test(rawPage) ? Number(rawPage) : 1;
+
+const result = await getBlogPage(page);
+const data = result.status === 'ok' ? result.data : null;
+
+if (!data) {
+  Astro.response.status = 503;
+  Astro.response.statusText = 'Service Unavailable';
+  Astro.response.headers.set('Retry-After', '60');
+  Astro.response.headers.set('Cache-Control', 'no-store');
+} else {
+  if (result.status === 'ok' && result.stale) Astro.response.headers.set('X-Blog-Stale', '1');
+  // Past the last page (with articles): the site's own 404 page.
+  if (data.total > 0 && page > data.totalPages) return new Response(null, { status: 404 });
+}
+
+const posts = data?.items ?? [];
+const empty = data !== null && posts.length === 0;
+const pageHref = (n: number) => (n <= 1 ? '/blog' : `/blog?pagina=${n}`);
+const newer = data && !empty && page > 1 ? pageHref(page - 1) : null;
+const older = data && !empty && page < data.totalPages ? pageHref(page + 1) : null;
 ---
 
 <BaseLayout
-  title="Blog"
-  description="Artículos de Hilda Hernández, psicóloga infanto-juvenil, sobre crianza consciente, emociones y maternidad."
-  noindex={empty}
+  title={page > 1 && !empty ? `Blog (página ${page})` : 'Blog'}
+  description={BLOG_DESCRIPTION}
+  noindex={!data || empty || page > 1}
+  jsonLd={breadcrumbJsonLd([
+    { name: 'Inicio', path: '/' },
+    { name: 'Blog', path: '/blog' },
+  ])}
 >
+  <link slot="head" rel="alternate" type="application/rss+xml" title="Blog de Sanar y Criar" href="/blog/rss.xml" />
   <section class="watercolor" aria-labelledby="page-title">
     <div class="mx-auto max-w-6xl px-4 pb-16 pt-12 sm:px-6 sm:pb-24 sm:pt-20">
       <SectionHeading
@@ -24,11 +56,13 @@ const empty = posts.length === 0;
         eyebrow="Artículos"
         title="Blog de crianza"
         accent="crianza"
-        intro={empty ? undefined : 'Lecturas cortas para entender lo que pasa en casa y acompañar desde la calma.'}
+        intro={posts.length > 0 ? 'Lecturas cortas para entender lo que pasa en casa y acompañar desde la calma.' : undefined}
       />
       <div class="mt-12">
         {
-          empty ? (
+          !data ? (
+            <BlogUnavailable />
+          ) : empty ? (
             <EmptyState
               title="Estamos escribiendo los primeros artículos."
               text="Muy pronto encontrarás aquí lecturas cortas sobre crianza, emociones y maternidad."
@@ -38,6 +72,26 @@ const empty = posts.length === 0;
           )
         }
       </div>
+      {
+        (newer || older) && (
+          <nav aria-label="Más artículos" class="mt-12 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-between">
+            {newer ? (
+              <a href={newer} class="btn btn-secondary">
+                <ArrowLeft size={18} strokeWidth={2} aria-hidden="true" />
+                Artículos más recientes
+              </a>
+            ) : (
+              <span class="hidden sm:block" />
+            )}
+            {older && (
+              <a href={older} class="btn btn-secondary">
+                Artículos anteriores
+                <ArrowRight size={18} strokeWidth={2} aria-hidden="true" />
+              </a>
+            )}
+          </nav>
+        )
+      }
     </div>
   </section>
 </BaseLayout>

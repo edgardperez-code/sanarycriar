@@ -11,7 +11,7 @@ interface Props {
 const { title, description } = Astro.props;
 ---
 
-<BaseLayout title={title} description={description} noindex={legalDraft}>
+<BaseLayout title={title} description={description} noindex={legalDraft} newsletter={false}>
   <article class="mx-auto max-w-6xl px-4 pb-16 pt-10 sm:px-6 sm:pb-24 sm:pt-14">
     {
       legalDraft && (

@@ -3,10 +3,8 @@ import { Menu, X } from 'lucide-react';
 import Wordmark from '@/components/ui/Wordmark.astro';
 import { freeClassHref, site, whatsappLink } from '@/site.config';
 import { isCurrent, mainNav } from '@/lib/nav';
-import { getPublishedPosts } from '@/lib/content';
 
-const posts = await getPublishedPosts();
-const nav = mainNav({ hasPosts: posts.length > 0 });
+const nav = mainNav();
 const pathname = Astro.url.pathname;
 ---
 
@@ -17,14 +15,14 @@ const pathname = Astro.url.pathname;
     </a>
 
     <nav aria-label="Principal" class="hidden xl:block">
-      <ul class="flex items-center gap-7">
+      <ul class="flex items-center gap-5 2xl:gap-7">
         {
           nav.map((item) => (
             <li>
               <a
                 href={item.href}
                 aria-current={isCurrent(pathname, item.href) ? 'page' : undefined}
-                class="text-[0.9375rem] font-medium text-violeta-600 underline-offset-[0.4em] decoration-rosa-300 decoration-2 hover:text-violeta hover:underline aria-[current=page]:text-violeta aria-[current=page]:underline"
+                class="whitespace-nowrap text-[0.9375rem] font-medium text-violeta-600 underline-offset-[0.4em] decoration-rosa-300 decoration-2 hover:text-violeta hover:underline aria-[current=page]:text-violeta aria-[current=page]:underline"
               >
                 {item.label}
               </a>
@@ -41,14 +39,14 @@ const pathname = Astro.url.pathname;
       >
         Entrar
       </a>
-      <a href={freeClassHref} class="btn btn-primary btn-sm hidden sm:inline-flex" target="_blank" rel="noopener">
+      <a href={freeClassHref} class="btn btn-primary btn-sm hidden whitespace-nowrap sm:inline-flex" target="_blank" rel="noopener">
         {site.freeClass.shortLabel}
       </a>
       <button
         type="button"
         class="inline-flex h-11 w-11 items-center justify-center rounded-full text-violeta hover:bg-lavanda-100 xl:hidden"
         aria-expanded="false"
-        aria-controls="mobile-menu"
+        aria-controls="mobile_menu"
         data-menu-toggle
       >
         <span class="sr-only" data-menu-label>Abrir menú</span>
@@ -58,7 +56,7 @@ const pathname = Astro.url.pathname;
     </div>
   </div>
 
-  <div id="mobile-menu" class="border-t border-borde bg-nube xl:hidden" hidden>
+  <div id="mobile_menu" class="border-t border-borde bg-nube xl:hidden" hidden>
     <nav aria-label="Menú móvil" class="mx-auto max-w-6xl px-4 pb-8 pt-4 sm:px-6">
       <ul class="flex flex-col">
         {
@@ -97,7 +95,7 @@ const pathname = Astro.url.pathname;
 <script>
   function setupMenu() {
     const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
-    const menu = document.getElementById('mobile-menu');
+    const menu = document.getElementById('mobile_menu');
     if (!toggle || !menu) return;
     const label = toggle.querySelector('[data-menu-label]');
     const iconOpen = toggle.querySelector('[data-icon-open]');
