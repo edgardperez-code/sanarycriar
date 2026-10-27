@@ -1,5 +1,5 @@
 ---
-import { CirclePlay, CreditCard, MousePointerClick } from 'lucide-react';
+import { CirclePlay, ShoppingCart, Smartphone } from 'lucide-react';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import SectionHeading from '@/components/ui/SectionHeading.astro';
 import CatalogIsland from '@/components/islands/CatalogIsland';
@@ -12,26 +12,26 @@ const catalog = await getServerCatalog();
 
 const steps = [
   {
-    icon: MousePointerClick,
-    title: 'Elige tu curso o ebook',
-    text: 'Cada tarjeta te lleva a su página en la plataforma de cursos, con el detalle y el precio.',
+    icon: ShoppingCart,
+    title: 'Agrega tus cursos al carrito',
+    text: 'Elige tus cursos y ebooks y agrégalos al carrito: puedes pagarlos todos juntos. En «Ver detalles» tienes la descripción completa.',
   },
   {
-    icon: CreditCard,
-    title: 'Crea tu cuenta y paga en línea',
-    text: `Pagas con ${site.payments.now}. Muy pronto también con ${site.payments.soon}.`,
+    icon: Smartphone,
+    title: 'Paga con Pago Móvil',
+    text: `Creas tu cuenta, confirmas tu pedido y pagas con ${site.payments.now}. Nos envías el comprobante por WhatsApp con un toque. Muy pronto también con ${site.payments.soon}.`,
   },
   {
     icon: CirclePlay,
-    title: 'Empieza de inmediato',
-    text: 'Al confirmarse el pago, el contenido queda en tu cuenta. Avanzas a tu ritmo y la plataforma recuerda dónde te quedaste.',
+    title: 'Empieza a aprender',
+    text: 'En cuanto confirmamos tu pago, el contenido queda en tu cuenta y te avisamos por correo. Avanzas a tu ritmo y la plataforma recuerda dónde te quedaste.',
   },
 ];
 ---
 
 <BaseLayout
   title="Cursos y ebooks"
-  description="Cursos en video y ebooks de Hilda Hernández, psicóloga infanto-juvenil, para criar desde la calma. Pago en línea y acceso inmediato."
+  description="Cursos en video y ebooks de Hilda Hernández, psicóloga infanto-juvenil, para criar desde la calma. Pagas con Pago Móvil en bolívares, a la tasa del día."
   jsonLd={breadcrumbJsonLd([
     { name: 'Inicio', path: '/' },
     { name: 'Cursos y ebooks', path: '/cursos' },

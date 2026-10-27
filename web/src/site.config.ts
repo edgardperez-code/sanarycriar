@@ -68,6 +68,8 @@ export const site = {
     loginUrl: `${platformUrl}/login`,
     storeUrl: `${platformUrl}/store`,
     offerUrl: (offerUuid: string) => `${platformUrl}/store/offers/${encodeURIComponent(offerUuid)}`,
+    /** Adds the offer to the platform's cart and opens it (Pago Móvil checkout). */
+    cartAddUrl: (offerUuid: string) => `${platformUrl}/store/cart?add=${encodeURIComponent(offerUuid)}`,
   },
 
   /** Primary call to action. Changes with each launch date (brand manual, p.3). */
@@ -86,11 +88,16 @@ export const site = {
     whatsappMessage: 'Hola, Hilda. Quisiera agendar una consulta online.',
   },
 
-  /** Payment methods shown in copy. Keep in sync with the platform. */
+  /**
+   * Payment methods shown in copy. Keep in sync with the platform: Pago Móvil
+   * (cart + receipt by WhatsApp, access once the payment is confirmed); PayPal
+   * comes later.
+   */
   payments: {
-    now: 'PayPal o tarjeta de débito o crédito (a través de PayPal)',
-    short: 'con PayPal o con tarjeta',
-    soon: 'Pago Móvil',
+    // "a la tasa del día": the rate may be the BCV's or one set by hand.
+    now: 'Pago Móvil, en bolívares, a la tasa del día',
+    short: 'con Pago Móvil, en bolívares',
+    soon: 'PayPal',
   },
 } as const;
 

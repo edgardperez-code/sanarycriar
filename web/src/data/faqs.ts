@@ -1,7 +1,7 @@
 /**
  * Frequently asked questions, rewritten for the new model: purchases happen on
- * the course platform (PayPal now, Pago Móvil soon), an account is needed to
- * see the content, and access is immediate once the payment is confirmed.
+ * the course platform (cart + Pago Móvil now, PayPal soon), an account is
+ * needed to see the content, and access arrives once the payment is confirmed.
  */
 
 export interface Faq {
@@ -27,7 +27,7 @@ export const faqs: Faq[] = [
     id: 'como-comprar',
     question: '¿Cómo compro un curso o un ebook?',
     answer:
-      'Elige el producto en la sección de cursos y ebooks. El botón te lleva a la plataforma de cursos de Sanar y Criar, donde creas tu cuenta (o inicias sesión) y pagas en línea en pocos pasos.',
+      'Elige el producto en la sección de cursos y ebooks y agrégalo al carrito; puedes llevar varios y pagarlos juntos. El carrito está en la plataforma de cursos de Sanar y Criar: ahí creas tu cuenta (o inicias sesión), confirmas tu pedido y pagas con Pago Móvil.',
     link: { href: '/cursos', label: 'Ver cursos y ebooks' },
     home: true,
   },
@@ -35,14 +35,14 @@ export const faqs: Faq[] = [
     id: 'metodos-de-pago',
     question: '¿Qué métodos de pago aceptan?',
     answer:
-      'Por ahora puedes pagar con PayPal o con tarjeta de débito o crédito; el pago con tarjeta lo procesa PayPal de forma segura y nosotros nunca vemos los datos de tu tarjeta. Muy pronto también podrás pagar con Pago Móvil. Los precios están en dólares (USD).',
+      'Pagas con Pago Móvil en bolívares, a la tasa del día: agregas tus cursos al carrito, haces el Pago Móvil y nos envías el comprobante por WhatsApp. En cuanto lo confirmamos tienes acceso (te avisamos por correo). Muy pronto también PayPal. Los precios se muestran en dólares (USD) y, al confirmar tu pedido, ves el monto exacto en bolívares.',
     home: true,
   },
   {
     id: 'acceso-inmediato',
     question: '¿Cuándo tengo acceso a lo que compré?',
     answer:
-      'De inmediato. En cuanto se confirma el pago, el curso o ebook queda disponible en tu cuenta y te llega un correo de confirmación. Si en algún caso el pago queda en revisión, el acceso se activa solo apenas se confirme.',
+      'En cuanto confirmamos tu Pago Móvil: revisamos el comprobante que nos envías por WhatsApp y, al confirmarlo, el curso o ebook queda disponible en tu cuenta y te llega un correo. Cuando llegue PayPal, pagando con PayPal el acceso será inmediato.',
     home: true,
   },
   {
@@ -93,7 +93,7 @@ export const faqs: Faq[] = [
     id: 'problema-compra',
     question: '¿Qué hago si tengo un problema con mi compra?',
     answer:
-      'Escríbeme por WhatsApp con el correo de tu cuenta y te ayudo. También puedes revisar la política de reembolsos.',
+      'Escríbeme por WhatsApp con el correo de tu cuenta (y el código de tu pedido, si lo tienes) y te ayudo. También puedes revisar la política de reembolsos.',
     link: { href: '/reembolsos', label: 'Política de reembolsos' },
   },
 ];

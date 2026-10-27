@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowRight, ArrowUpRight, BookOpen, CirclePlay, MessageCircle } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, BookOpen, CirclePlay, MessageCircle, ShoppingCart } from 'lucide-react';
 import { fetchCatalog, type CatalogItem, type CatalogResult } from '@/lib/catalog';
 import { freeClassHref, site, whatsappLink } from '@/site.config';
 
@@ -103,15 +103,25 @@ function countLabel(count: number, singular: string, plural: string): string {
   return `${count} ${count === 1 ? singular : plural}`;
 }
 
+/**
+ * Main action: "Agregar al carrito" (opens the platform's cart with the
+ * product added; paid with Pago Móvil). The product page is the secondary
+ * "Ver detalles" link.
+ */
 function ProductCard({ item }: { item: CatalogItem }) {
   const isEbook = item.productType === 'ebook';
   const Icon = isEbook ? BookOpen : CirclePlay;
-  const cta = isEbook ? 'Ver ebook' : 'Ver curso';
   const typeLabel = isEbook ? 'Ebook · PDF' : 'Curso en video';
+  const cartHref = site.platform.cartAddUrl(item.offerUuid);
 
   return (
-    <article className="card group relative flex w-full flex-col overflow-hidden transition-colors hover:border-lavanda-300">
-      <div className="relative aspect-[16/9] w-full overflow-hidden bg-[linear-gradient(150deg,var(--color-lavanda-100),var(--color-rosa-200))]">
+    <article className="card flex w-full flex-col overflow-hidden transition-colors hover:border-lavanda-300">
+      <a
+        href={item.href}
+        tabIndex={-1}
+        aria-hidden="true"
+        className="relative block aspect-[16/9] w-full overflow-hidden bg-[linear-gradient(150deg,var(--color-lavanda-100),var(--color-rosa-200))]"
+      >
         {item.thumbnailUrl ? (
           <img
             src={item.thumbnailUrl}
@@ -127,11 +137,14 @@ function ProductCard({ item }: { item: CatalogItem }) {
             <Icon size={44} strokeWidth={1.5} aria-hidden="true" />
           </div>
         )}
-      </div>
+      </a>
       <div className="flex flex-1 flex-col p-6">
         <p className="eyebrow text-[0.75rem]">{typeLabel}</p>
         <h3 className="mt-2 font-serif text-xl font-semibold leading-snug text-violeta">
-          <a href={item.href} className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none">
+          <a
+            href={item.href}
+            className="decoration-rosa-300 decoration-2 underline-offset-[0.2em] hover:text-lavanda-700 hover:underline"
+          >
             {item.title}
           </a>
         </h3>
@@ -143,25 +156,31 @@ function ProductCard({ item }: { item: CatalogItem }) {
             Incluye {item.resourcesCount} {isEbook ? 'ebooks' : 'contenidos'}
           </p>
         )}
-        <div className="mt-auto flex items-end justify-between gap-3 pt-5">
-          {item.price ? (
-            <p className="font-serif text-2xl font-semibold leading-none text-violeta">
-              {item.price}
-              <span className="ml-1.5 font-sans text-xs font-medium text-violeta-400">{item.currency}</span>
-            </p>
-          ) : (
-            <span />
-          )}
-          <span className="inline-flex items-center gap-1.5 text-[0.9375rem] font-semibold text-lavanda-600 group-hover:text-lavanda-700">
-            {cta}
-            <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
-          </span>
+        <div className="mt-auto pt-5">
+          <div className="flex items-end justify-between gap-3">
+            {item.price ? (
+              <p className="font-serif text-2xl font-semibold leading-none text-violeta">
+                {item.price}
+                <span className="ml-1.5 font-sans text-xs font-medium text-violeta-400">{item.currency}</span>
+              </p>
+            ) : (
+              <span />
+            )}
+            <a
+              href={item.href}
+              aria-label={`Ver detalles: ${item.title}`}
+              className="inline-flex min-h-11 items-center gap-1.5 text-[0.9375rem] font-semibold text-lavanda-600 hover:text-lavanda-700"
+            >
+              Ver detalles
+              <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
+            </a>
+          </div>
+          <a href={cartHref} aria-label={`Agregar al carrito: ${item.title}`} className="btn btn-primary mt-4 w-full">
+            <ShoppingCart size={18} strokeWidth={1.75} aria-hidden="true" />
+            Agregar al carrito
+          </a>
         </div>
       </div>
-      <span
-        className="pointer-events-none absolute inset-0 rounded-[var(--radius-card)] ring-lavanda-600 ring-offset-2 group-has-[:focus-visible]:ring-2"
-        aria-hidden="true"
-      />
     </article>
   );
 }

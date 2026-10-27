@@ -123,7 +123,7 @@ const dynamic = []
 for (const f of files) {
   const src = fs.readFileSync(f, 'utf8')
   const usesSc = /useScT|ScTranslate/.test(src)
-  for (const m of src.matchAll(/\bt\(\s*['"`]((sc_commerce|sc_learning|sc_fixes|sc_errors|sc_brand|sc_ui|sc_newsletter|sc_blog)\.[^'"`]+)['"`]/g)) {
+  for (const m of src.matchAll(/\bt\(\s*['"`]((sc_commerce|sc_learning|sc_fixes|sc_errors|sc_brand|sc_ui|sc_newsletter|sc_blog|sc_orders)\.[^'"`]+)['"`]/g)) {
     checked++
     if (m[1].includes('${')) dynamic.push(`${path.relative(WEB, f)}: ${m[1]}`)
     else if (!(m[1] in es) && !(`${m[1]}_other` in es)) errors.push(`${path.relative(WEB, f)} uses missing ${m[1]}`)
@@ -152,6 +152,29 @@ for (const f of files) {
       checked++
       const key = `sc_blog.${m[2]}`
       if (m[2].includes('${')) dynamic.push(`${path.relative(WEB, f)}: bt(${m[2]})`)
+      else if (!(key in es) && !(`${key}_other` in es)) errors.push(`${path.relative(WEB, f)} uses missing ${key}`)
+    }
+  }
+  // sc_orders via useOrdersT `ot('…')`.
+  if (/useOrdersT|OrdersTranslate/.test(src)) {
+    for (const m of src.matchAll(/\bot\(\s*(['"`])([^'"`]+)\1/g)) {
+      checked++
+      const key = `sc_orders.${m[2]}`
+      if (m[2].includes('${')) dynamic.push(`${path.relative(WEB, f)}: ot(${m[2]})`)
+      else if (!(key in es) && !(`${key}_other` in es)) errors.push(`${path.relative(WEB, f)} uses missing ${key}`)
+    }
+  }
+  // sc_cart via t('sc_cart.…') and useCartT `ct('…')` (cart + Pago Móvil orders).
+  for (const m of src.matchAll(/\bt\(\s*['"`](sc_cart\.[^'"`]+)['"`]/g)) {
+    checked++
+    if (m[1].includes('${')) dynamic.push(`${path.relative(WEB, f)}: ${m[1]}`)
+    else if (!(m[1] in es) && !(`${m[1]}_other` in es)) errors.push(`${path.relative(WEB, f)} uses missing ${m[1]}`)
+  }
+  if (/useCartT|CartTranslate/.test(src)) {
+    for (const m of src.matchAll(/\bct\(\s*(['"`])([^'"`]+)\1/g)) {
+      checked++
+      const key = `sc_cart.${m[2]}`
+      if (m[2].includes('${')) dynamic.push(`${path.relative(WEB, f)}: ct(${m[2]})`)
       else if (!(key in es) && !(`${key}_other` in es)) errors.push(`${path.relative(WEB, f)} uses missing ${key}`)
     }
   }
@@ -186,7 +209,21 @@ for (const s of ['created', 'approved', 'pending', 'paid', 'accredited', 'failed
 }
 
 // 9. locales-sc bundles that code imports directly must match the merged copy.
-for (const [key, stem] of [['sc_commerce', 'commerce'], ['sc_fixes', 'fixes'], ['sc_errors', 'errors'], ['sc_newsletter', 'newsletter'], ['sc_blog', 'blog']]) {
+for (const [key, stem] of [['sc_commerce', 'commerce'], ['sc_fixes', 'fixes'], ['sc_errors', 'errors'], ['sc_newsletter', 'newsletter'], ['sc_blog', 'blog'], ['sc_orders', 'orders']]) {
+  for (const [lng, dict] of [['es', es], ['en', en]]) {
+    const p = path.join(WEB, 'locales-sc', `${stem}.${lng}.json`)
+    if (!fs.existsSync(p)) continue
+    const src = flat(JSON.parse(fs.readFileSync(p, 'utf8'))[key] || {}, key)
+    for (const [k, v] of Object.entries(src)) {
+      if (dict[k] !== v) errors.push(`${stem}.${lng}.json ${k} differs from locales/${lng}.json (re-run apply.cjs)`)
+    }
+    for (const k of Object.keys(dict)) {
+      if (k.startsWith(`${key}.`) && !(k in src)) errors.push(`locales/${lng}.json ${k} is not in ${stem}.${lng}.json`)
+    }
+  }
+}
+// Same check for the cart bundle (sc_cart), kept as its own block.
+for (const [key, stem] of [['sc_cart', 'cart']]) {
   for (const [lng, dict] of [['es', es], ['en', en]]) {
     const p = path.join(WEB, 'locales-sc', `${stem}.${lng}.json`)
     if (!fs.existsSync(p)) continue

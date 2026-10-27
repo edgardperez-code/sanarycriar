@@ -49,6 +49,7 @@ docker compose -f dev/docker-compose.yml run --rm --no-deps -T \
 - Pagos y progreso: `pytest src/tests/payments -q -p no:cacheprovider`.
 - Boletín: `pytest src/tests/newsletter -q -p no:cacheprovider`.
 - Blog: `pytest src/tests/blog -q -p no:cacheprovider` (nunca llama a Anthropic: usa el modo de prueba y un cliente falso).
+- Carrito y Pago Móvil: `pytest src/tests/payments/test_cart_manual.py src/tests/payments/test_fx.py -q -p no:cacheprovider` (también entran con `src/tests/payments`). No salen a la red: la tasa del BCV y los correos están simulados.
 
 ## Web de LearnHouse (Next.js)
 - Dependencias: `cd learnhouse/apps/web && bun install --frozen-lockfile`. Se usa bun 1.4.3, instalado con `npm i -g bun@1.4.3`.
@@ -118,6 +119,28 @@ Hay un PayPal simulado en `dev/paypal-mock`, en http://localhost:8099. Su `READM
 - `POST http://localhost:8099/mock/captures/<capture_id>/complete`: una captura pendiente pasa a completada.
 
 **Con credenciales sandbox reales**: quita las dos variables `LEARNHOUSE_PAYPAL_*` de `dev/api.env`, recrea la API y configura PayPal desde el panel con tu Webhook ID real.
+
+## Probar Pago Móvil en local
+Pago Móvil no tiene simulador: quien compra paga desde su banco y la administradora confirma a mano. En local se prueba todo el recorrido sin dinero.
+
+**Activarlo** (Pagos → Configuración → tarjeta «Pago Móvil»)
+- Usa datos de prueba: banco 0134 Banesco, teléfono 0424-1234567, cédula V-12345678, titular «Prueba (borrar)», un WhatsApp cualquiera y, si quieres el aviso de pedidos nuevos, un correo `@example.com`.
+- Enciende «Aceptar Pago Móvil». Si falta un dato obligatorio, la API responde `INCOMPLETE` y dice cuál.
+
+**La tasa**
+- Sale de https://ve.dolarapi.com (la pide la API desde el contenedor). Se guarda 30 min en Redis y una vez por día en `sc_pay_fx_rate`.
+- Sin internet, elige «Tasa manual» en la tarjeta.
+- Solo en modo desarrollo, `SC_PAY_FX_URL` en `dev/api.env` apunta la API a otra URL que responda con la misma forma (después, recrea la API).
+
+**Comprar y confirmar**
+- Con una alumna de prueba, agrega cursos al carrito (`/store/cart`), confirma el pedido y abre `/store/purchases/<uuid>`.
+- Los correos (datos para pagar, aviso a la administradora, acceso y rechazo) llegan a Mailpit: http://localhost:8025.
+- Marca el pedido como pagado, recházalo o anúlalo desde Pedidos (`/dash/orders`).
+- Los pedidos sin pagar vencen solos: 24 h por defecto, y la reconciliación pasa cada 5 min.
+
+**Comprobar la API**: `curl -s -X POST -H 'Content-Type: application/json' -d '{"offer_uuids":[]}' http://localhost:1338/api/v1/payments/1/cart/quote` responde 200.
+
+Al terminar, borra lo que creaste (correos `@example.com`, nombres con «(borrar)»). Los pedidos se borran con su usuario.
 
 ## Probar el kit de producción
 - `deploy/local-smoke/smoke.sh` levanta el kit completo con su propio proyecto Docker (`sanarycriar-smoke`), sin tocar este entorno. Lo comprueba de punta a punta: primer despliegue, salud, páginas, redirecciones, CORS, cabeceras, copia de seguridad, actualización y restauración. Al final lo borra todo.
