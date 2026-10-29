@@ -1,6 +1,6 @@
 import { absoluteUrl, site } from '@/site.config';
 
-export const OG_IMAGE = '/og-image.png';
+export const OG_IMAGE = '/og-image.png?v=2';
 
 const businessId = `${site.url}/#consulta`;
 const personId = `${site.url}/#hilda`;

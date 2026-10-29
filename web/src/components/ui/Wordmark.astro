@@ -3,10 +3,10 @@
  * Brand lockup: the isotipo (heart with mother and child) next to the text
  * wordmark. "Sanar y Criar" in Playfair Display with the "y" in italic, plus
  * the professional line in Poppins. The isotipo is decorative: the link that
- * wraps the wordmark carries the accessible name.
+ * wraps the wordmark carries the accessible name. Plain files from
+ * public/brand (npm run brand-assets), not astro:assets: the header also
+ * renders on the on-demand /blog pages, where /_image is not served.
  */
-import { Image } from 'astro:assets';
-import isotipo from '@/assets/brand/isotipo.png';
 
 interface Props {
   tone?: 'dark' | 'light';
@@ -25,12 +25,15 @@ const light = tone === 'light';
 <span class:list={['inline-flex items-center', size === 'lg' ? 'gap-3.5' : 'gap-2.5 sm:gap-3', className]}>
   {
     mark && (
-      <Image
-        src={isotipo}
-        alt=""
-        widths={[48, 96, 144]}
+      <img
+        src="/brand/isotipo-96.webp"
+        srcset="/brand/isotipo-48.webp 48w, /brand/isotipo-96.webp 96w, /brand/isotipo-144.webp 144w"
         sizes={size === 'lg' ? '56px' : '(min-width: 640px) 40px, 36px'}
+        width="96"
+        height="113"
+        alt=""
         loading="eager"
+        decoding="async"
         class:list={['h-auto shrink-0 select-none', size === 'lg' ? 'w-12 sm:w-14' : 'w-9 sm:w-10']}
       />
     )

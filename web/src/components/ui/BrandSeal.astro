@@ -2,11 +2,9 @@
 /**
  * The round brand seal ("Sanar y Criar" around the isotipo) on a warm white
  * disc, so its dark lettering reads on any background. Decorative unless an
- * alt text is given.
+ * alt text is given. Plain files from public/brand (npm run brand-assets), so
+ * it also works on pages rendered on demand.
  */
-import { Image } from 'astro:assets';
-import sello from '@/assets/brand/sello.png';
-
 interface Props {
   sizes?: string;
   alt?: string;
@@ -24,5 +22,15 @@ const { sizes = '128px', alt = '', priority = false, class: className = '' } = A
   ]}
   aria-hidden={alt ? undefined : 'true'}
 >
-  <Image src={sello} alt={alt} widths={[128, 192, 256, 384]} sizes={sizes} loading={priority ? 'eager' : 'lazy'} class="h-full w-full select-none" />
+  <img
+    src="/brand/sello-256.webp"
+    srcset="/brand/sello-128.webp 128w, /brand/sello-256.webp 256w, /brand/sello-384.webp 384w"
+    sizes={sizes}
+    width="256"
+    height="254"
+    alt={alt}
+    loading={priority ? 'eager' : 'lazy'}
+    decoding="async"
+    class="h-full w-full select-none"
+  />
 </span>

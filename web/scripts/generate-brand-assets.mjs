@@ -8,7 +8,7 @@
  * OG text is converted to vector paths by satori using the self-hosted fonts,
  * then rasterised with sharp. Run with: npm run brand-assets
  */
-import { readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import satori from 'satori';
 import sharp from 'sharp';
@@ -199,6 +199,18 @@ async function main() {
   await writeFile(fromRoot('public/apple-touch-icon.png'), await iconPng(180, C.nube));
   await writeFile(fromRoot('public/icon-192.png'), await iconPng(192));
   await writeFile(fromRoot('public/icon-512.png'), await iconPng(512));
+
+  // Isotipo and seal as plain files for <img srcset>: the /blog pages render on
+  // demand, and Astro's /_image service is not served there, so the header,
+  // footer and seal never go through astro:assets.
+  const brandOut = fromRoot('public/brand');
+  await mkdir(brandOut, { recursive: true });
+  for (const width of [48, 96, 144]) {
+    await sharp(fromRoot('src/assets/brand/isotipo.png')).resize({ width }).webp({ quality: 90 }).toFile(`${brandOut}/isotipo-${width}.webp`);
+  }
+  for (const width of [128, 256, 384]) {
+    await sharp(fromRoot('src/assets/brand/sello.png')).resize({ width }).webp({ quality: 90 }).toFile(`${brandOut}/sello-${width}.webp`);
+  }
 
   // Open Graph image.
   const photo = await pngDataUrl('src/assets/hilda-nobg.png', 640);
