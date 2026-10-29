@@ -1,6 +1,7 @@
 ---
 import { ArrowUpRight, BookOpen, CalendarDays, ClipboardCheck, Globe, MessageCircle, Presentation, Sparkles } from 'lucide-react';
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import BrandSeal from '@/components/ui/BrandSeal.astro';
 import OrganicPhoto from '@/components/ui/OrganicPhoto.astro';
 import Wordmark from '@/components/ui/Wordmark.astro';
 import InstagramIcon from '@/components/ui/InstagramIcon.astro';
@@ -26,8 +27,9 @@ const links = [
   <div class="watercolor min-h-dvh">
     <div class="mx-auto flex max-w-md flex-col px-4 pb-12 pt-10">
       <div class="flex flex-col items-start">
-        <div class="w-36">
+        <div class="relative w-36">
           <OrganicPhoto priority sizes="144px" />
+          <BrandSeal priority class="absolute -bottom-2 -right-6 w-16" sizes="64px" />
         </div>
         <h1 class="sr-only">Sanar y Criar: enlaces</h1>
         <div class="mt-6">

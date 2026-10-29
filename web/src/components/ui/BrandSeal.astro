@@ -1,0 +1,28 @@
+---
+/**
+ * The round brand seal ("Sanar y Criar" around the isotipo) on a warm white
+ * disc, so its dark lettering reads on any background. Decorative unless an
+ * alt text is given.
+ */
+import { Image } from 'astro:assets';
+import sello from '@/assets/brand/sello.png';
+
+interface Props {
+  sizes?: string;
+  alt?: string;
+  priority?: boolean;
+  class?: string;
+}
+
+const { sizes = '128px', alt = '', priority = false, class: className = '' } = Astro.props;
+---
+
+<span
+  class:list={[
+    'block aspect-square rounded-full bg-blanco-calido p-[6%] shadow-[0_10px_30px_-12px_rgb(25_9_51/0.35)] ring-1 ring-borde',
+    className,
+  ]}
+  aria-hidden={alt ? undefined : 'true'}
+>
+  <Image src={sello} alt={alt} widths={[128, 192, 256, 384]} sizes={sizes} loading={priority ? 'eager' : 'lazy'} class="h-full w-full select-none" />
+</span>

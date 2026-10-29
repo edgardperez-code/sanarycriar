@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 /**
- * Generates the brand assets in /public from code (no design tools needed):
- *   favicon.svg, favicon-32.png, apple-touch-icon.png, icon-192.png,
- *   icon-512.png and og-image.png (1200x630).
+ * Generates the brand assets in /public:
+ *   favicon.ico, favicon-32.png, apple-touch-icon.png, icon-192.png and
+ *   icon-512.png from the brand icon (src/assets/brand/icono.png), and
+ *   og-image.png (1200x630) with the isotipo.
  *
- * Text is converted to vector paths by satori using the self-hosted fonts,
+ * OG text is converted to vector paths by satori using the self-hosted fonts,
  * then rasterised with sharp. Run with: npm run brand-assets
  */
 import { readFile, writeFile } from 'node:fs/promises';
@@ -47,43 +48,44 @@ function h(type, style, ...children) {
   return { type, props: { style, children: flat.length === 1 ? flat[0] : flat } };
 }
 
-/* ---------- Monogram (favicon / app icons) ---------- */
+/* ---------- Favicon and app icons (from the brand icon) ---------- */
 
-function monogram({ rounded }) {
-  return h(
-    'div',
-    {
-      width: '100%',
-      height: '100%',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: C.violeta,
-      borderRadius: rounded ? 112 : 0,
-      // border-box keeps the padding inside the 512px canvas (otherwise the
-      // rounded square grows to 520x546 and its right/bottom corners get clipped).
-      boxSizing: 'border-box',
-      paddingBottom: 28,
-      paddingLeft: 6,
-    },
-    h('span', { fontFamily: 'Playfair Display', fontWeight: 600, fontSize: 250, color: C.rosa300, lineHeight: 1 }, 'S'),
-    h(
-      'span',
-      { fontFamily: 'Playfair Display', fontWeight: 500, fontStyle: 'italic', fontSize: 160, color: C.rosa300, lineHeight: 1, marginLeft: -5, marginRight: 3, marginTop: 58 },
-      'y',
-    ),
-    h('span', { fontFamily: 'Playfair Display', fontWeight: 600, fontSize: 250, color: C.rosa300, lineHeight: 1 }, 'C'),
-  );
+// The brand icon: the isotipo in cream on a pink circle, transparent corners.
+const ICON = fromRoot('src/assets/brand/icono.png');
+
+async function iconPng(size, background) {
+  let image = sharp(ICON).resize(size, size);
+  if (background) image = image.flatten({ background });
+  return image.png({ compressionLevel: 9 }).toBuffer();
+}
+
+/** favicon.ico holding PNG images (supported by every current browser). */
+function ico(pngs) {
+  const header = Buffer.alloc(6 + 16 * pngs.length);
+  header.writeUInt16LE(1, 2);
+  header.writeUInt16LE(pngs.length, 4);
+  let offset = header.length;
+  pngs.forEach(({ size, data }, i) => {
+    const entry = 6 + 16 * i;
+    header.writeUInt8(size >= 256 ? 0 : size, entry);
+    header.writeUInt8(size >= 256 ? 0 : size, entry + 1);
+    header.writeUInt16LE(1, entry + 4);
+    header.writeUInt16LE(32, entry + 6);
+    header.writeUInt32LE(data.length, entry + 8);
+    header.writeUInt32LE(offset, entry + 12);
+    offset += data.length;
+  });
+  return Buffer.concat([header, ...pngs.map((png) => png.data)]);
 }
 
 /* ---------- Open Graph image ---------- */
 
-async function hildaDataUrl() {
-  const png = await sharp(fromRoot('src/assets/hilda-nobg.png')).resize({ width: 640 }).png({ compressionLevel: 9 }).toBuffer();
+async function pngDataUrl(path, width) {
+  const png = await sharp(fromRoot(path)).resize({ width }).png({ compressionLevel: 9 }).toBuffer();
   return `data:image/png;base64,${png.toString('base64')}`;
 }
 
-function ogImage(photo) {
+function ogImage(photo, isotipo) {
   const frameW = 392;
   const frameH = 424;
   return h(
@@ -106,12 +108,21 @@ function ogImage(photo) {
         { display: 'flex', flexDirection: 'column' },
         h(
           'div',
-          { display: 'flex', alignItems: 'baseline', fontFamily: 'Playfair Display', fontWeight: 600, fontSize: 40, color: C.violeta, letterSpacing: -0.5 },
-          h('span', {}, 'Sanar'),
-          h('span', { fontStyle: 'italic', fontWeight: 500, color: C.lavanda500, margin: '0 10px' }, 'y'),
-          h('span', {}, 'Criar'),
+          { display: 'flex', alignItems: 'center' },
+          { type: 'img', props: { src: isotipo, width: 60, height: 71, style: { marginRight: 18 } } },
+          h(
+            'div',
+            { display: 'flex', flexDirection: 'column' },
+            h(
+              'div',
+              { display: 'flex', alignItems: 'baseline', fontFamily: 'Playfair Display', fontWeight: 600, fontSize: 40, color: C.violeta, letterSpacing: -0.5 },
+              h('span', {}, 'Sanar'),
+              h('span', { fontStyle: 'italic', fontWeight: 500, color: C.lavanda500, margin: '0 10px' }, 'y'),
+              h('span', {}, 'Criar'),
+            ),
+            h('div', { display: 'flex', marginTop: 6, fontSize: 19, fontWeight: 500, color: C.violeta500 }, 'Hilda Hernández · Psicóloga Infanto-Juvenil'),
+          ),
         ),
-        h('div', { display: 'flex', marginTop: 6, fontSize: 19, fontWeight: 500, color: C.violeta500 }, 'Hilda Hernández · Psicóloga Infanto-Juvenil'),
       ),
       h(
         'div',
@@ -178,23 +189,24 @@ function ogImage(photo) {
 }
 
 async function main() {
-  // Favicon (rounded) and app icons (square: platforms apply their own mask).
-  const faviconSvg = await satori(monogram({ rounded: true }), { width: 512, height: 512, fonts });
-  await writeFile(fromRoot('public/favicon.svg'), faviconSvg);
-  await sharp(Buffer.from(faviconSvg)).resize(32, 32).png().toFile(fromRoot('public/favicon-32.png'));
-
-  const squareSvg = await satori(monogram({ rounded: false }), { width: 512, height: 512, fonts });
-  const square = Buffer.from(squareSvg);
-  await sharp(square).resize(180, 180).png().toFile(fromRoot('public/apple-touch-icon.png'));
-  await sharp(square).resize(192, 192).png().toFile(fromRoot('public/icon-192.png'));
-  await sharp(square).resize(512, 512).png().toFile(fromRoot('public/icon-512.png'));
+  // Favicon and app icons from the round brand icon. iOS does not keep
+  // transparency, so its icon sits on the cream background.
+  const ico16 = await iconPng(16);
+  const ico32 = await iconPng(32);
+  const ico48 = await iconPng(48);
+  await writeFile(fromRoot('public/favicon.ico'), ico([{ size: 16, data: ico16 }, { size: 32, data: ico32 }, { size: 48, data: ico48 }]));
+  await writeFile(fromRoot('public/favicon-32.png'), ico32);
+  await writeFile(fromRoot('public/apple-touch-icon.png'), await iconPng(180, C.nube));
+  await writeFile(fromRoot('public/icon-192.png'), await iconPng(192));
+  await writeFile(fromRoot('public/icon-512.png'), await iconPng(512));
 
   // Open Graph image.
-  const photo = await hildaDataUrl();
-  const ogSvg = await satori(ogImage(photo), { width: 1200, height: 630, fonts });
+  const photo = await pngDataUrl('src/assets/hilda-nobg.png', 640);
+  const isotipo = await pngDataUrl('src/assets/brand/isotipo.png', 120);
+  const ogSvg = await satori(ogImage(photo, isotipo), { width: 1200, height: 630, fonts });
   await sharp(Buffer.from(ogSvg)).png({ compressionLevel: 9 }).toFile(fromRoot('public/og-image.png'));
 
-  console.log('Brand assets written to public/: favicon.svg, favicon-32.png, apple-touch-icon.png, icon-192.png, icon-512.png, og-image.png');
+  console.log('Brand assets written to public/: favicon.ico, favicon-32.png, apple-touch-icon.png, icon-192.png, icon-512.png, og-image.png');
 }
 
 await main();

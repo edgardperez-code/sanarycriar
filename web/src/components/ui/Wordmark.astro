@@ -1,40 +1,63 @@
 ---
 /**
- * Text wordmark (brand manual p.3: no image logo). "Sanar y Criar" in
- * Playfair Display with the "y" in italic, plus the professional line in Poppins.
+ * Brand lockup: the isotipo (heart with mother and child) next to the text
+ * wordmark. "Sanar y Criar" in Playfair Display with the "y" in italic, plus
+ * the professional line in Poppins. The isotipo is decorative: the link that
+ * wraps the wordmark carries the accessible name.
  */
+import { Image } from 'astro:assets';
+import isotipo from '@/assets/brand/isotipo.png';
+
 interface Props {
   tone?: 'dark' | 'light';
   size?: 'md' | 'lg';
   subtitle?: boolean;
+  mark?: boolean;
+  /** Hide the professional line on very narrow phones (< 360px), for the header. */
+  compact?: boolean;
   class?: string;
 }
 
-const { tone = 'dark', size = 'md', subtitle = true, class: className = '' } = Astro.props;
+const { tone = 'dark', size = 'md', subtitle = true, mark = true, compact = false, class: className = '' } = Astro.props;
 const light = tone === 'light';
 ---
 
-<span class:list={['inline-flex flex-col', className]}>
-  <span
-    class:list={[
-      'font-serif font-semibold leading-none tracking-[-0.015em]',
-      size === 'lg' ? 'text-[2rem] sm:text-[2.25rem]' : 'text-[1.375rem] sm:text-[1.5rem]',
-      light ? 'text-nube' : 'text-violeta',
-    ]}
-  >
-    Sanar <em class:list={['font-medium', light ? 'text-rosa-300' : 'text-lavanda-500']}>y</em> Criar
-  </span>
+<span class:list={['inline-flex items-center', size === 'lg' ? 'gap-3.5' : 'gap-2.5 sm:gap-3', className]}>
   {
-    subtitle && (
-      <span
-        class:list={[
-          'mt-1.5 font-sans font-medium leading-tight tracking-[0.02em]',
-          size === 'lg' ? 'text-[0.8125rem]' : 'text-[0.6875rem] sm:text-[0.75rem]',
-          light ? 'text-nube/75' : 'text-violeta-500',
-        ]}
-      >
-        Hilda Hernández · Psicóloga Infanto-Juvenil
-      </span>
+    mark && (
+      <Image
+        src={isotipo}
+        alt=""
+        widths={[48, 96, 144]}
+        sizes={size === 'lg' ? '56px' : '(min-width: 640px) 40px, 36px'}
+        loading="eager"
+        class:list={['h-auto shrink-0 select-none', size === 'lg' ? 'w-12 sm:w-14' : 'w-9 sm:w-10']}
+      />
     )
   }
+  <span class="inline-flex flex-col">
+    <span
+      class:list={[
+        'font-serif font-semibold leading-none tracking-[-0.015em]',
+        size === 'lg' ? 'text-[2rem] sm:text-[2.25rem]' : 'text-[1.375rem] sm:text-[1.5rem]',
+        light ? 'text-nube' : 'text-violeta',
+      ]}
+    >
+      Sanar <em class:list={['font-medium', light ? 'text-rosa-300' : 'text-lavanda-500']}>y</em> Criar
+    </span>
+    {
+      subtitle && (
+        <span
+          class:list={[
+            'mt-1.5 font-sans font-medium leading-tight tracking-[0.02em]',
+            size === 'lg' ? 'text-[0.8125rem]' : 'text-[0.6875rem] sm:text-[0.75rem]',
+            light ? 'text-nube/75' : 'text-violeta-500',
+            compact && 'max-[359px]:hidden',
+          ]}
+        >
+          Hilda Hernández · Psicóloga Infanto-Juvenil
+        </span>
+      )
+    }
+  </span>
 </span>

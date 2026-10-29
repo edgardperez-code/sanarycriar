@@ -1,5 +1,6 @@
 ---
 import { ArrowRight } from 'lucide-react';
+import BrandSeal from '@/components/ui/BrandSeal.astro';
 import OrganicPhoto from '@/components/ui/OrganicPhoto.astro';
 import { freeClassHref, site } from '@/site.config';
 
@@ -41,8 +42,9 @@ const stats = [
         }
       </dl>
     </div>
-    <div class="mx-auto w-full max-w-[20rem] sm:max-w-[24rem] lg:max-w-[28rem]">
+    <div class="relative mx-auto w-full max-w-[20rem] sm:max-w-[24rem] lg:max-w-[28rem]">
       <OrganicPhoto priority />
+      <BrandSeal priority class="absolute -bottom-3 -left-2 w-24 sm:-left-6 sm:w-28 lg:-left-10 lg:w-32" sizes="(min-width: 1024px) 128px, (min-width: 640px) 112px, 96px" />
     </div>
   </div>
 </section>
