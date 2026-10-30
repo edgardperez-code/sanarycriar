@@ -128,6 +128,7 @@ Estados de orden: `created → approved → paid → (accredited)`; `failed`, `e
 - Memoizar en `request.state` cuando hay `request`; caché corta (60 s) en Redis por `(user_id, course_id)` invalidada al cumplir/revocar. Debe ser una consulta indexada: se llama en cada Range/segmento de video.
 - `services/courses/chapters.py::_apply_locks_to_chapters` revisa solo la primera actividad: dejar así (pago por curso), pero asegurar que autores pasan (el hook ya lo hace).
 - `add_course_to_trail`: si el curso está a la venta y el usuario no tiene acceso → 402 `{code:'PAYMENT_REQUIRED'}`.
+- Lo gratuito (sin ofertas) exige cuenta con correo verificado (`SC_EMAIL_VERIFICATION`, por defecto `1`; `0` = abierto como upstream): anónimo o token de org → `reason:"login_required"` (401 `LOGIN_REQUIRED` en `/content` y al empezar); `email_verified` falso en la BD → `reason:"verify_email"` (403 `EMAIL_NOT_VERIFIED`); admin/autor pasan. Los registros con contraseña quedan sin verificar y reciben el correo de verificación (no el de bienvenida); `verify-email` llama a `bump_access_version()`. Quien compró un curso cuyas ofertas se archivaron lo conserva aunque no esté verificada (`reason:"purchased"`).
 - Invalidar la caché anónima de `/meta` (`invalidate_course_meta_cache`) al crear/archivar ofertas o cambiar recursos.
 
 ### 2.8 CORS para el sitio de marketing
