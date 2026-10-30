@@ -23,6 +23,7 @@ export default function CatalogIsland({ initial, variant = 'full' }: Props) {
       apiBase: site.platform.apiBase,
       orgId: site.platform.orgId,
       offerUrl: site.platform.offerUrl,
+      courseUrl: site.platform.courseUrl,
       signal: controller.signal,
     }).then((fresh) => {
       if (controller.signal.aborted) return;
@@ -106,13 +107,14 @@ function countLabel(count: number, singular: string, plural: string): string {
 /**
  * Main action: "Agregar al carrito" (opens the platform's cart with the
  * product added; paid with Pago Móvil). The product page is the secondary
- * "Ver detalles" link.
+ * "Ver detalles" link. Free items (no offer) say "Gratis" and link straight
+ * to the course page to read it.
  */
 function ProductCard({ item }: { item: CatalogItem }) {
   const isEbook = item.productType === 'ebook';
   const Icon = isEbook ? BookOpen : CirclePlay;
   const typeLabel = isEbook ? 'Ebook · PDF' : 'Curso en video';
-  const cartHref = site.platform.cartAddUrl(item.offerUuid);
+  const cartHref = item.free ? '' : site.platform.cartAddUrl(item.offerUuid);
 
   return (
     <article className="card flex w-full flex-col overflow-hidden transition-colors hover:border-lavanda-300">
@@ -139,7 +141,7 @@ function ProductCard({ item }: { item: CatalogItem }) {
         )}
       </a>
       <div className="flex flex-1 flex-col p-6">
-        <p className="eyebrow text-[0.75rem]">{typeLabel}</p>
+        <p className="eyebrow text-[0.75rem]">{item.free ? `${typeLabel} · Gratis` : typeLabel}</p>
         <h3 className="mt-2 font-serif text-xl font-semibold leading-snug text-violeta">
           <a
             href={item.href}
@@ -158,7 +160,9 @@ function ProductCard({ item }: { item: CatalogItem }) {
         )}
         <div className="mt-auto pt-5">
           <div className="flex items-end justify-between gap-3">
-            {item.price ? (
+            {item.free ? (
+              <p className="font-serif text-2xl font-semibold leading-none text-violeta">Gratis</p>
+            ) : item.price ? (
               <p className="font-serif text-2xl font-semibold leading-none text-violeta">
                 {item.price}
                 <span className="ml-1.5 font-sans text-xs font-medium text-violeta-400">{item.currency}</span>
@@ -175,10 +179,17 @@ function ProductCard({ item }: { item: CatalogItem }) {
               <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
             </a>
           </div>
-          <a href={cartHref} aria-label={`Agregar al carrito: ${item.title}`} className="btn btn-primary mt-4 w-full">
-            <ShoppingCart size={18} strokeWidth={1.75} aria-hidden="true" />
-            Agregar al carrito
-          </a>
+          {item.free ? (
+            <a href={item.href} aria-label={`Leer gratis: ${item.title}`} className="btn btn-primary mt-4 w-full">
+              <BookOpen size={18} strokeWidth={1.75} aria-hidden="true" />
+              {isEbook ? 'Leer gratis' : 'Ver gratis'}
+            </a>
+          ) : (
+            <a href={cartHref} aria-label={`Agregar al carrito: ${item.title}`} className="btn btn-primary mt-4 w-full">
+              <ShoppingCart size={18} strokeWidth={1.75} aria-hidden="true" />
+              Agregar al carrito
+            </a>
+          )}
         </div>
       </div>
     </article>

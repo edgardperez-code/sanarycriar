@@ -13,6 +13,7 @@ export function getServerCatalog(): Promise<CatalogResult> {
     apiBase: site.platform.apiBase,
     orgId: site.platform.orgId,
     offerUrl: site.platform.offerUrl,
+    courseUrl: site.platform.courseUrl,
     timeoutMs: 8000,
   }).then((result) => {
     if (result.status === 'error' && !import.meta.env.DEV) {

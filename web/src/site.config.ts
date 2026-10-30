@@ -70,6 +70,8 @@ export const site = {
     offerUrl: (offerUuid: string) => `${platformUrl}/store/offers/${encodeURIComponent(offerUuid)}`,
     /** Adds the offer to the platform's cart and opens it (Pago Móvil checkout). */
     cartAddUrl: (offerUuid: string) => `${platformUrl}/store/cart?add=${encodeURIComponent(offerUuid)}`,
+    /** Course page on the platform (free courses and ebooks link straight there). */
+    courseUrl: (courseUuid: string) => `${platformUrl}/course/${encodeURIComponent(courseUuid.replace(/^course_/, ''))}`,
   },
 
   /** Primary call to action. Changes with each launch date (brand manual, p.3). */
