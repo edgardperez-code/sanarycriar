@@ -1,0 +1,66 @@
+---
+import { ArrowRight } from 'lucide-react';
+import EbookCover from '@/components/ui/EbookCover.astro';
+import { giftAuthHref } from '@/site.config';
+
+// Client guide (2026-11): the free ebook is read on the platform with a free
+// account (verified e-mail), the same account that unlocks the test result.
+const checks = [
+  'Por qué a veces reaccionas más fuerte de lo que quisieras.',
+  'Cómo soltar un poco de la culpa que cargas.',
+  'Un primer paso para criar desde un lugar más consciente.',
+];
+---
+
+<section
+  id="gratis"
+  class="bg-[linear-gradient(180deg,color-mix(in_srgb,var(--color-rosa-200)_35%,var(--color-nube)),var(--color-nube))]"
+  aria-labelledby="gratis-title"
+>
+  <div
+    class="mx-auto grid max-w-6xl items-center gap-16 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14"
+  >
+    <EbookCover variant="free" />
+
+    <div>
+      <p class="eyebrow">Gratis · Guía en PDF</p>
+      <h2 id="gratis-title" class="h2 mb-5 mt-4">¿No te ha <em class="title-accent">pasado</em>…?</h2>
+      <div class="space-y-3 text-violeta-600 sm:text-lg">
+        <p class="font-serif text-[1.375rem] font-medium italic leading-snug text-violeta">
+          Gritas, castigas o dices algo que te prometiste no decir… y después piensas: «ya traumé a mi hijo».
+        </p>
+        <p>
+          Esa idea pesa tanto que terminas creyendo que eres una mala mamá. Por eso escribí esta guía. <strong
+            class="font-semibold text-violeta">Necesito que la leas.</strong
+          >
+        </p>
+      </div>
+      <ul class="check-list mt-6 space-y-2.5">
+        {checks.map((item) => <li>{item}</li>)}
+      </ul>
+
+      <div class="card mt-7 p-6 shadow-[0_18px_40px_-32px_rgba(25,9,51,0.5)]">
+        <a href={giftAuthHref('guia-gratis')} class="btn btn-blush w-full" data-gift-cta>
+          Quiero leerla gratis
+          <ArrowRight size={18} strokeWidth={2} aria-hidden="true" />
+        </a>
+        <p class="note mt-3">
+          Creas tu cuenta gratis y la lees en tu celular o computadora. Después te seguiré escribiendo, como una amiga; te das de baja
+          cuando quieras.
+        </p>
+        <p class="mt-2 text-[0.9375rem] text-violeta-600">
+          ¿Ya tienes cuenta? <a href={giftAuthHref('guia-gratis', { mode: 'login' })} class="text-link" data-gift-cta>Entra aquí</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { getStorage, markSubscribed } from '@/lib/newsletter';
+
+  // Going for the gift counts as joining: the welcome pop-up stops offering it.
+  document.querySelectorAll('[data-gift-cta]').forEach((link) => {
+    link.addEventListener('click', () => markSubscribed(getStorage()));
+  });
+</script>

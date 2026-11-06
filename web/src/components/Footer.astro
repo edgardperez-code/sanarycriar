@@ -1,24 +1,24 @@
 ---
-import { MapPin, MessageCircle, BadgeCheck, MonitorSmartphone } from 'lucide-react';
 import Wordmark from '@/components/ui/Wordmark.astro';
-import InstagramIcon from '@/components/ui/InstagramIcon.astro';
 import NewsletterFooterForm from '@/components/islands/NewsletterFooterForm';
 import { site } from '@/site.config';
-import { getTestimonials } from '@/lib/content';
 
-const testimonials = getTestimonials();
+interface Props {
+  /** Newsletter form. Off on the Home page, which has its own «Cartas» band. */
+  newsletter?: boolean;
+}
+
+const { newsletter = true } = Astro.props;
 const year = new Date().getFullYear();
 
+// Client guide (2026-11): a short footer. Pages that left the menu (talleres,
+// blog, preguntas frecuentes) are reached from here.
 const explore = [
-  { href: '/sobre-mi', label: 'Sobre mí' },
-  { href: '/agenda', label: 'Consultas' },
-  { href: '/cursos', label: 'Cursos y ebooks' },
-  { href: '/talleres', label: 'Talleres' },
-  { href: '/test-de-crianza', label: 'Test de crianza' },
-  ...(testimonials.length > 0 ? [{ href: '/testimonios', label: 'Testimonios' }] : []),
-  { href: '/blog', label: 'Blog' },
+  { href: site.contact.instagramUrl, label: `Instagram ${site.contact.instagramHandle}`, external: true },
+  { href: site.platform.loginUrl, label: 'Entrar a mis ebooks' },
   { href: '/preguntas-frecuentes', label: 'Preguntas frecuentes' },
-  { href: '/links', label: 'Links' },
+  { href: '/talleres', label: 'Talleres para colegios y empresas' },
+  { href: '/blog', label: 'Blog' },
 ];
 
 const legal = [
@@ -36,34 +36,12 @@ const legal = [
           <Wordmark tone="light" />
         </a>
         <p class="mt-5 max-w-sm text-[0.9375rem] leading-relaxed text-nube/80">
-          Acompañamiento psicológico cálido y profesional para criar desde la calma, con cursos, ebooks y consultas 100% online.
+          {site.professional.name} · Psicóloga infanto-juvenil · {site.professional.license}<br />
+          100% online, desde {site.professional.city} para donde estés.
         </p>
-        <ul class="mt-6 space-y-3 text-[0.9375rem] text-nube/85">
-          <li>
-            <a href={site.contact.whatsappUrl} target="_blank" rel="noopener" class="inline-flex items-center gap-3 hover:text-nube hover:underline underline-offset-4">
-              <MessageCircle size={18} strokeWidth={1.75} aria-hidden="true" />
-              <span><span class="sr-only">WhatsApp: </span>{site.contact.whatsappNumber}</span>
-            </a>
-          </li>
-          <li>
-            <a href={site.contact.instagramUrl} target="_blank" rel="noopener" class="inline-flex items-center gap-3 hover:text-nube hover:underline underline-offset-4">
-              <InstagramIcon size={18} />
-              <span><span class="sr-only">Instagram: </span>{site.contact.instagramHandle}</span>
-            </a>
-          </li>
-          <li class="flex items-center gap-3">
-            <MapPin size={18} strokeWidth={1.75} aria-hidden="true" />
-            {site.professional.city}, {site.professional.region}, {site.professional.country}
-          </li>
-          <li class="flex items-center gap-3">
-            <MonitorSmartphone size={18} strokeWidth={1.75} aria-hidden="true" />
-            Consultas 100% online
-          </li>
-          <li class="flex items-center gap-3">
-            <BadgeCheck size={18} strokeWidth={1.75} aria-hidden="true" />
-            {site.professional.license} · {site.professional.title}
-          </li>
-        </ul>
+        <p class="mt-3 max-w-sm text-sm leading-relaxed text-nube/65">
+          Los ebooks son recursos de aprendizaje y no sustituyen una evaluación ni una terapia individual.
+        </p>
       </div>
 
       <nav aria-labelledby="footer_explora">
@@ -71,6 +49,25 @@ const legal = [
         <ul class="mt-5 space-y-2.5">
           {
             explore.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  {...(item.external ? { target: '_blank', rel: 'noopener' } : {})}
+                  class="text-[0.9375rem] text-nube/85 hover:text-nube hover:underline underline-offset-4"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <nav aria-labelledby="footer_legal">
+        <p id="footer_legal" class="eyebrow">Legal</p>
+        <ul class="mt-5 space-y-2.5">
+          {
+            legal.map((item) => (
               <li>
                 <a href={item.href} class="text-[0.9375rem] text-nube/85 hover:text-nube hover:underline underline-offset-4">
                   {item.label}
@@ -80,35 +77,9 @@ const legal = [
           }
         </ul>
       </nav>
-
-      <div>
-        <nav aria-labelledby="footer_legal">
-          <p id="footer_legal" class="eyebrow">Legal</p>
-          <ul class="mt-5 space-y-2.5">
-            {
-              legal.map((item) => (
-                <li>
-                  <a href={item.href} class="text-[0.9375rem] text-nube/85 hover:text-nube hover:underline underline-offset-4">
-                    {item.label}
-                  </a>
-                </li>
-              ))
-            }
-          </ul>
-        </nav>
-        <p class="eyebrow mt-10">Plataforma</p>
-        <ul class="mt-5 space-y-2.5">
-          <li>
-            <a href={site.platform.url} class="text-[0.9375rem] text-nube/85 hover:text-nube hover:underline underline-offset-4">Plataforma de cursos</a>
-          </li>
-          <li>
-            <a href={site.platform.loginUrl} class="text-[0.9375rem] text-nube/85 hover:text-nube hover:underline underline-offset-4">Entrar a mis cursos</a>
-          </li>
-        </ul>
-      </div>
     </div>
 
-    <NewsletterFooterForm client:visible />
+    {newsletter && <NewsletterFooterForm client:visible />}
 
     <div class="mt-14 flex flex-col gap-3 border-t border-nube/15 pt-6 text-sm text-nube/70 sm:flex-row sm:items-center sm:justify-between">
       <p>© {year} {site.name} · {site.professional.name}, psicóloga ({site.professional.license}).</p>

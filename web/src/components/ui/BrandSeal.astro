@@ -2,7 +2,9 @@
 /**
  * The round brand seal ("Sanar y Criar" around the isotipo) on a warm white
  * disc, so its dark lettering reads on any background. Decorative unless an
- * alt text is given. Plain files from public/brand (npm run brand-assets), so
+ * alt text is given. Callers set both width and height (h-* with w-*): some
+ * phone browsers do not size an absolutely placed box from aspect-ratio alone,
+ * and the image keeps its own shape (object-contain) so it never stretches. Plain files from public/brand (npm run brand-assets), so
  * it also works on pages rendered on demand.
  */
 interface Props {
@@ -17,7 +19,7 @@ const { sizes = '128px', alt = '', priority = false, class: className = '' } = A
 
 <span
   class:list={[
-    'block aspect-square rounded-full bg-blanco-calido p-[6%] shadow-[0_10px_30px_-12px_rgb(25_9_51/0.35)] ring-1 ring-borde',
+    'block aspect-square shrink-0 overflow-hidden rounded-full bg-blanco-calido p-1.5 shadow-[0_10px_30px_-12px_rgb(25_9_51/0.35)] ring-1 ring-borde',
     className,
   ]}
   aria-hidden={alt ? undefined : 'true'}
@@ -31,6 +33,6 @@ const { sizes = '128px', alt = '', priority = false, class: className = '' } = A
     alt={alt}
     loading={priority ? 'eager' : 'lazy'}
     decoding="async"
-    class="h-full w-full select-none"
+    class="block h-full w-full select-none object-contain"
   />
 </span>

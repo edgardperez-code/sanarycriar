@@ -7,6 +7,8 @@ interface ImportMetaEnv {
   readonly PUBLIC_SITE_URL?: string;
   readonly PUBLIC_FREE_CLASS_URL?: string;
   readonly PUBLIC_BOOKING_URL?: string;
+  readonly PUBLIC_GIFT_COURSE_UUID?: string;
+  readonly PUBLIC_FEATURED_OFFER_UUID?: string;
 }
 
 interface ImportMeta {

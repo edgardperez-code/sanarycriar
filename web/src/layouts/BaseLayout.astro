@@ -35,6 +35,8 @@ interface Props {
    * default, also on `bare` pages; off on the legal pages and the 404.
    */
   newsletter?: boolean;
+  /** Newsletter form in the footer. Off on the Home page, which has its own «Cartas» band. */
+  footerNewsletter?: boolean;
 }
 
 const {
@@ -48,6 +50,7 @@ const {
   jsonLd,
   bare = false,
   newsletter = true,
+  footerNewsletter = true,
 } = Astro.props;
 
 const fullTitle = title ? `${title} | ${site.name}` : `${site.name} · Hilda Hernández, Psicóloga Infanto-Juvenil`;
@@ -106,7 +109,16 @@ const jsonLdList = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
     <main id="contenido_principal" tabindex="-1" class="outline-none">
       <slot />
     </main>
-    {!bare && <Footer />}
+    {!bare && <Footer newsletter={footerNewsletter} />}
     {newsletter && <NewsletterPopup client:load />}
+    <script>
+      // The old 15-question test kept its answers in this browser; the new one
+      // stores nothing. Remove the leftover draft (safe to drop in 2027).
+      try {
+        window.localStorage.removeItem('sanarycriar:test-crianza:v1');
+      } catch {
+        // Storage blocked: nothing to remove.
+      }
+    </script>
   </body>
 </html>

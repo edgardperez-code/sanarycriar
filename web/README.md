@@ -31,6 +31,8 @@ Las `PUBLIC_*` son públicas (quedan en el HTML/JS) y se fijan al compilar. Copi
 | `PUBLIC_SITE_URL` | `https://www.sanarycriarve.com` | Dominio canónico (SEO, sitemap). |
 | `PUBLIC_FREE_CLASS_URL` | vacío | Enlace de la clase gratuita. Vacío = abre WhatsApp con un mensaje. |
 | `PUBLIC_BOOKING_URL` | vacío | Enlace para agendar consultas (Cal.com, Google Calendar...). Vacío = WhatsApp. |
+| `PUBLIC_GIFT_COURSE_UUID` | el de producción | Ebook gratis que se regala al crear la cuenta («¿Será que soy una mala mamá?»). En local, el id de un curso gratis de tu base de prueba. |
+| `PUBLIC_FEATURED_OFFER_UUID` | el de producción | Oferta del ebook destacado del inicio («Límites sin culpa»). En local, una oferta de tu base de prueba. |
 
 Y una solo de servidor, que se lee al arrancar Node (no se compila en el HTML):
 
@@ -53,12 +55,21 @@ Se lee de `GET {PUBLIC_LH_API}/payments/{PUBLIC_LH_ORG_ID}/offers/public-listing
 
 La API debe permitir CORS desde el dominio del sitio (`LEARNHOUSE_EXTRA_CORS_ORIGINS` en la plataforma).
 
+## Inicio: el camino de la mamá
+
+El inicio sigue la guía de la clienta (noviembre 2026): conocer a Hilda → hacer el test → leer el ebook gratis → comprar «Límites sin culpa» → recibir las cartas → agendar una cita al final. Talleres, blog y preguntas frecuentes siguen en sus páginas y se enlazan desde el pie.
+
+- **Test** (`src/lib/quiz.ts`, `ParentingQuiz.tsx`; `npm run test:quiz`): 7 preguntas; cada respuesta suma puntos a un camino (guía gratis, límites o cita). Las respuestas no se guardan ni se envían. Al terminar, el resultado queda oculto: la mamá crea su cuenta en la plataforma, que le muestra el resultado en `/regalo` y le da el ebook gratis. A la plataforma solo viaja el nombre del camino (`resultado=guia|limites|cita`).
+- **Ebook gratis, ventana de bienvenida y test** llevan a `{PUBLIC_LH_PLATFORM}/signup?redirect=/regalo?…` (o `/login`), armado con `giftAuthHref()` de `src/site.config.ts`. El `origen` (`test`, `guia-gratis`, `ventana-web`) llega al boletín cuando la cuenta queda verificada.
+- **Ebook de pago:** el precio sale de la plataforma (al compilar y otra vez en el navegador), nunca se escribe en el código.
+
 ## Boletín
 
 Quien visita el sitio puede dejar su correo para recibir el boletín. Los correos se guardan en la plataforma de cursos y, si allí está configurado Resend, se copian a los contactos de Resend para enviar boletines desde Resend → Broadcasts (Resend agrega el enlace para darse de baja).
 
-- **Ventana emergente** (`src/components/islands/NewsletterPopup.tsx`, montada en `BaseLayout.astro`): pide solo el correo. Se cierra con la X, con "Ahora no", con Esc o con un clic fuera. En el celular aparece como una hoja desde abajo.
-- **Formulario del pie** (`src/components/islands/NewsletterFooterForm.tsx`, en `Footer.astro`): está en todas las páginas, para quien cerró la ventana. Funciona aunque la ventana esté desactivada.
+- **Cartas** (`src/components/islands/NewsletterCartasForm.tsx`, en el inicio): nombre y correo, origen `cartas`.
+- **Ventana de bienvenida** (`src/components/islands/NewsletterPopup.tsx`, montada en `BaseLayout.astro`): ofrece el ebook gratis y su botón lleva a crear la cuenta (no pide el correo). Sale tras el retraso configurado (3 s más en el celular) o al bajar un tercio de la página. Una palabra entre asteriscos en el título se ve en cursiva. Se cierra con la X, con "Ahora no", con Esc o con un clic fuera. En el celular aparece como una hoja desde abajo.
+- **Formulario del pie** (`src/components/islands/NewsletterFooterForm.tsx`, en `Footer.astro`): en todas las páginas menos el inicio (que tiene las cartas). Funciona aunque la ventana esté desactivada.
 - **Dónde no aparece la ventana:** en `/privacidad`, `/terminos`, `/reembolsos` y la página 404. Se apaga con `newsletter={false}` en `BaseLayout` (ya lo hacen `LegalLayout.astro` y `404.astro`).
 - **Panel "Boletín" de la plataforma:** activa o desactiva la ventana y edita sus textos, el retraso en segundos (0 = de inmediato) y los días sin volver a mostrarla. Ahí también está la lista de suscriptores, con búsqueda, exportación a CSV y eliminar. Los cambios se ven en el sitio sin volver a publicarlo.
 - **Qué recuerda el navegador** (almacenamiento local, nunca se envía):
@@ -70,7 +81,7 @@ Quien visita el sitio puede dejar su correo para recibir el boletín. Los correo
 
 ## Publicar
 
-El sitio ya no es solo estático: `/blog`, `/blog/*` y el bloque «Del blog» del inicio los genera Node en cada visita. Por eso se publica con el contenedor de `Dockerfile`:
+El sitio ya no es solo estático: `/blog` y `/blog/*` los genera Node en cada visita. Por eso se publica con el contenedor de `Dockerfile`:
 
 - Compila Astro con las variables `PUBLIC_*` (argumentos de compilación).
 - Dentro del contenedor, Caddy (`deploy/Caddyfile`) sirve las páginas estáticas de `dist/client` en `$PORT` (8080) con las cabeceras de seguridad, y pasa `/blog`, `/blog/*` y `/_server-islands/*` a Node (`dist/server/entry.mjs`) en `127.0.0.1:4321`. Los dos procesos los arranca `deploy/start.sh` (con tini); si uno se cae, el contenedor se reinicia.

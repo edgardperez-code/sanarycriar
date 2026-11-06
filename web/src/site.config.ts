@@ -4,6 +4,8 @@
  * environment can be overridden with PUBLIC_* variables (see .env.example).
  */
 
+import type { QuizPath } from '@/lib/quiz';
+
 const env = import.meta.env;
 
 /** Trim trailing slashes so we can safely join paths. */
@@ -91,6 +93,19 @@ export const site = {
   },
 
   /**
+   * Home funnel (client guide, 2026-11): the free ebook is the gift for
+   * registering on the platform, and «Límites sin culpa» is the featured paid
+   * ebook. Local stacks have other ids: override with PUBLIC_GIFT_COURSE_UUID
+   * and PUBLIC_FEATURED_OFFER_UUID.
+   */
+  funnel: {
+    giftCourseUuid: optional(env.PUBLIC_GIFT_COURSE_UUID) || 'course_2999a0ad-d98b-471c-b7df-abcf4dae2462',
+    giftTitle: '¿Será que soy una mala mamá?',
+    featuredOfferUuid: optional(env.PUBLIC_FEATURED_OFFER_UUID) || '90785380-5e6a-4f71-8ef3-4abafe46cafa',
+    featuredTitle: 'Límites sin culpa',
+  },
+
+  /**
    * Payment methods shown in copy. Keep in sync with the platform: Pago Móvil
    * (cart + receipt by WhatsApp, access once the payment is confirmed); PayPal
    * comes later.
@@ -108,6 +123,29 @@ export const freeClassHref = site.freeClass.url || whatsappLink(site.freeClass.w
 
 /** Resolved link for booking a consultation (falls back to WhatsApp). */
 export const bookingHref = site.booking.url || whatsappLink(site.booking.whatsappMessage);
+
+/** Where a registration started: the test, the free ebook section or the welcome pop-up. */
+export type GiftOrigin = 'test' | 'guia-gratis' | 'ventana-web';
+
+/**
+ * Path of the platform's gift page: the free ebook and, coming from the test,
+ * its result (guía, límites or cita). Only ids and the path name travel: never
+ * the answers.
+ */
+export function giftPath(origin: GiftOrigin, result?: QuizPath): string {
+  const params = new URLSearchParams();
+  if (result) params.set('resultado', result);
+  params.set('origen', origin);
+  params.set('guia', site.funnel.giftCourseUuid.replace(/^course_/, ''));
+  params.set('oferta', site.funnel.featuredOfferUuid);
+  return `/regalo?${params.toString()}`;
+}
+
+/** Sign up (or log in) on the platform and land on the gift page afterwards. */
+export function giftAuthHref(origin: GiftOrigin, options: { result?: QuizPath; mode?: 'signup' | 'login' } = {}): string {
+  const { result, mode = 'signup' } = options;
+  return `${site.platform.url}/${mode}?redirect=${encodeURIComponent(giftPath(origin, result))}`;
+}
 
 /** Absolute URL on the marketing site. */
 export function absoluteUrl(path = '/'): string {

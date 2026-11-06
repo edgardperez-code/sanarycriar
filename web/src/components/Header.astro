@@ -1,21 +1,25 @@
 ---
 import { Menu, X } from 'lucide-react';
 import Wordmark from '@/components/ui/Wordmark.astro';
-import { freeClassHref, site, whatsappLink } from '@/site.config';
+import { site, whatsappLink } from '@/site.config';
 import { isCurrent, mainNav } from '@/lib/nav';
 
+// Client guide (2026-11): short menu and a single button, «Ebook gratis».
+// Breakpoints are in rem so they move with the reader's text size: the
+// desktop menu from 56.25rem (900px at 16px); below 22.5rem (360px) the menu
+// button steps aside, as in the guide, and the footer keeps every link.
 const nav = mainNav();
 const pathname = Astro.url.pathname;
 ---
 
 <header class="sticky top-0 z-40 border-b border-borde/80 bg-nube/92 backdrop-blur-md supports-[backdrop-filter]:bg-nube/85">
-  <div class="mx-auto flex h-[4.5rem] max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-    <a href="/" class="shrink-0 rounded-md" aria-label="Sanar y Criar, inicio">
+  <div class="mx-auto flex h-[4.5rem] max-w-6xl items-center justify-between gap-2 px-4 sm:gap-4 sm:px-6">
+    <a href="/" class="min-w-0 shrink-0 rounded-md" aria-label="Sanar y Criar, inicio">
       <Wordmark compact />
     </a>
 
-    <nav aria-label="Principal" class="hidden xl:block">
-      <ul class="flex items-center gap-5 2xl:gap-7">
+    <nav aria-label="Principal" class="ml-auto hidden min-[56.25rem]:block">
+      <ul class="flex items-center gap-6 lg:gap-7">
         {
           nav.map((item) => (
             <li>
@@ -32,19 +36,17 @@ const pathname = Astro.url.pathname;
       </ul>
     </nav>
 
-    <div class="flex items-center gap-2 sm:gap-4">
+    <div class="flex items-center gap-1 sm:gap-4">
       <a
         href={site.platform.loginUrl}
-        class="hidden text-[0.9375rem] font-medium text-violeta-600 hover:text-violeta hover:underline underline-offset-[0.4em] decoration-rosa-300 decoration-2 xl:inline"
+        class="hidden text-[0.9375rem] font-medium text-violeta-600 hover:text-violeta hover:underline underline-offset-[0.4em] decoration-rosa-300 decoration-2 min-[56.25rem]:inline"
       >
         Entrar
       </a>
-      <a href={freeClassHref} class="btn btn-primary btn-sm hidden whitespace-nowrap sm:inline-flex" target="_blank" rel="noopener">
-        {site.freeClass.shortLabel}
-      </a>
+      <a href="/#gratis" class="btn btn-primary btn-sm whitespace-nowrap max-[25rem]:px-3 max-[25rem]:text-[0.875rem]">Ebook gratis</a>
       <button
         type="button"
-        class="inline-flex h-11 w-11 items-center justify-center rounded-full text-violeta hover:bg-lavanda-100 xl:hidden"
+        class="inline-flex h-11 w-10 shrink-0 items-center justify-center rounded-full text-violeta hover:bg-lavanda-100 max-[22.5rem]:hidden sm:w-11 min-[56.25rem]:hidden"
         aria-expanded="false"
         aria-controls="mobile_menu"
         data-menu-toggle
@@ -56,37 +58,32 @@ const pathname = Astro.url.pathname;
     </div>
   </div>
 
-  <div id="mobile_menu" class="border-t border-borde bg-nube xl:hidden" hidden>
+  <div id="mobile_menu" class="border-t border-borde bg-nube min-[56.25rem]:hidden" hidden>
     <nav aria-label="Menú móvil" class="mx-auto max-w-6xl px-4 pb-8 pt-4 sm:px-6">
       <ul class="flex flex-col">
         {
           nav.map((item) => (
-            <li class="border-b border-borde last:border-b-0">
+            <li class="border-b border-borde">
               <a
                 href={item.href}
                 aria-current={isCurrent(pathname, item.href) ? 'page' : undefined}
                 class="flex min-h-12 items-center py-3 font-serif text-[1.375rem] font-semibold text-violeta aria-[current=page]:text-lavanda-600"
               >
-                {item.label}
+                {item.menuLabel ?? item.label}
               </a>
             </li>
           ))
         }
         <li>
           <a href={site.platform.loginUrl} class="flex min-h-12 items-center py-3 text-base font-medium text-violeta-600">
-            Entrar a mis cursos
+            Entrar a mis ebooks
           </a>
         </li>
       </ul>
-      <div class="mt-5 flex flex-col gap-3">
-        <a href={freeClassHref} class="btn btn-primary" target="_blank" rel="noopener">
-          <span class="sm:hidden">{site.freeClass.mobileLabel}</span>
-          <span class="hidden sm:inline">{site.freeClass.label}</span>
-        </a>
-        <a href="/agenda" class="btn btn-secondary">Agenda tu consulta</a>
-      </div>
       <p class="note mt-5">
-        ¿Prefieres escribir? <a class="text-link" href={whatsappLink(site.booking.whatsappMessage)} target="_blank" rel="noopener">WhatsApp {site.contact.whatsappNumber}</a>
+        ¿Prefieres escribir? <a class="text-link" href={whatsappLink(site.booking.whatsappMessage)} target="_blank" rel="noopener"
+          >WhatsApp {site.contact.whatsappNumber}</a
+        >
       </p>
     </nav>
   </div>
@@ -110,7 +107,8 @@ const pathname = Astro.url.pathname;
     };
 
     toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
-    menu.addEventListener('click', (event) => {
+    // Any link in the menu, and the header's own «Ebook gratis», closes it.
+    menu.closest('header')?.addEventListener('click', (event) => {
       if ((event.target as HTMLElement).closest('a')) setOpen(false);
     });
     document.addEventListener('keydown', (event) => {
@@ -119,7 +117,7 @@ const pathname = Astro.url.pathname;
         toggle.focus();
       }
     });
-    window.matchMedia('(min-width: 1280px)').addEventListener('change', (event) => {
+    window.matchMedia('(min-width: 56.25rem)').addEventListener('change', (event) => {
       if (event.matches) setOpen(false);
     });
   }

@@ -1,6 +1,6 @@
 ---
 import ParentingQuiz from '@/components/islands/ParentingQuiz';
-import { quizInstructions, quizIntro, quizQuestions } from '@/data/quiz';
+import { quizInstructions, quizIntro } from '@/lib/quiz';
 
 interface Props {
   level?: 'h1' | 'h2';
@@ -10,31 +10,21 @@ interface Props {
 
 const { level = 'h2', eager = false } = Astro.props;
 const Heading = level;
-// The quiz question/result heading sits one level below the section title.
+// The quiz question/final card heading sits one level below the section title.
 const itemLevel = level === 'h1' ? 'h2' : 'h3';
 ---
 
-<section id="test-crianza" class="watercolor" aria-labelledby="quiz-title">
-  <div class="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-16">
-    <div class="lg:pt-6">
-      <p class="eyebrow mb-4">Un espacio para mirarte</p>
-      <Heading id="quiz-title" class={level === 'h1' ? 'h1' : 'h2'}>
+<section id="test" class="bg-lavanda-100" aria-labelledby="quiz-title">
+  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+    <div class="mx-auto max-w-3xl text-center">
+      <p class="eyebrow">Test de crianza · 2 minutos</p>
+      <Heading id="quiz-title" class:list={['mt-4', level === 'h1' ? 'h1' : 'h2']}>
         ¿Desde dónde estás <em class="title-accent">criando</em>?
       </Heading>
-      <p class="lead mt-6">{quizIntro}</p>
-      <p class="mt-6 max-w-[60ch] border-l-[3px] border-lavanda-300 pl-5 text-[0.9375rem] leading-relaxed text-violeta-600">
-        <span class="font-semibold text-violeta">Instrucciones:</span>{' '}{quizInstructions}
-      </p>
-      <p class="note mt-6">{quizQuestions.length} situaciones cotidianas · A tu ritmo, sin juicios · Sin registrarte</p>
+      <p class="lead mx-auto mt-4">{quizIntro} {quizInstructions}</p>
     </div>
-    <div class="min-w-0">
-      {
-        eager ? (
-          <ParentingQuiz client:load headingLevel={itemLevel} />
-        ) : (
-          <ParentingQuiz client:visible headingLevel={itemLevel} />
-        )
-      }
+    <div class="mx-auto mt-10 max-w-3xl">
+      {eager ? <ParentingQuiz client:load headingLevel={itemLevel} /> : <ParentingQuiz client:visible headingLevel={itemLevel} />}
     </div>
   </div>
 </section>

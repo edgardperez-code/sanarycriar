@@ -14,6 +14,8 @@
     "check": "astro check",
     "test:newsletter": "node --test scripts/test-newsletter.mjs",
     "test:blog": "node --test scripts/test-blog.mjs",
+    "test:quiz": "node --test scripts/test-quiz.mjs",
+    "test:payments": "node --test scripts/test-payments.mjs",
     "brand-assets": "node scripts/generate-brand-assets.mjs",
     "astro": "astro"
   },

@@ -13,7 +13,11 @@ interface Props {
   size?: 'md' | 'lg';
   subtitle?: boolean;
   mark?: boolean;
-  /** Hide the professional line on very narrow phones (< 360px), for the header. */
+  /**
+   * Header use: hides the professional line on phones (< 32.5rem, 520px) and
+   * shrinks a little below 25rem (400px), so the «Ebook gratis» button and the
+   * menu fit beside it. In rem so it follows the reader's text size.
+   */
   compact?: boolean;
   class?: string;
 }
@@ -22,7 +26,7 @@ const { tone = 'dark', size = 'md', subtitle = true, mark = true, compact = fals
 const light = tone === 'light';
 ---
 
-<span class:list={['inline-flex items-center', size === 'lg' ? 'gap-3.5' : 'gap-2.5 sm:gap-3', className]}>
+<span class:list={['inline-flex items-center', size === 'lg' ? 'gap-3.5' : 'gap-2.5 sm:gap-3', compact && 'max-[25rem]:gap-2', className]}>
   {
     mark && (
       <img
@@ -34,7 +38,7 @@ const light = tone === 'light';
         alt=""
         loading="eager"
         decoding="async"
-        class:list={['h-auto shrink-0 select-none', size === 'lg' ? 'w-12 sm:w-14' : 'w-9 sm:w-10']}
+        class:list={['h-auto shrink-0 select-none', size === 'lg' ? 'w-12 sm:w-14' : 'w-9 sm:w-10', compact && 'max-[25rem]:w-8']}
       />
     )
   }
@@ -43,6 +47,7 @@ const light = tone === 'light';
       class:list={[
         'font-serif font-semibold leading-none tracking-[-0.015em]',
         size === 'lg' ? 'text-[2rem] sm:text-[2.25rem]' : 'text-[1.375rem] sm:text-[1.5rem]',
+        compact && 'max-[25rem]:text-[1.2rem]',
         light ? 'text-nube' : 'text-violeta',
       ]}
     >
@@ -55,7 +60,7 @@ const light = tone === 'light';
             'mt-1.5 font-sans font-medium leading-tight tracking-[0.02em]',
             size === 'lg' ? 'text-[0.8125rem]' : 'text-[0.6875rem] sm:text-[0.75rem]',
             light ? 'text-nube/75' : 'text-violeta-500',
-            compact && 'max-[359px]:hidden',
+            compact && 'max-[32.5rem]:hidden',
           ]}
         >
           Hilda Hernández · Psicóloga Infanto-Juvenil

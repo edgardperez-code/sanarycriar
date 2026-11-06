@@ -1,0 +1,56 @@
+---
+/**
+ * 3D ebook cover drawn in CSS (classes in global.css). Decorative: the
+ * section next to it carries the title and the text.
+ *   free: «¿Será que soy una mala mamá?» (pink)
+ *   paid: «Límites sin culpa» (violet), with the price sticker when known.
+ */
+interface Props {
+  variant: 'free' | 'paid';
+  /** Formatted price for the sticker; the element stays for the live price update. */
+  price?: string;
+  class?: string;
+}
+
+const { variant, price = '', class: className = '' } = Astro.props;
+---
+
+<div class:list={['book-stage', className]} aria-hidden="true">
+  <div class="book">
+    {
+      variant === 'free' ? (
+        <div class="cover cover-free">
+          <span class="cover-pill">Guía gratuita</span>
+          <span class="cover-question">¿Será que soy una</span>
+          <span class="cover-big">
+            <span>MALA</span>
+            <span>MAMÁ?</span>
+          </span>
+          <span class="cover-sticker">
+            Léela
+            <br />
+            gratis
+          </span>
+          <span class="cover-sub">Para comprender tus reacciones y soltar un poco de culpa.</span>
+          <span class="cover-who">
+            Hilda Hernández<small>Psicóloga infanto-juvenil</small>
+          </span>
+        </div>
+      ) : (
+        <div class="cover cover-paid">
+          <span class="cover-ring" />
+          <span class="cover-pill">Guía práctica</span>
+          <span class="cover-t1">Límites</span>
+          <span class="cover-t2">sin culpa</span>
+          <span class="cover-sub">Para poner límites con firmeza y conexión, sin gritos.</span>
+          <span class="cover-sticker" data-precio hidden={!price}>
+            {price}
+          </span>
+          <span class="cover-who">
+            Hilda Hernández<small>Psicóloga infanto-juvenil</small>
+          </span>
+        </div>
+      )
+    }
+  </div>
+</div>

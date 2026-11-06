@@ -1,0 +1,151 @@
+---
+import { ArrowRight } from 'lucide-react';
+import EbookCover from '@/components/ui/EbookCover.astro';
+import FaqList from '@/components/FaqList.astro';
+import type { Faq } from '@/data/faqs';
+import { getServerCatalog } from '@/lib/catalog.server';
+import { site } from '@/site.config';
+
+// Client guide (2026-11): story, contents and purchase in one block. The price
+// is the platform's (read at build time and refreshed in the browser), never
+// a number written here.
+const catalog = await getServerCatalog();
+const offerUuid = site.funnel.featuredOfferUuid;
+const offer = [...catalog.ebooks, ...catalog.courses].find((item) => item.offerUuid === offerUuid);
+const price = offer?.price ?? '';
+const buyHref = site.platform.cartAddUrl(offerUuid);
+
+const checks = [
+  'Por qué un límite no rompe el vínculo con tu hijo.',
+  'Cómo decir «no» con firmeza y conexión, sin gritos.',
+  'Qué hacer con la culpa cuando aparece después.',
+];
+
+const steps = [
+  'Toca «Lo quiero» y crea tu cuenta (o entra si ya tienes una).',
+  'Paga con el método que prefieras y envía tu comprobante por WhatsApp.',
+  'Al confirmar tu pago te avisamos por correo y lo lees en tu cuenta.',
+];
+
+const faqs: Faq[] = [
+  { id: 'ebook-fisico', question: '¿Es un libro físico?', answer: 'No. Es un PDF para leer en el celular o en la computadora.' },
+  {
+    id: 'ebook-cuando',
+    question: '¿Cuándo lo recibo?',
+    answer: 'En cuanto confirmamos tu pago. Te avisamos por correo y queda en tu cuenta.',
+  },
+  {
+    id: 'ebook-terapia',
+    question: '¿Sustituye una terapia?',
+    answer: 'No. Es una guía para aprender. Si necesitas acompañamiento directo, al final de esta página puedes agendar tu cita.',
+  },
+];
+---
+
+<section id="ebooks" class="bg-lavanda-100" aria-labelledby="ebooks-title">
+  <div
+    class="mx-auto grid max-w-6xl items-center gap-16 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-14"
+  >
+    <div>
+      <p class="eyebrow">Ebook · PDF · Mamás de niños de 0 a 8 años</p>
+      <h2 id="ebooks-title" class="h2 mb-5 mt-4">
+        Necesito darle a mi hijo <em class="title-accent">eso que no me dieron</em>.
+      </h2>
+      <div class="space-y-3 text-violeta-600 sm:text-lg">
+        <p>
+          Yo sé, mamá, que esto pasa por tu mente. Quieres darle a tu hijo la calma, la escucha y el cariño que tú no tuviste. Y en el
+          camino aparece el miedo: <strong class="font-semibold text-violeta">«si le pongo un límite, ¿le hago daño?»</strong>
+        </p>
+        <p class="font-serif text-[1.375rem] font-medium italic leading-snug text-violeta">
+          Necesito que sepas algo: puedes poner límites sin culpa. Un límite puesto con firmeza y conexión también es amor.
+        </p>
+      </div>
+      <ul class="check-list check-list-lavanda mt-6 space-y-2.5">
+        {checks.map((item) => <li>{item}</li>)}
+      </ul>
+
+      <div class="card mt-7 p-6 shadow-[0_18px_40px_-32px_rgba(25,9,51,0.5)]">
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-4">
+          <p class="font-serif text-[2.75rem] font-bold leading-none text-violeta" data-precio-bloque hidden={!price}>
+            <span data-precio>{price}</span><span class="ml-1.5 font-sans text-sm font-medium text-violeta-400">USD</span>
+          </p>
+          <a href={buyHref} class="btn btn-primary max-sm:w-full">
+            <span data-precio-cta data-label="Lo quiero">{price ? `Lo quiero · ${price}` : 'Lo quiero'}</span>
+            <ArrowRight size={18} strokeWidth={2} aria-hidden="true" />
+          </a>
+        </div>
+        <ul class="mt-4 flex flex-wrap gap-2" aria-label="Formas de pago" data-formas-pago>
+          <li class="rounded-full border border-borde bg-nube px-3 py-2 text-[0.8125rem] font-medium leading-snug text-violeta-600">
+            {site.payments.now}
+          </li>
+        </ul>
+      </div>
+
+      <ol class="mt-7 grid gap-3 md:grid-cols-3" aria-label="Cómo lo compras">
+        {
+          steps.map((step, index) => (
+            <li class="flex items-center gap-3.5 rounded-[var(--radius-field)] border border-borde bg-blanco-calido/85 p-4 md:block">
+              <span class="font-serif text-[1.375rem] font-bold leading-none text-rosa-500 md:mb-2 md:block md:text-[1.625rem]" aria-hidden="true">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <span class="text-[0.9rem] leading-snug text-violeta-600">{step}</span>
+            </li>
+          ))
+        }
+      </ol>
+
+      <div class="mt-6">
+        <FaqList items={faqs} />
+      </div>
+    </div>
+
+    <EbookCover variant="paid" price={price} class="max-lg:-order-1" />
+  </div>
+</section>
+
+<script>
+  import { fetchCatalog } from '@/lib/catalog';
+  import { fetchPaymentLabels } from '@/lib/payments';
+  import { site } from '@/site.config';
+
+  // Payment chips: the methods Hilda has turned on in the panel. The HTML
+  // keeps a safe fallback (Pago Móvil) when the platform doesn't answer.
+  fetchPaymentLabels({ apiBase: site.platform.apiBase, orgId: site.platform.orgId }).then((labels) => {
+    if (!labels.length) return;
+    document.querySelectorAll<HTMLUListElement>('[data-formas-pago]').forEach((list) => {
+      const template = list.querySelector('li');
+      if (!template) return;
+      list.replaceChildren(
+        ...labels.map((label) => {
+          const chip = template.cloneNode(false) as HTMLLIElement;
+          chip.textContent = label;
+          return chip;
+        }),
+      );
+    });
+  });
+
+  // The HTML carries the build-time price; refresh it from the platform so a
+  // change in the panel shows without rebuilding the site.
+  fetchCatalog({
+    apiBase: site.platform.apiBase,
+    orgId: site.platform.orgId,
+    offerUrl: site.platform.offerUrl,
+    courseUrl: site.platform.courseUrl,
+  }).then((catalog) => {
+    if (catalog.status !== 'ok') return;
+    const offer = [...catalog.ebooks, ...catalog.courses].find((item) => item.offerUuid === site.funnel.featuredOfferUuid);
+    const price = offer?.price ?? '';
+    if (!price) return;
+    document.querySelectorAll<HTMLElement>('[data-precio]').forEach((el) => {
+      el.textContent = price;
+      el.hidden = false;
+    });
+    document.querySelectorAll<HTMLElement>('[data-precio-bloque]').forEach((el) => {
+      el.hidden = false;
+    });
+    document.querySelectorAll<HTMLElement>('[data-precio-cta]').forEach((el) => {
+      el.textContent = `${el.dataset.label ?? 'Lo quiero'} · ${price}`;
+    });
+  });
+</script>

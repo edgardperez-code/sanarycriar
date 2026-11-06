@@ -1,0 +1,47 @@
+---
+import { ArrowRight } from 'lucide-react';
+import { Picture } from 'astro:assets';
+import hildaSentada from '@/assets/fotos/hilda-sentada.webp';
+import { site, whatsappLink } from '@/site.config';
+
+// Client guide (2026-11): the only invitation to a session, at the end of the
+// Home page, with the guide's own WhatsApp message («cita», not «consulta»).
+const citaHref = site.booking.url || whatsappLink('Hola, Hilda. Quisiera agendar una cita online.');
+---
+
+<section class="watercolor-tl watercolor" aria-labelledby="cita-title">
+  <div
+    class="mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16"
+  >
+    <div
+      class="relative isolate mx-auto w-[min(21rem,74%)] before:absolute before:inset-[22px_-22px_-22px_22px] before:-z-10 before:rounded-[28px] before:bg-[linear-gradient(160deg,var(--color-lavanda-100),var(--color-rosa-200))] lg:w-full lg:max-w-[21rem]"
+    >
+      <Picture
+        src={hildaSentada}
+        formats={['avif', 'webp']}
+        fallbackFormat="webp"
+        widths={[320, 480, 672, 880]}
+        sizes="(min-width: 1024px) 336px, 74vw"
+        alt="Hilda Hernández sentada, sonriendo"
+        loading="lazy"
+        decoding="async"
+        pictureAttributes={{ class: 'block' }}
+        class="aspect-[4/5] w-full rounded-[var(--radius-card)] object-cover object-[60%_30%]"
+      />
+    </div>
+    <div>
+      <p class="eyebrow">Acompañamiento directo</p>
+      <h2 id="cita-title" class="h2 mt-4">
+        Si deseas que este camino sea con un <em class="title-accent">acompañamiento directo</em>, agenda tu cita online.
+      </h2>
+      <p class="lead mt-5">
+        Sesiones individuales por videollamada. Acompaño en crianza y límites, ansiedad infantil, TDAH y neurodiversidad, autismo y
+        adolescencia.
+      </p>
+      <a href={citaHref} class="btn btn-primary mt-8" target="_blank" rel="noopener">
+        Agenda tu cita online
+        <ArrowRight size={18} strokeWidth={2} aria-hidden="true" />
+      </a>
+    </div>
+  </div>
+</section>

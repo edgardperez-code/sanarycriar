@@ -1,10 +1,11 @@
 ---
 import { Picture } from 'astro:assets';
-import hilda from '@/assets/hilda-nobg.png';
+import hilda from '@/assets/fotos/hilda-de-pie.webp';
 
 /**
- * Hilda's cut-out photo inside an organic lavender-to-pink frame
- * (brand manual p.2-3). The frame clips only the body, never the face.
+ * Hilda's studio photo (client guide, 2026-11) inside the organic
+ * lavender-to-pink frame of the brand manual. The frame crops the edges of the
+ * photo, never the face.
  */
 interface Props {
   priority?: boolean;
@@ -17,29 +18,31 @@ const {
   priority = false,
   sizes = '(min-width: 1024px) 460px, (min-width: 640px) 60vw, 82vw',
   class: className = '',
-  alt = 'Hilda Hernández, psicóloga infanto-juvenil, sonriendo con la mano en el mentón',
+  alt = 'Hilda Hernández, psicóloga infanto-juvenil, sonriendo con los brazos cruzados',
 } = Astro.props;
 ---
 
-<div class:list={['relative aspect-[100/108] w-full', className]}>
+<div class:list={['relative aspect-[100/112] w-full', className]}>
   <div
     class="absolute inset-[5%_-3%_-2%_7%] rounded-[52%_48%_46%_54%/44%_50%_50%_56%] bg-[linear-gradient(150deg,var(--color-lavanda-300)_0%,var(--color-rosa-300)_100%)] opacity-80"
     aria-hidden="true"
   >
   </div>
   <div
-    class="absolute inset-0 overflow-hidden rounded-[47%_53%_44%_56%/42%_44%_56%_58%] bg-[linear-gradient(165deg,var(--color-lavanda-100)_0%,var(--color-lavanda-100)_35%,var(--color-rosa-200)_100%)]"
+    class="absolute inset-0 overflow-hidden rounded-[47%_53%_44%_56%/42%_44%_56%_58%] bg-[linear-gradient(165deg,var(--color-lavanda-100)_0%,var(--color-rosa-200)_100%)]"
   >
     <Picture
       src={hilda}
       formats={['avif', 'webp']}
-      widths={[400, 600, 800, 1100]}
+      fallbackFormat="webp"
+      widths={[320, 480, 640, 880]}
       sizes={sizes}
       alt={alt}
       loading={priority ? 'eager' : 'lazy'}
       fetchpriority={priority ? 'high' : 'auto'}
       decoding={priority ? 'sync' : 'async'}
-      class="absolute left-[-8.5%] top-[4.5%] h-auto w-[110%] max-w-none select-none"
+      pictureAttributes={{ class: 'block h-full w-full' }}
+      class="h-full w-full select-none object-cover object-[50%_28%]"
     />
   </div>
 </div>

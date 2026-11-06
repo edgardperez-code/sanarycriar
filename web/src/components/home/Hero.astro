@@ -1,50 +1,48 @@
 ---
-import { ArrowRight } from 'lucide-react';
+import { ArrowDown } from 'lucide-react';
 import BrandSeal from '@/components/ui/BrandSeal.astro';
 import OrganicPhoto from '@/components/ui/OrganicPhoto.astro';
-import { freeClassHref, site } from '@/site.config';
+import { site } from '@/site.config';
 
-const stats = [
-  { value: '100% online', label: `desde ${site.professional.city}` },
-  { value: site.professional.license, label: 'psicóloga colegiada' },
-  { value: 'Cursos y ebooks', label: 'a tu ritmo, con Pago Móvil' },
-];
+// Client guide (2026-11): title, «Hola, soy Hilda» and a single button to the
+// test. On phones the order is title → photo → «Hola» → button.
 ---
 
-<section class="watercolor overflow-hidden" aria-labelledby="hero-title">
-  <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-10 sm:px-6 sm:pt-14 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-14 lg:pb-24 lg:pt-20">
-    <div>
-      <p class="inline-flex rounded-full border border-borde bg-blanco-calido px-4 py-1.5">
-        <span class="eyebrow text-[0.75rem] sm:text-[0.8125rem]">{site.professional.shortTitle} · {site.professional.license}</span>
-      </p>
-      <h1 id="hero-title" class="h1 mt-6 max-w-[16ch] sm:max-w-[18ch]">
+<section id="hilda" class="watercolor overflow-hidden" aria-labelledby="hero-title">
+  <div
+    class="mx-auto flex max-w-6xl flex-col gap-7 px-4 pb-16 pt-10 sm:px-6 sm:pt-14 lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-center lg:gap-14 lg:pb-24 lg:pt-20"
+  >
+    <div class="contents lg:block">
+      <h1 id="hero-title" class="h1 order-1 max-w-[18ch]">
         Antes de corregir a tu hijo, <em class="title-accent">descubre</em> qué se activa en ti.
       </h1>
-      <p class="lead mt-6 max-w-[34rem]">
-        Acompaño a niños y a sus mamás. Muchas veces el cambio empieza por sanar tu propia historia: con calma, sin culpa y 100% online.
-      </p>
-      <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-        <a href={freeClassHref} class="btn btn-primary" target="_blank" rel="noopener">
-          <span class="sm:hidden">{site.freeClass.mobileLabel}</span>
-          <span class="hidden sm:inline">{site.freeClass.label}</span>
-          <ArrowRight size={18} strokeWidth={2} aria-hidden="true" />
-        </a>
-        <a href="/agenda" class="btn btn-secondary">Agenda tu consulta</a>
+
+      <div class="card order-3 p-6 shadow-[0_18px_40px_-32px_rgba(25,9,51,0.45)] sm:p-7 lg:mt-8">
+        <h2 class="font-serif text-[1.75rem] font-semibold leading-tight text-violeta">
+          Hola, soy <em class="title-accent">Hilda</em>.
+        </h2>
+        <p class="mt-3 text-violeta-600">
+          Soy psicóloga infanto-juvenil y mamá, y sé lo hermoso y desafiante que es criar. En consulta descubrí algo: muchas veces, lo
+          que más ayuda a un hijo es que su mamá sane su propia historia. Aquí te dejo herramientas para empezar, a tu ritmo y sin culpa.
+        </p>
+        <p class="note mt-4">
+          <strong class="font-semibold text-violeta">{site.professional.name}</strong> · Psicóloga infanto-juvenil · {site.professional.license}
+        </p>
       </div>
-      <dl class="mt-10 grid max-w-xl grid-cols-3 gap-4 border-t border-borde pt-6">
-        {
-          stats.map((stat) => (
-            <div>
-              <dt class="font-serif text-[1.0625rem] font-semibold leading-tight text-violeta sm:text-xl">{stat.value}</dt>
-              <dd class="mt-1 text-[0.8125rem] leading-snug text-violeta-400 sm:text-sm">{stat.label}</dd>
-            </div>
-          ))
-        }
-      </dl>
+
+      <a href="#test" class="btn btn-primary order-4 self-start max-sm:w-full lg:mt-8">
+        Empieza por aquí
+        <ArrowDown size={18} strokeWidth={2} aria-hidden="true" />
+      </a>
     </div>
-    <div class="relative mx-auto w-full max-w-[20rem] sm:max-w-[24rem] lg:max-w-[28rem]">
+
+    <div class="relative order-2 mx-auto w-full max-w-[17rem] sm:max-w-[22rem] lg:max-w-[28rem]">
       <OrganicPhoto priority />
-      <BrandSeal priority class="absolute -bottom-3 -left-2 w-24 sm:-left-6 sm:w-28 lg:-left-10 lg:w-32" sizes="(min-width: 1024px) 128px, (min-width: 640px) 112px, 96px" />
+      <BrandSeal
+        priority
+        class="absolute -bottom-3 -left-2 h-24 w-24 sm:-left-6 sm:h-28 sm:w-28 lg:-left-10 lg:h-32 lg:w-32"
+        sizes="(min-width: 1024px) 128px, (min-width: 640px) 112px, 96px"
+      />
     </div>
   </div>
 </section>

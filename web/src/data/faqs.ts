@@ -10,8 +10,6 @@ export interface Faq {
   answer: string;
   /** Optional link shown after the answer. Paths starting with "/" are internal. */
   link?: { href: string; label: string };
-  /** Shown on the Home page (keep it to about five). */
-  home?: boolean;
 }
 
 export const faqs: Faq[] = [
@@ -21,7 +19,6 @@ export const faqs: Faq[] = [
     answer:
       'Sí. Todas las consultas son 100% online, por videollamada, desde la comodidad de tu casa. Atiendo desde Lechería (Anzoátegui) a familias de Venezuela y de otros países.',
     link: { href: '/agenda', label: 'Cómo agendar tu consulta' },
-    home: true,
   },
   {
     id: 'como-comprar',
@@ -29,28 +26,24 @@ export const faqs: Faq[] = [
     answer:
       'Elige el producto en la sección de cursos y ebooks y agrégalo al carrito; puedes llevar varios y pagarlos juntos. El carrito está en la plataforma de cursos de Sanar y Criar: ahí creas tu cuenta (o inicias sesión), confirmas tu pedido y pagas con Pago Móvil.',
     link: { href: '/cursos', label: 'Ver cursos y ebooks' },
-    home: true,
   },
   {
     id: 'metodos-de-pago',
     question: '¿Qué métodos de pago aceptan?',
     answer:
       'Pagas con Pago Móvil en bolívares, a la tasa del día: agregas tus cursos al carrito, haces el Pago Móvil y nos envías el comprobante por WhatsApp. En cuanto lo confirmamos tienes acceso (te avisamos por correo). Muy pronto también PayPal. Los precios se muestran en dólares (USD) y, al confirmar tu pedido, ves el monto exacto en bolívares.',
-    home: true,
   },
   {
     id: 'acceso-inmediato',
     question: '¿Cuándo tengo acceso a lo que compré?',
     answer:
       'En cuanto confirmamos tu Pago Móvil: revisamos el comprobante que nos envías por WhatsApp y, al confirmarlo, el curso o ebook queda disponible en tu cuenta y te llega un correo. Cuando llegue PayPal, pagando con PayPal el acceso será inmediato.',
-    home: true,
   },
   {
     id: 'cuenta',
     question: '¿Necesito crear una cuenta?',
     answer:
       'Sí. Tu cuenta es la llave para ver tus cursos y leer tus ebooks desde cualquier dispositivo. Además, la plataforma recuerda dónde te quedaste para que retomes cada video sin buscarlo.',
-    home: true,
   },
   {
     id: 'a-tu-ritmo',
@@ -98,4 +91,3 @@ export const faqs: Faq[] = [
   },
 ];
 
-export const homeFaqs = faqs.filter((faq) => faq.home);

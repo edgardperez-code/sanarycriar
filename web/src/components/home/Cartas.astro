@@ -1,0 +1,22 @@
+---
+import NewsletterCartasForm from '@/components/islands/NewsletterCartasForm';
+
+// Client guide (2026-11): the newsletter as Hilda's weekly letters, between
+// the testimonials and the closing invitation.
+---
+
+<section
+  id="cartas"
+  class="on-dark relative isolate bg-violeta before:absolute before:inset-0 before:-z-10 before:bg-[radial-gradient(32rem_21rem_at_92%_10%,rgb(187_187_255/0.22),transparent_70%),radial-gradient(29rem_20rem_at_0%_100%,rgb(240_180_223/0.18),transparent_70%)]"
+  aria-labelledby="cartas-title"
+>
+  <div class="mx-auto max-w-6xl px-4 py-16 text-center sm:px-6 sm:py-24">
+    <p class="eyebrow">Hilda en tu correo</p>
+    <h2 id="cartas-title" class="h2 mt-4 text-nube">Tu amiga psicóloga, <em class="title-accent">cada semana</em>.</h2>
+    <p class="mx-auto mt-4 max-w-[46rem] text-[1.0625rem] leading-relaxed text-nube/85 sm:text-lg">
+      Te escribo como le escribiría a una amiga: lo que veo en consulta, lo que vivo como mamá y una herramienta práctica para usar con
+      tu hijo ese mismo día.
+    </p>
+    <NewsletterCartasForm client:visible />
+  </div>
+</section>

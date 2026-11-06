@@ -3,6 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  MAX_NAME_LENGTH,
   NEWSLETTER_DISMISSED_KEY,
   NEWSLETTER_SUBSCRIBED_KEY,
   fetchNewsletterConfig,
@@ -11,6 +12,7 @@ import {
   markDismissed,
   markSubscribed,
   normalizeEmail,
+  normalizeName,
   parseNewsletterConfig,
   shouldOfferPopup,
   subscribeToNewsletter,
@@ -215,6 +217,37 @@ test('subscribeToNewsletter maps the HTTP outcome and keeps the e-mail out of th
     assert.equal(init.headers['Content-Type'], 'application/json');
     assert.deepEqual(JSON.parse(init.body), { email: 'ana@example.com', website: '', source: 'popup', page: '/cursos' });
   }
+});
+
+test('subscribeToNewsletter sends the first name only when there is one', async (t) => {
+  const originalFetch = globalThis.fetch;
+  t.after(() => {
+    globalThis.fetch = originalFetch;
+  });
+  const bodies = [];
+  globalThis.fetch = async (url, init) => {
+    bodies.push({ url: String(url), body: JSON.parse(init.body) });
+    return new Response('{"ok":true}', { status: 200, headers: { 'Content-Type': 'application/json' } });
+  };
+  const opts = { apiBase: 'http://localhost:1338/api/v1', orgId: 1, email: 'ana@example.com', website: '', source: 'cartas', page: '/' };
+
+  assert.equal(await subscribeToNewsletter({ ...opts, name: '  Ana   María\n ' }), 'ok');
+  assert.equal(await subscribeToNewsletter({ ...opts, name: ' \t ' }), 'ok');
+  assert.equal(await subscribeToNewsletter(opts), 'ok');
+
+  assert.deepEqual(bodies[0].body, { email: 'ana@example.com', name: 'Ana María', website: '', source: 'cartas', page: '/' });
+  assert.deepEqual(bodies[1].body, { email: 'ana@example.com', website: '', source: 'cartas', page: '/' });
+  assert.deepEqual(bodies[2].body, { email: 'ana@example.com', website: '', source: 'cartas', page: '/' });
+  for (const { url } of bodies) assert.ok(!url.includes('Ana'), 'name not in the URL');
+});
+
+test('normalizeName trims, drops control characters and caps the length', () => {
+  assert.equal(normalizeName('  Ana  '), 'Ana');
+  assert.equal(normalizeName('Ana\u0000\u0007María'), 'Ana María');
+  assert.equal(normalizeName(''), '');
+  assert.equal(normalizeName(undefined), '');
+  assert.equal(normalizeName('ñ'.repeat(MAX_NAME_LENGTH + 20)), 'ñ'.repeat(MAX_NAME_LENGTH));
+  assert.equal(Array.from(normalizeName('😀'.repeat(100))).length, MAX_NAME_LENGTH, 'counts characters, not UTF-16 units');
 });
 
 test('subscribeToNewsletter returns error when the caller aborts', async (t) => {

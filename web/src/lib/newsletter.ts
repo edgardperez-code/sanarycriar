@@ -35,7 +35,11 @@ export interface NewsletterConfig {
 }
 
 export type SubscribeResult = 'ok' | 'invalid' | 'rate_limited' | 'error';
-export type NewsletterSource = 'popup' | 'footer';
+/** Where the e-mail was left: the pop-up, the footer form or the «Cartas» band of the Home page. */
+export type NewsletterSource = 'popup' | 'footer' | 'cartas';
+
+/** Same limit as the API for the subscriber's name. */
+export const MAX_NAME_LENGTH = 80;
 
 /** Visible messages shared by both forms (the configurable texts come from the API). */
 export const NEWSLETTER_MESSAGES = {
@@ -69,6 +73,18 @@ const FALLBACK_SUCCESS_MESSAGE = '¡Listo, gracias por sumarte! Muy pronto te ll
 
 export function normalizeEmail(value: string): string {
   return String(value ?? '').trim().toLowerCase();
+}
+
+/**
+ * First name as the API stores it: no control characters, single spaces,
+ * at most MAX_NAME_LENGTH characters. Empty when nothing usable is left.
+ */
+export function normalizeName(value: string): string {
+  const clean = String(value ?? '')
+    .replace(/[\u0000-\u001f\u007f-\u009f]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return Array.from(clean).slice(0, MAX_NAME_LENGTH).join('').trim();
 }
 
 export function isValidEmail(value: string): boolean {
@@ -229,18 +245,22 @@ export async function fetchNewsletterConfig(opts: {
 }
 
 /**
- * Sends the sign-up. The e-mail only travels in the JSON body, never in the
- * URL. The API answers the same for new and repeated e-mails.
+ * Sends the sign-up. The e-mail (and the optional first name) only travel in
+ * the JSON body, never in the URL. The API answers the same for new and
+ * repeated e-mails.
  */
 export async function subscribeToNewsletter(opts: {
   apiBase: string;
   orgId: number;
   email: string;
+  /** First name, optional («Cartas» band). Sent only when something usable is left. */
+  name?: string;
   website: string;
   source: NewsletterSource;
   page: string;
   signal?: AbortSignal;
 }): Promise<SubscribeResult> {
+  const name = normalizeName(opts.name ?? '');
   // Own timeout linked to the caller's signal (AbortSignal.any/timeout are missing in older Safari).
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), SUBSCRIBE_TIMEOUT_MS);
@@ -254,6 +274,7 @@ export async function subscribeToNewsletter(opts: {
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({
         email: normalizeEmail(opts.email),
+        ...(name ? { name } : {}),
         website: opts.website,
         source: opts.source,
         page: opts.page,
