@@ -1,4 +1,5 @@
 ---
+import TodoWebBadge from '@/components/ui/TodoWebBadge.astro';
 import Wordmark from '@/components/ui/Wordmark.astro';
 import NewsletterFooterForm from '@/components/islands/NewsletterFooterForm';
 import { site } from '@/site.config';
@@ -83,7 +84,10 @@ const legal = [
 
     <div class="mt-14 flex flex-col gap-3 border-t border-nube/15 pt-6 text-sm text-nube/70 sm:flex-row sm:items-center sm:justify-between">
       <p>© {year} {site.name} · {site.professional.name}, psicóloga ({site.professional.license}).</p>
-      <p>Hecho con cuidado en {site.professional.city}, Venezuela.</p>
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-3">
+        <p>Hecho con cuidado en {site.professional.city}, Venezuela.</p>
+        <TodoWebBadge />
+      </div>
     </div>
   </div>
 </footer>

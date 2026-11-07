@@ -1,0 +1,52 @@
+---
+// "Hecho por TodoWeb Digital" badge for the footer: one link, the brand as
+// text, to the site of whoever made the web. Same badge as the agency's other
+// projects (Emaús, Cocoroma), dark variant for the violeta footer. Static
+// markup with inline styles so it looks the same on every site.
+interface Props {
+  tema?: 'claro' | 'oscuro';
+}
+
+const { tema = 'oscuro' } = Astro.props;
+const FONT = "'Plus Jakarta Sans',Inter,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif";
+const c =
+  tema === 'claro'
+    ? { bg: '#ffffff', border: '#cbd5e1', label: '#64748b', name: '#0a1226', accent: '#2563eb' }
+    : { bg: '#0a1226', border: 'rgba(255,255,255,.16)', label: '#94a3b8', name: '#ffffff', accent: '#22d3ee' };
+const gradId = `twdBadgeGrad-${tema}`;
+---
+
+<a
+  href="https://www.todowebdigital.com"
+  target="_blank"
+  rel="noopener"
+  title="TodoWeb Digital: diseño de páginas web"
+  class="todoweb-badge"
+  style={`display:inline-flex;align-items:center;gap:8px;padding:6px 14px 6px 6px;border:1px solid ${c.border};border-radius:999px;background:${c.bg};text-decoration:none;font-family:${FONT};line-height:1;vertical-align:middle;`}
+>
+  <svg width="26" height="26" viewBox="0 0 48 48" aria-hidden="true" style="flex:none;display:block;">
+    <defs>
+      <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#3b82f6"></stop>
+        <stop offset="60%" stop-color="#22d3ee"></stop>
+        <stop offset="100%" stop-color="#a3e635"></stop>
+      </linearGradient>
+    </defs>
+    <rect x="2" y="2" width="44" height="44" rx="13" fill={`url(#${gradId})`}></rect>
+    <path d="M12 16l6 16 6-11 6 11 6-16" fill="none" stroke="#050a18" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"></path>
+    <circle cx="36" cy="13" r="3" fill="#050a18"></circle>
+  </svg>
+  <span style="display:flex;flex-direction:column;gap:3px;text-align:left;">
+    <span style={`font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:${c.label};`}>Hecho por</span>
+    <span style={`font-size:13.5px;font-weight:800;letter-spacing:-.01em;color:${c.name};`}>
+      TodoWeb <span style={`color:${c.accent};`}>Digital</span>
+    </span>
+  </span>
+</a>
+
+<style>
+  .todoweb-badge:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+  }
+</style>
