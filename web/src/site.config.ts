@@ -106,15 +106,15 @@ export const site = {
   },
 
   /**
-   * Payment methods shown in copy. Keep in sync with the platform: Pago Móvil
-   * (cart + receipt by WhatsApp, access once the payment is confirmed); PayPal
-   * comes later.
+   * Payment methods named in static copy (HTML fallback and meta texts). The
+   * Home chips are replaced in the browser by the methods Hilda has turned on
+   * (lib/payments.ts); keep this list in step with the panel. Cart + receipt
+   * by WhatsApp, access once the payment is confirmed.
    */
   payments: {
     // "a la tasa del día": the rate may be the BCV's or one set by hand.
-    now: 'Pago Móvil, en bolívares, a la tasa del día',
-    short: 'con Pago Móvil, en bolívares',
-    soon: 'PayPal',
+    methods: ['Pago Móvil, en bolívares, a la tasa del día', 'Transferencia bancaria, en bolívares', 'Zelle', 'Binance'],
+    summary: 'Pago Móvil, transferencia, Zelle o Binance',
   },
 } as const;
 

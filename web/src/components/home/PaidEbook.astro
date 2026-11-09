@@ -2,7 +2,7 @@
 import { ArrowRight } from 'lucide-react';
 import EbookCover from '@/components/ui/EbookCover.astro';
 import FaqList from '@/components/FaqList.astro';
-import type { Faq } from '@/data/faqs';
+import { ebookFaqs } from '@/data/faqs';
 import { getServerCatalog } from '@/lib/catalog.server';
 import { site } from '@/site.config';
 
@@ -27,19 +27,7 @@ const steps = [
   'Al confirmar tu pago te avisamos por correo y lo lees en tu cuenta.',
 ];
 
-const faqs: Faq[] = [
-  { id: 'ebook-fisico', question: '¿Es un libro físico?', answer: 'No. Es un PDF para leer en el celular o en la computadora.' },
-  {
-    id: 'ebook-cuando',
-    question: '¿Cuándo lo recibo?',
-    answer: 'En cuanto confirmamos tu pago. Te avisamos por correo y queda en tu cuenta.',
-  },
-  {
-    id: 'ebook-terapia',
-    question: '¿Sustituye una terapia?',
-    answer: 'No. Es una guía para aprender. Si necesitas acompañamiento directo, al final de esta página puedes agendar tu cita.',
-  },
-];
+const faqs = ebookFaqs;
 ---
 
 <section id="ebooks" class="bg-lavanda-100" aria-labelledby="ebooks-title">
@@ -75,9 +63,13 @@ const faqs: Faq[] = [
           </a>
         </div>
         <ul class="mt-4 flex flex-wrap gap-2" aria-label="Formas de pago" data-formas-pago>
-          <li class="rounded-full border border-borde bg-nube px-3 py-2 text-[0.8125rem] font-medium leading-snug text-violeta-600">
-            {site.payments.now}
-          </li>
+          {
+            site.payments.methods.map((method) => (
+              <li class="rounded-full border border-borde bg-nube px-3 py-2 text-[0.8125rem] font-medium leading-snug text-violeta-600">
+                {method}
+              </li>
+            ))
+          }
         </ul>
       </div>
 

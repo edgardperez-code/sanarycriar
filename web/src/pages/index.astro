@@ -7,19 +7,35 @@ import FreeEbook from '@/components/home/FreeEbook.astro';
 import PaidEbook from '@/components/home/PaidEbook.astro';
 import Cartas from '@/components/home/Cartas.astro';
 import CitaCta from '@/components/home/CitaCta.astro';
+import Ayuda from '@/components/home/Ayuda.astro';
 import TestimonialCards from '@/components/TestimonialCards.astro';
 import { getTestimonials } from '@/lib/content';
-import { businessJsonLd, websiteJsonLd } from '@/lib/seo';
+import { businessJsonLd, faqJsonLd, productsJsonLd, websiteJsonLd } from '@/lib/seo';
+import { ebookFaqs } from '@/data/faqs';
+import { site } from '@/site.config';
+import { getServerCatalog } from '@/lib/catalog.server';
 
 // Client guide (2026-11): the Home page is one path. Meet Hilda → take the test
 // → read the free ebook → buy «Límites sin culpa» → read her letters → book a
 // session at the end. Talleres, blog and FAQ stay on their own pages.
 const testimonials = getTestimonials().slice(0, 3);
+
+// Structured data: who Hilda is, the site, the ebook's questions (the general
+// ones are marked up once, on /preguntas-frecuentes), and the two ebooks this
+// page shows, with their price (read at build time).
+const catalog = await getServerCatalog();
+const giftPathPart = `/course/${site.funnel.giftCourseUuid.replace(/^course_/, '')}`;
+const shown = [...catalog.ebooks, ...catalog.courses].filter(
+  (item) => item.offerUuid === site.funnel.featuredOfferUuid || (item.free && item.href.endsWith(giftPathPart)),
+);
+const products = productsJsonLd(shown);
+const jsonLd = [businessJsonLd(), websiteJsonLd(), faqJsonLd(ebookFaqs), ...(products ? [products] : [])];
 ---
 
 <BaseLayout
-  description="Antes de corregir a tu hijo, descubre qué se activa en ti. Hilda Hernández, psicóloga infanto-juvenil (FPV 8.914): test de crianza, ebooks y citas online para criar sin culpa."
-  jsonLd={[businessJsonLd(), websiteJsonLd()]}
+  documentTitle="Psicóloga infantil online · Hilda Hernández · Sanar y Criar"
+  description="Hilda Hernández, psicóloga infanto-juvenil online desde Venezuela (FPV 8.914). Rabietas, límites, ansiedad y crianza sin culpa: test gratis, ebooks y citas."
+  jsonLd={jsonLd}
   footerNewsletter={false}
 >
   <Hero />
@@ -47,5 +63,6 @@ const testimonials = getTestimonials().slice(0, 3);
   }
 
   <Cartas />
+  <Ayuda />
   <CitaCta />
 </BaseLayout>

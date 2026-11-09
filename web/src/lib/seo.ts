@@ -1,4 +1,5 @@
 import { absoluteUrl, site } from '@/site.config';
+import type { CatalogItem } from '@/lib/catalog';
 
 export const OG_IMAGE = '/og-image.png?v=2';
 
@@ -88,6 +89,36 @@ export function faqJsonLd(items: { question: string; answer: string }[]) {
       acceptedAnswer: { '@type': 'Answer', text: item.answer },
     })),
   };
+}
+
+/**
+ * The courses and ebooks on sale (and the free ones), as Products with their
+ * Offer, so search engines and AI assistants can name them with their price.
+ * Built from the platform catalog at build time; items without a price and
+ * not free are left out.
+ */
+export function productsJsonLd(items: CatalogItem[]) {
+  const products = items
+    .filter((item) => item.free || item.amount > 0)
+    .map((item) => ({
+      '@type': 'Product',
+      name: item.title,
+      ...(item.description ? { description: item.description } : {}),
+      ...(item.thumbnailUrl ? { image: item.thumbnailUrl } : { image: absoluteUrl(OG_IMAGE) }),
+      category: item.productType === 'ebook' ? 'Ebook (PDF)' : 'Curso en video',
+      brand: { '@type': 'Brand', name: site.name },
+      url: item.href,
+      offers: {
+        '@type': 'Offer',
+        price: item.free ? '0' : String(item.amount),
+        priceCurrency: item.free ? 'USD' : item.currency || 'USD',
+        availability: 'https://schema.org/InStock',
+        url: item.href,
+        seller: { '@type': 'Organization', '@id': businessId, name: site.name, url: `${site.url}/` },
+      },
+    }));
+  if (products.length === 0) return null;
+  return { '@context': 'https://schema.org', '@graph': products };
 }
 
 export function breadcrumbJsonLd(items: { name: string; path: string }[]) {

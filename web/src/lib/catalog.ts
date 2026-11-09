@@ -15,6 +15,8 @@ export interface CatalogItem {
   description: string;
   /** Formatted price, e.g. "$35" (empty when unknown). */
   price: string;
+  /** Numeric price (0 when free or unknown), for structured data. */
+  amount: number;
   currency: string;
   thumbnailUrl: string | null;
   productType: ProductType;
@@ -82,6 +84,12 @@ function plainText(value: unknown): string {
     .trim();
 }
 
+/** A finite, positive number, else 0. */
+export function positiveNumber(amount: unknown): number {
+  const value = typeof amount === 'number' ? amount : Number(amount);
+  return Number.isFinite(value) && value > 0 ? value : 0;
+}
+
 export function formatPrice(amount: unknown, currency: unknown): string {
   const value = typeof amount === 'number' ? amount : Number(amount);
   if (!Number.isFinite(value) || value <= 0) return '';
@@ -129,6 +137,7 @@ export function normalizeCatalog(raw: unknown, offerUrl: (uuid: string) => strin
       title,
       description,
       price: formatPrice(entry.amount, currency),
+      amount: positiveNumber(entry.amount),
       currency,
       thumbnailUrl,
       productType,
@@ -173,6 +182,7 @@ export function addFreeItems(
       title,
       description: plainText(entry.description),
       price: '',
+      amount: 0,
       currency: '',
       thumbnailUrl: safeHttpUrl(entry.thumbnail_url, assetBase),
       productType,

@@ -1,7 +1,8 @@
 /**
  * Frequently asked questions, rewritten for the new model: purchases happen on
- * the course platform (cart + Pago Móvil now, PayPal soon), an account is
- * needed to see the content, and access arrives once the payment is confirmed.
+ * the course platform (cart; Pago Móvil, bank transfer, Zelle or Binance), an
+ * account is needed to see the content, and access arrives once the payment is
+ * confirmed. Also marked up as FAQPage for search engines and AI assistants.
  */
 
 export interface Faq {
@@ -24,20 +25,21 @@ export const faqs: Faq[] = [
     id: 'como-comprar',
     question: '¿Cómo compro un curso o un ebook?',
     answer:
-      'Elige el producto en la sección de cursos y ebooks y agrégalo al carrito; puedes llevar varios y pagarlos juntos. El carrito está en la plataforma de cursos de Sanar y Criar: ahí creas tu cuenta (o inicias sesión), confirmas tu pedido y pagas con Pago Móvil.',
+      'Elige el producto en la sección de cursos y ebooks y agrégalo al carrito; puedes llevar varios y pagarlos juntos. El carrito está en la plataforma de cursos de Sanar y Criar: ahí creas tu cuenta (o inicias sesión), confirmas tu pedido y pagas con el método que prefieras.',
     link: { href: '/cursos', label: 'Ver cursos y ebooks' },
   },
   {
+    // Keep in step with the methods Hilda has turned on (site.payments).
     id: 'metodos-de-pago',
     question: '¿Qué métodos de pago aceptan?',
     answer:
-      'Pagas con Pago Móvil en bolívares, a la tasa del día: agregas tus cursos al carrito, haces el Pago Móvil y nos envías el comprobante por WhatsApp. En cuanto lo confirmamos tienes acceso (te avisamos por correo). Muy pronto también PayPal. Los precios se muestran en dólares (USD) y, al confirmar tu pedido, ves el monto exacto en bolívares.',
+      'Puedes pagar con Pago Móvil o transferencia bancaria en bolívares, a la tasa del día, o en dólares con Zelle o Binance. Agregas tus cursos al carrito, eliges cómo pagar, haces el pago y nos envías el comprobante por WhatsApp. En cuanto lo confirmamos tienes acceso (te avisamos por correo). Los precios se muestran en dólares (USD); si pagas en bolívares, al confirmar tu pedido ves el monto exacto.',
   },
   {
     id: 'acceso-inmediato',
     question: '¿Cuándo tengo acceso a lo que compré?',
     answer:
-      'En cuanto confirmamos tu Pago Móvil: revisamos el comprobante que nos envías por WhatsApp y, al confirmarlo, el curso o ebook queda disponible en tu cuenta y te llega un correo. Cuando llegue PayPal, pagando con PayPal el acceso será inmediato.',
+      'En cuanto confirmamos tu pago: revisamos el comprobante que nos envías por WhatsApp y, al confirmarlo, el curso o ebook queda disponible en tu cuenta y te llega un correo.',
   },
   {
     id: 'cuenta',
@@ -91,3 +93,21 @@ export const faqs: Faq[] = [
   },
 ];
 
+/** Questions about the paid ebook, shown in its Home block. */
+export const ebookFaqs: Faq[] = [
+  { id: 'ebook-fisico', question: '¿El ebook es un libro físico?', answer: 'No. Es un PDF para leer en el celular o en la computadora.' },
+  {
+    id: 'ebook-cuando',
+    question: '¿Cuándo recibo el ebook?',
+    answer: 'En cuanto confirmamos tu pago. Te avisamos por correo y queda en tu cuenta.',
+  },
+  {
+    id: 'ebook-terapia',
+    question: '¿El ebook sustituye una terapia?',
+    answer: 'No. Es una guía para aprender. Si necesitas acompañamiento directo, al final de esta página puedes agendar tu cita.',
+  },
+];
+
+/** General questions shown on the Home page («¿En qué te puedo ayudar?»). */
+export const homeFaqIds = ['consultas-online', 'edades', 'curso-o-consulta'] as const;
+export const homeFaqs: Faq[] = homeFaqIds.map((id) => faqs.find((f) => f.id === id)).filter((f): f is Faq => Boolean(f));

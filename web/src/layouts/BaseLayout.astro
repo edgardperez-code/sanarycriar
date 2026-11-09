@@ -19,6 +19,8 @@ import { routePath } from '@/lib/nav';
 interface Props {
   /** Page title without the brand suffix. Omit on the Home page. */
   title?: string;
+  /** Whole <title>, used as is (the Home page: what people search, then the brand). */
+  documentTitle?: string;
   description?: string;
   /** Social image path or absolute URL (1200×630). */
   image?: string;
@@ -41,6 +43,7 @@ interface Props {
 
 const {
   title,
+  documentTitle,
   description = site.description,
   image = OG_IMAGE,
   imageAlt = 'Sanar y Criar · Hilda Hernández, psicóloga infanto-juvenil',
@@ -53,7 +56,8 @@ const {
   footerNewsletter = true,
 } = Astro.props;
 
-const fullTitle = title ? `${title} | ${site.name}` : `${site.name} · Hilda Hernández, Psicóloga Infanto-Juvenil`;
+const fullTitle =
+  documentTitle || (title ? `${title} | ${site.name}` : `${site.name} · Hilda Hernández, Psicóloga Infanto-Juvenil`);
 const canonical = absoluteUrl(routePath(Astro.url.pathname));
 const imageUrl = absoluteUrl(image);
 const jsonLdList = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
