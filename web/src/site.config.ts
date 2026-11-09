@@ -18,7 +18,7 @@ function optional(url: string | undefined): string {
   return (url ?? '').trim();
 }
 
-const whatsappNumber = '+58 424 8824634';
+const whatsappNumber = '+58 412 8824634';
 const whatsappDigits = whatsappNumber.replace(/\D/g, '');
 
 /** Builds a wa.me link with an optional pre-filled message. */
