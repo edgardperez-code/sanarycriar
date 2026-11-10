@@ -45,7 +45,8 @@ export interface SessionTestimonial {
   detail: string;
   /** Paragraphs, as the family wrote them. */
   text: string[];
-  time: string;
+  /** Time of the WhatsApp message, when the family sent one. */
+  time?: string;
 }
 
 export const sessionTestimonials: SessionTestimonial[] = [
@@ -89,6 +90,14 @@ export const sessionTestimonials: SessionTestimonial[] = [
       'En cuanto a las consultas, me enseñó a ver las cosas desde otra perspectiva. A escuchar, observar mejor y entender a mi hija con su manera de ver y sentir. Asi aprendí que la maternidad no siempre cumplirá mis expectativas sino que dependerá de los procesos individuales de cada quien.',
     ],
     time: '12:11 p. m.',
+  },
+  {
+    name: 'Dulce María',
+    detail: 'mamá de dos niñas',
+    text: [
+      'Hilda me acompañó durante mi postparto y hubo una pregunta suya que me cambió la perspectiva: «¿Tú lloras?». Ahí descubrí que reprimía mi llanto por miedo a parecer malagradecida o a que mi bebé sintiera que no la quería.',
+      'Con la guía de Hilda comprendí que desahogarse es humano, necesario, y que llorar no borra ni un poco el amor y la gratitud que siento por mi familia. Su apoyo fue fundamental para vivir mi maternidad libre de culpas.',
+    ],
   },
 ];
 

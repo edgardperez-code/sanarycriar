@@ -172,7 +172,7 @@ const jsonLd = [
       <div class="mt-10 grid gap-6 md:grid-cols-2">
         {
           sessionTestimonials.map((t) => (
-            <figure class="flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-borde bg-violeta shadow-[0_18px_40px_-32px_rgba(25,9,51,0.5)]">
+            <figure class="flex flex-col overflow-hidden md:[&:last-child:nth-child(odd)]:col-span-2 rounded-[var(--radius-card)] border border-borde bg-violeta shadow-[0_18px_40px_-32px_rgba(25,9,51,0.5)]">
               <figcaption class="flex items-center gap-3 px-5 py-4 text-nube">
                 <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-lavanda-300 font-serif text-lg font-semibold text-violeta" aria-hidden="true">
                   {t.name.charAt(0)}
@@ -183,9 +183,14 @@ const jsonLd = [
                 </span>
               </figcaption>
               <blockquote class="flex-1 bg-[#efe7dd] p-4 sm:p-5">
-                <div class="relative rounded-2xl rounded-tl-sm bg-white px-4 pb-6 pt-3.5 text-[0.9375rem] leading-relaxed text-violeta-600 shadow-sm">
+                <div
+                  class:list={[
+                    'relative rounded-2xl rounded-tl-sm bg-white px-4 pt-3.5 text-[0.9375rem] leading-relaxed text-violeta-600 shadow-sm',
+                    t.time ? 'pb-6' : 'pb-3.5',
+                  ]}
+                >
                   {t.text.map((para) => <p class="mb-2.5 last:mb-0">{para}</p>)}
-                  <span class="absolute bottom-1.5 right-3 text-[0.6875rem] text-violeta-400">{t.time}</span>
+                  {t.time && <span class="absolute bottom-1.5 right-3 text-[0.6875rem] text-violeta-400">{t.time}</span>}
                 </div>
               </blockquote>
             </figure>
