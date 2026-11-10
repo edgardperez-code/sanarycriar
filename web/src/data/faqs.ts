@@ -75,7 +75,7 @@ export const faqs: Faq[] = [
     id: 'edades',
     question: '¿Con qué edades trabajas?',
     answer:
-      'Mi enfoque principal es la primera infancia (de 1 a 5 años) y el acompañamiento a mamás durante el embarazo, el posparto y la crianza. También trabajo temas de la infancia y la adolescencia. Si no sabes si puedo ayudarte, escríbeme y lo conversamos.',
+      'Trabajo con familias de niños de 0 a 8 años y acompaño a mamás durante el embarazo, el posparto y la crianza. Si no sabes si puedo ayudarte, escríbeme y lo conversamos.',
   },
   {
     id: 'talleres',

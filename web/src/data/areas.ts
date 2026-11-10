@@ -14,7 +14,7 @@ export interface Area {
 /** Main focus (shown larger). */
 export const mainAreas: Area[] = [
   {
-    title: 'Primera infancia (1 a 5 años)',
+    title: 'Infancia (0 a 8 años)',
     description:
       'Rabietas, hábitos, sueño, autonomía y desarrollo integral. Te acompaño a entender lo que tu hijo siente y a responder con calma y límites claros.',
     icon: 'baby',
