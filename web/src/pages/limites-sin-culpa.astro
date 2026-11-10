@@ -33,7 +33,7 @@ const price = offer?.price ?? '';
 const buyHref = site.platform.cartAddUrl(offerUuid);
 const pageUrl = absoluteUrl('/limites-sin-culpa');
 const description =
-  'Ebook de Hilda Hernández, psicóloga infanto-juvenil, para poner límites a tu hijo de 0 a 8 años con firmeza y conexión, sin gritos ni culpa. PDF con actividades y bonus.';
+  'Ebook de Hilda Hernández, psicóloga infanto-juvenil, para poner límites a tu hijo de 0 a 8 años con firmeza y conexión, sin gritos ni culpa.';
 
 const jsonLd = [
   ...(offer
@@ -64,7 +64,9 @@ const steps = [
 ---
 
 <BaseLayout
-  documentTitle="Límites sin culpa: ebook para poner límites sin gritos | Sanar y Criar"
+  documentTitle="Límites sin culpa: ebook para poner límites sin gritos"
+  image="/og/limites-sin-culpa.png"
+  imageAlt="Ebook «Límites sin culpa» de Hilda Hernández: pon límites con firmeza y conexión, sin gritos ni culpa"
   description={description}
   jsonLd={jsonLd}
   newsletter={false}

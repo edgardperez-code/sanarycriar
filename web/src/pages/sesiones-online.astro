@@ -24,7 +24,7 @@ const whatsappHref = whatsappLink(sessionWhatsappMessage);
 const firstPrice = sessionPrices[0];
 const pageUrl = absoluteUrl('/sesiones-online');
 const description =
-  'Asesoría de crianza consciente por videollamada con Hilda Hernández, psicóloga infanto-juvenil (FPV 8.914). Sesiones de 60 minutos desde 80 USD. Agenda por WhatsApp.';
+  'Asesoría de crianza consciente por videollamada con Hilda Hernández, psicóloga infanto-juvenil (FPV 8.914). 60 minutos desde 80 USD.';
 const jsonLd = [
   businessJsonLd(),
   sessionsJsonLd({
@@ -43,7 +43,13 @@ const jsonLd = [
 ];
 ---
 
-<BaseLayout documentTitle="Sesiones online de crianza con psicóloga infantil | Sanar y Criar" description={description} jsonLd={jsonLd}>
+<BaseLayout
+  documentTitle="Sesiones online con psicóloga infantil | Sanar y Criar"
+  description={description}
+  image="/og/sesiones-online.png"
+  imageAlt="Sesiones online con Hilda Hernández, psicóloga infanto-juvenil: 60 minutos desde 80 USD"
+  jsonLd={jsonLd}
+>
   <!-- Hero -->
   <section class="watercolor overflow-hidden" aria-labelledby="page-title">
     <div
@@ -254,7 +260,8 @@ const jsonLd = [
       </div>
       <div class="mt-12 flex flex-col items-start gap-4 rounded-[var(--radius-card)] border border-borde bg-blanco-calido p-6 sm:flex-row sm:items-center sm:justify-between">
         <p class="text-violeta-600">
-          <strong class="font-semibold text-violeta">¿Te quedó alguna duda?</strong> Escríbeme y lo conversamos.
+          <strong class="font-semibold text-violeta">¿Te quedó alguna duda?</strong> Escríbeme y lo conversamos. ¿Prefieres empezar a tu
+          ritmo? Lee mi ebook <a href="/limites-sin-culpa" class="text-link">«Límites sin culpa»</a>.
         </p>
         <a href={whatsappHref} class="btn btn-primary max-sm:w-full" target="_blank" rel="noopener">
           <MessageCircle size={18} strokeWidth={2} aria-hidden="true" />

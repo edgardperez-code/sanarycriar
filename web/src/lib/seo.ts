@@ -40,6 +40,23 @@ export function businessJsonLd() {
         founder: { '@id': personId },
         employee: { '@id': personId },
         sameAs: [site.contact.instagramUrl],
+        // What the practice offers, each pointing at its own page and node.
+        hasOfferCatalog: {
+          '@type': 'OfferCatalog',
+          name: 'Sesiones online y ebooks de crianza',
+          itemListElement: [
+            {
+              '@type': 'Offer',
+              itemOffered: { '@id': absoluteUrl('/sesiones-online#servicio'), '@type': 'Service', name: 'Sesiones online de crianza consciente' },
+              url: absoluteUrl('/sesiones-online'),
+            },
+            {
+              '@type': 'Offer',
+              itemOffered: { '@id': absoluteUrl('/limites-sin-culpa#ebook'), '@type': 'Book', name: 'Límites sin culpa' },
+              url: absoluteUrl('/limites-sin-culpa'),
+            },
+          ],
+        },
       },
       {
         '@type': 'Person',

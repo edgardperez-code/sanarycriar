@@ -79,6 +79,8 @@ export const GET: APIRoute = async () => {
     `- [Inicio](${page('/')})`,
     `- [Sobre mí](${page('/sobre-mi')}): historia y formación de ${p.name}.`,
     `- [Blog](${page('/blog')}): artículos sobre crianza y salud mental infantil.`,
+    `- [Sesiones online](${page('/sesiones-online')}): precios, modalidades, testimonios y preguntas frecuentes de las sesiones.`,
+    `- [Límites sin culpa](${page('/limites-sin-culpa')}): el ebook para poner límites sin gritos, con su contenido completo y preguntas frecuentes.`,
     `- [Preguntas frecuentes](${page('/preguntas-frecuentes')})`,
     '',
     '## Contacto',
