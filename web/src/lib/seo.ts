@@ -121,6 +121,59 @@ export function productsJsonLd(items: CatalogItem[]) {
   return { '@context': 'https://schema.org', '@graph': products };
 }
 
+/**
+ * The online sessions as a Service with its price list (/sesiones-online):
+ * who gives them, to whom, how (Zoom) and for how much, so search engines and
+ * AI assistants can answer "how much is a session with Hilda" from the page.
+ */
+export function sessionsJsonLd(input: {
+  url: string;
+  description: string;
+  minutes: number;
+  currency: string;
+  prices: ReadonlyArray<{ sessions: number; price: number }>;
+  modalities: ReadonlyArray<{ name: string; summary: string }>;
+}) {
+  const prices = input.prices.map((p) => p.price);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    '@id': `${input.url}#servicio`,
+    name: 'Sesiones online de crianza consciente',
+    serviceType: input.modalities.map((m) => m.name).join(' · '),
+    description: input.description,
+    url: input.url,
+    provider: { '@type': 'ProfessionalService', '@id': businessId, name: site.name, url: `${site.url}/` },
+    areaServed: [{ '@type': 'Country', name: site.professional.country }, 'Online'],
+    availableLanguage: 'es',
+    audience: { '@type': 'PeopleAudience', audienceType: 'Mamás, papás y cuidadores de niños de 0 a 8 años' },
+    availableChannel: {
+      '@type': 'ServiceChannel',
+      name: 'Videollamada por Zoom',
+      serviceUrl: input.url,
+      availableLanguage: 'es',
+    },
+    offers: {
+      '@type': 'AggregateOffer',
+      priceCurrency: input.currency,
+      lowPrice: String(Math.min(...prices)),
+      highPrice: String(Math.max(...prices)),
+      offerCount: String(prices.length),
+    },
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'Valor de la asesoría',
+      itemListElement: input.prices.map((p) => ({
+        '@type': 'Offer',
+        name: p.sessions === 1 ? `1 sesión de ${input.minutes} minutos` : `Paquete de ${p.sessions} sesiones de ${input.minutes} minutos`,
+        price: String(p.price),
+        priceCurrency: input.currency,
+        url: input.url,
+      })),
+    },
+  };
+}
+
 export function breadcrumbJsonLd(items: { name: string; path: string }[]) {
   return {
     '@context': 'https://schema.org',

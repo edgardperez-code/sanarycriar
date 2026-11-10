@@ -38,10 +38,13 @@ const citaHref = site.booking.url || whatsappLink('Hola, Hilda. Quisiera agendar
         Sesiones individuales por videollamada. Acompaño en crianza y límites, ansiedad infantil, TDAH y neurodiversidad, autismo y
         adolescencia.
       </p>
-      <a href={citaHref} class="btn btn-primary mt-8" target="_blank" rel="noopener">
-        Agenda tu cita online
-        <ArrowRight size={18} strokeWidth={2} aria-hidden="true" />
-      </a>
+      <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+        <a href={citaHref} class="btn btn-primary" target="_blank" rel="noopener">
+          Agenda tu cita online
+          <ArrowRight size={18} strokeWidth={2} aria-hidden="true" />
+        </a>
+        <a href="/sesiones-online" class="text-link text-[0.9375rem]">Precios y preguntas frecuentes</a>
+      </div>
     </div>
   </div>
 </section>

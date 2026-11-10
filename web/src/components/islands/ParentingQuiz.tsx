@@ -113,7 +113,7 @@ export default function ParentingQuiz({ headingLevel = 'h3' }: Props) {
             Entra aquí
           </a>
         </p>
-        <p className="note mt-3">Después te seguiré escribiendo, como una amiga; te das de baja cuando quieras.</p>
+        <p className="note mt-3">Después te seguiré escribiendo con ideas para criar desde la calma; te das de baja cuando quieras.</p>
 
         <div className="mt-7 flex flex-col gap-3 border-t border-borde pt-5 sm:flex-row sm:items-center sm:justify-between">
           <p className="note">Este test no es un diagnóstico. Es una forma de mirarte con cariño y elegir por dónde empezar.</p>

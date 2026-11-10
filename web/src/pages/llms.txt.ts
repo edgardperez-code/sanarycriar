@@ -3,6 +3,7 @@ import { mainAreas, otherAreas } from '@/data/areas';
 import { faqs } from '@/data/faqs';
 import { getServerCatalog } from '@/lib/catalog.server';
 import { site } from '@/site.config';
+import { SESSION_CURRENCY, SESSION_MINUTES, modalities, sessionPrices } from '@/data/sesiones';
 
 /** Cut at a word boundary, with an ellipsis when shortened. */
 function shorten(text: string, max: number): string {
@@ -52,10 +53,18 @@ export const GET: APIRoute = async () => {
     '',
     '## Servicios',
     '',
-    `- [Citas online](${page('/agenda')}): sesiones individuales por videollamada.`,
+    `- [Sesiones online](${page('/sesiones-online')}): asesoría de crianza consciente o espacio terapéutico para mamás, por videollamada (Zoom), ${SESSION_MINUTES} minutos, desde ${sessionPrices[0].price} ${SESSION_CURRENCY}. Se agenda por WhatsApp.`,
     `- [Test de crianza](${page('/test-de-crianza')}): 7 preguntas para saber desde dónde estás criando; ves tu resultado al crear tu cuenta gratis (incluye un ebook de regalo). No es un diagnóstico.`,
     `- [Cursos y ebooks](${page('/cursos')}): contenidos grabados para aprender a tu ritmo, en la plataforma ${site.platform.url}.`,
     `- [Talleres](${page('/talleres')}): para colegios, empresas y grupos de familias, presenciales o virtuales.`,
+    '',
+    '## Sesiones online',
+    '',
+    ...modalities.map((m) => `- [${m.name}](${page(`/sesiones-online#${m.id}`)}): ${m.summary}`),
+    `- [Valor](${page('/sesiones-online#valor')}): ${sessionPrices
+      .map((p) => `${p.sessions} ${p.sessions === 1 ? 'sesión' : 'sesiones'} por ${p.price} ${SESSION_CURRENCY}`)
+      .join(', ')}. ${SESSION_MINUTES} minutos por sesión; el seguimiento es unos 20 días después de la primera. Pago por PayPal, Binance o Pago Móvil, al menos 24 horas antes.`,
+    `- [Preguntas frecuentes de las sesiones](${page('/sesiones-online#preguntas')}): para mamás, papás, abuelos, niñeras y profesionales que acompañan a niños de 0 a 8 años; la sesión es solo con los adultos; se puede reprogramar avisando con 12 horas; horario de Caracas, ajustado a tu zona.`,
     '',
     ...(products.length ? ['## Cursos y ebooks disponibles', '', ...products, ''] : []),
     '## Preguntas frecuentes',

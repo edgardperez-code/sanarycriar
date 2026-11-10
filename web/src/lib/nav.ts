@@ -6,14 +6,16 @@ export interface NavItem {
 }
 
 /**
- * Main menu (client guide, 2026-11): three stops of the Home page. The other
- * pages (talleres, blog, preguntas frecuentes) are linked from the footer.
+ * Main menu (client guide, 2026-11): three stops of the Home page and the
+ * online sessions page. The other pages (talleres, blog, preguntas frecuentes)
+ * are linked from the footer.
  */
 export function mainNav(): NavItem[] {
   return [
     { href: '/#hilda', label: 'Sobre mí' },
     { href: '/#test', label: 'Test', menuLabel: 'Test de crianza' },
     { href: '/#gratis', label: 'Ebooks' },
+    { href: '/sesiones-online', label: 'Sesiones online' },
   ];
 }
 

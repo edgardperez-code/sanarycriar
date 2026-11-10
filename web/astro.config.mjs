@@ -42,6 +42,8 @@ export default defineConfig({
   devToolbar: { enabled: false },
   redirects: {
     '/ebooks': '/cursos',
+    // The consultation page became «Sesiones online» (2026-11).
+    '/agenda': '/sesiones-online',
   },
   env: {
     schema: {

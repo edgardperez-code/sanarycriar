@@ -1,0 +1,264 @@
+---
+import { ArrowRight, MessageCircle, Video } from 'lucide-react';
+import { Picture } from 'astro:assets';
+import hildaSentada from '@/assets/fotos/hilda-sentada.webp';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import FaqList from '@/components/FaqList.astro';
+import { absoluteUrl, site, whatsappLink } from '@/site.config';
+import { breadcrumbJsonLd, businessJsonLd, faqJsonLd, sessionsJsonLd } from '@/lib/seo';
+import {
+  SESSION_CURRENCY,
+  SESSION_MINUTES,
+  includes,
+  modalities,
+  sessionFaqGroups,
+  sessionFaqs,
+  sessionPrices,
+  sessionTestimonials,
+  sessionWhatsappMessage,
+} from '@/data/sesiones';
+
+// Client document «Sesiones online · Sanar y Criar» (2026-11): approach,
+// testimonials, prices and FAQs. Replaces /agenda (301 in deploy/Caddyfile).
+const whatsappHref = whatsappLink(sessionWhatsappMessage);
+const firstPrice = sessionPrices[0];
+const pageUrl = absoluteUrl('/sesiones-online');
+const description =
+  'Asesoría de crianza consciente por videollamada con Hilda Hernández, psicóloga infanto-juvenil (FPV 8.914). Sesiones de 60 minutos desde 80 USD. Agenda por WhatsApp.';
+const jsonLd = [
+  businessJsonLd(),
+  sessionsJsonLd({
+    url: pageUrl,
+    description,
+    minutes: SESSION_MINUTES,
+    currency: SESSION_CURRENCY,
+    prices: sessionPrices,
+    modalities,
+  }),
+  faqJsonLd(sessionFaqs),
+  breadcrumbJsonLd([
+    { name: 'Inicio', path: '/' },
+    { name: 'Sesiones online', path: '/sesiones-online' },
+  ]),
+];
+---
+
+<BaseLayout documentTitle="Sesiones online de crianza con psicóloga infantil | Sanar y Criar" description={description} jsonLd={jsonLd}>
+  <!-- Hero -->
+  <section class="watercolor overflow-hidden" aria-labelledby="page-title">
+    <div
+      class="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-16 pt-10 sm:px-6 sm:pt-14 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-16 lg:pb-24 lg:pt-20"
+    >
+      <div>
+        <p class="eyebrow">Sesiones online · Acompañamiento directo</p>
+        <h1 id="page-title" class="h1 mt-4 max-w-[20ch] text-balance">
+          Criar mejor empieza por <em class="title-accent">entender</em> lo que hay detrás de la conducta.
+        </h1>
+        <div class="mt-6 max-w-[60ch] space-y-3 text-violeta-600 sm:text-lg">
+          <p>
+            Soy psicóloga infanto-juvenil y mamá, y acompaño a familias a criar niños emocionalmente sanos desde una mirada de crianza
+            consciente.
+          </p>
+          <p>
+            Te doy herramientas prácticas y un espacio de reflexión para que conectes mejor con tu hijo o hija y acompañes su desarrollo con
+            seguridad y empatía.
+          </p>
+        </div>
+        <div class="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
+          <a href={whatsappHref} class="btn btn-primary max-sm:w-full" target="_blank" rel="noopener">
+            <MessageCircle size={18} strokeWidth={2} aria-hidden="true" />
+            Agenda por WhatsApp
+          </a>
+          <p class="text-[0.9375rem] font-medium text-violeta-600">
+            {SESSION_MINUTES} minutos · {firstPrice.price} {SESSION_CURRENCY} · Por Zoom
+          </p>
+        </div>
+        <p class="note mt-6">
+          <strong class="font-semibold text-violeta">{site.professional.name}</strong> · Psicóloga infanto-juvenil · {site.professional.license}
+        </p>
+      </div>
+      <div
+        class="relative isolate mx-auto w-[min(21rem,78%)] before:absolute before:inset-[22px_-22px_-22px_22px] before:-z-10 before:rounded-[28px] before:bg-[linear-gradient(160deg,var(--color-lavanda-100),var(--color-rosa-200))] lg:w-full lg:max-w-[22rem]"
+      >
+        <Picture
+          src={hildaSentada}
+          formats={['avif', 'webp']}
+          fallbackFormat="webp"
+          widths={[320, 480, 672, 880]}
+          sizes="(min-width: 1024px) 352px, 78vw"
+          alt="Hilda Hernández, psicóloga infanto-juvenil, sentada y sonriendo"
+          loading="eager"
+          decoding="async"
+          pictureAttributes={{ class: 'block' }}
+          class="aspect-[4/5] w-full rounded-[var(--radius-card)] object-cover object-[60%_30%]"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Mi enfoque -->
+  <section class="on-dark bg-violeta text-nube" aria-labelledby="enfoque-title">
+    <div class="mx-auto grid max-w-6xl gap-8 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
+      <div>
+        <p class="eyebrow">Mi enfoque</p>
+        <h2 id="enfoque-title" class="h2 mt-4 text-nube">¿Qué es la crianza <em class="title-accent">consciente</em>?</h2>
+      </div>
+      <div class="space-y-4 text-nube/85 sm:text-lg">
+        <p>
+          Es una forma de educar que pone en el centro la conexión emocional, el respeto mutuo y la comprensión del mundo interno del niño.
+        </p>
+        <p>
+          No se trata de permisividad: se educa con límites claros, pero desde la empatía, entendiendo que nuestro propio mundo emocional
+          influye en cómo criamos.
+        </p>
+        <p class="text-nube/70">
+          La conducta no es casual: refleja necesidades emocionales, la etapa del desarrollo y la forma en que los adultos respondemos.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modalidades -->
+  <section class="bg-blanco-calido" aria-labelledby="modalidades-title">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+      <div class="max-w-3xl">
+        <p class="eyebrow">Dos modalidades</p>
+        <h2 id="modalidades-title" class="h2 mt-4">¿Qué tipo de <em class="title-accent">acompañamiento</em> necesitas?</h2>
+        <p class="lead mt-5">
+          Sesiones de {SESSION_MINUTES} minutos por videollamada, solo con los adultos. Si no estás segura de cuál elegir, escríbeme y te
+          oriento.
+        </p>
+      </div>
+      <div class="mt-10 grid gap-5 md:grid-cols-2">
+        {
+          modalities.map((m) => (
+            <article id={m.id} class="card flex flex-col p-6 sm:p-7">
+              <h3 class="font-serif text-[1.5rem] font-semibold leading-tight text-violeta">{m.name}</h3>
+              <p class="mt-3 text-violeta-600">{m.summary}</p>
+              <p class="mt-4 rounded-[var(--radius-field)] bg-lavanda-100 px-4 py-3 text-[0.9375rem] text-violeta-600">
+                <strong class="font-semibold text-violeta">Para ti </strong>
+                {m.forWho.charAt(0).toLowerCase() + m.forWho.slice(1)}
+              </p>
+            </article>
+          ))
+        }
+      </div>
+      <div class="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start">
+        <div>
+          <h3 class="font-serif text-[1.375rem] font-semibold text-violeta">Qué incluye cada sesión</h3>
+          <ul class="check-list check-list-lavanda mt-4 space-y-2.5">
+            {includes.map((item) => <li>{item}</li>)}
+          </ul>
+          <p class="note mt-3">Los ebooks no están incluidos.</p>
+        </div>
+        <div class="card flex gap-4 p-5">
+          <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-lavanda-100 text-lavanda-700">
+            <Video size={22} strokeWidth={1.75} aria-hidden="true" />
+          </span>
+          <p class="text-[0.9375rem] leading-relaxed text-violeta-600">
+            Por <strong class="font-semibold text-violeta">Zoom</strong>, con el enlace el mismo día. Atiendo desde{' '}
+            {site.professional.city}, Venezuela, a familias de otros países: al agendar ajustamos la hora a tu zona.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonios -->
+  <section class="bg-nube" aria-labelledby="testimonios-title">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+      <p class="eyebrow">Testimonios</p>
+      <h2 id="testimonios-title" class="h2 mt-4">Lo que cuentan las <em class="title-accent">familias</em></h2>
+      <div class="mt-10 grid gap-6 md:grid-cols-2">
+        {
+          sessionTestimonials.map((t) => (
+            <figure class="flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-borde bg-violeta shadow-[0_18px_40px_-32px_rgba(25,9,51,0.5)]">
+              <figcaption class="flex items-center gap-3 px-5 py-4 text-nube">
+                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-lavanda-300 font-serif text-lg font-semibold text-violeta" aria-hidden="true">
+                  {t.name.charAt(0)}
+                </span>
+                <span class="min-w-0">
+                  <span class="block font-semibold leading-tight">{t.name}</span>
+                  <span class="block text-[0.8125rem] text-nube/70">{t.detail}</span>
+                </span>
+              </figcaption>
+              <blockquote class="flex-1 bg-[#efe7dd] p-4 sm:p-5">
+                <div class="relative rounded-2xl rounded-tl-sm bg-white px-4 pb-6 pt-3.5 text-[0.9375rem] leading-relaxed text-violeta-600 shadow-sm">
+                  {t.text.map((para) => <p class="mb-2.5 last:mb-0">{para}</p>)}
+                  <span class="absolute bottom-1.5 right-3 text-[0.6875rem] text-violeta-400">{t.time}</span>
+                </div>
+              </blockquote>
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Valor -->
+  <section id="valor" class="bg-blanco-calido" aria-labelledby="valor-title">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+      <div class="grid items-center gap-8 rounded-[var(--radius-card)] bg-lavanda-300 p-7 sm:p-10 md:grid-cols-[minmax(0,1fr)_auto]">
+        <div>
+          <p class="eyebrow !text-violeta">Valor de la asesoría</p>
+          <h2 id="valor-title" class="sr-only">Precios de las sesiones online</h2>
+          <dl class="mt-4 space-y-1.5">
+            {
+              sessionPrices.map((p) => (
+                <div class="flex items-baseline gap-3 font-serif text-violeta">
+                  <dt class="text-[1.75rem] font-semibold leading-tight sm:text-[2.125rem]">
+                    {p.sessions} {p.sessions === 1 ? 'sesión' : 'sesiones'}
+                  </dt>
+                  <dd class="text-[1.75rem] font-semibold leading-tight sm:text-[2.125rem]">
+                    · {p.price}
+                    <span class="ml-1 font-sans text-sm font-semibold">{SESSION_CURRENCY}</span>
+                  </dd>
+                </div>
+              ))
+            }
+          </dl>
+          <p class="mt-4 text-[0.9375rem] font-medium text-violeta-600">
+            {SESSION_MINUTES} minutos por sesión · Online · El seguimiento es unos 20 días después de la primera.
+          </p>
+          <p class="mt-1 text-[0.9375rem] text-violeta-600">Pagas por PayPal, Binance o Pago Móvil, al menos 24 horas antes.</p>
+        </div>
+        <a href={whatsappHref} class="btn btn-primary max-md:w-full" target="_blank" rel="noopener">
+          Agendar por WhatsApp
+          <ArrowRight size={18} strokeWidth={2} aria-hidden="true" />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Preguntas frecuentes -->
+  <section id="preguntas" class="bg-nube" aria-labelledby="faq-title">
+    <div class="mx-auto max-w-4xl px-4 py-16 sm:px-6 sm:py-24">
+      <p class="eyebrow">Resolvemos tus dudas</p>
+      <h2 id="faq-title" class="h2 mt-4">Preguntas <em class="title-accent">frecuentes</em></h2>
+      <div class="mt-10 space-y-10">
+        {
+          sessionFaqGroups.map((group) => (
+            <div aria-labelledby={`grupo-${group.id}`}>
+              <h3 id={`grupo-${group.id}`} class="mb-4 text-[0.8125rem] font-semibold uppercase tracking-[0.14em] text-lavanda-700">
+                {group.title}
+              </h3>
+              <FaqList items={group.items} />
+            </div>
+          ))
+        }
+      </div>
+      <div class="mt-12 flex flex-col items-start gap-4 rounded-[var(--radius-card)] border border-borde bg-blanco-calido p-6 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-violeta-600">
+          <strong class="font-semibold text-violeta">¿Te quedó alguna duda?</strong> Escríbeme y lo conversamos.
+        </p>
+        <a href={whatsappHref} class="btn btn-primary max-sm:w-full" target="_blank" rel="noopener">
+          <MessageCircle size={18} strokeWidth={2} aria-hidden="true" />
+          Escribir por WhatsApp
+        </a>
+      </div>
+      <p class="note mt-8">
+        {site.professional.name} · Psicóloga infanto-juvenil · {site.professional.license}
+      </p>
+    </div>
+  </section>
+</BaseLayout>

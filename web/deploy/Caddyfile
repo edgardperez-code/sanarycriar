@@ -46,6 +46,7 @@
 	@barra_final path_regexp barra ^(.+)/$
 	redir @barra_final {$SITE_ORIGIN}{re.barra.1}{?query} permanent
 	redir /ebooks {$SITE_ORIGIN}/cursos{?query} permanent
+	redir /agenda {$SITE_ORIGIN}/sesiones-online{?query} permanent
 
 	# Sanar y Criar: the blog and the server islands are rendered by Node (Astro
 	# on demand) on every request, so what is published shows up at once.

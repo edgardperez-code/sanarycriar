@@ -6,7 +6,7 @@ import { isCurrent, mainNav } from '@/lib/nav';
 
 // Client guide (2026-11): short menu and a single button, «Ebook gratis».
 // Breakpoints are in rem so they move with the reader's text size: the
-// desktop menu from 56.25rem (900px at 16px); below 22.5rem (360px) the menu
+// desktop menu from 60rem (960px at 16px; four menu items since «Sesiones online»); below 22.5rem (360px) the menu
 // button steps aside, as in the guide, and the footer keeps every link.
 const nav = mainNav();
 const pathname = Astro.url.pathname;
@@ -18,7 +18,7 @@ const pathname = Astro.url.pathname;
       <Wordmark compact />
     </a>
 
-    <nav aria-label="Principal" class="ml-auto hidden min-[56.25rem]:block">
+    <nav aria-label="Principal" class="ml-auto hidden min-[60rem]:block">
       <ul class="flex items-center gap-6 lg:gap-7">
         {
           nav.map((item) => (
@@ -39,14 +39,14 @@ const pathname = Astro.url.pathname;
     <div class="flex items-center gap-1 sm:gap-4">
       <a
         href={site.platform.loginUrl}
-        class="hidden text-[0.9375rem] font-medium text-violeta-600 hover:text-violeta hover:underline underline-offset-[0.4em] decoration-rosa-300 decoration-2 min-[56.25rem]:inline"
+        class="hidden text-[0.9375rem] font-medium text-violeta-600 hover:text-violeta hover:underline underline-offset-[0.4em] decoration-rosa-300 decoration-2 min-[60rem]:inline"
       >
         Entrar
       </a>
       <a href="/#gratis" class="btn btn-primary btn-sm whitespace-nowrap max-[25rem]:px-3 max-[25rem]:text-[0.875rem]">Ebook gratis</a>
       <button
         type="button"
-        class="inline-flex h-11 w-10 shrink-0 items-center justify-center rounded-full text-violeta hover:bg-lavanda-100 max-[22.5rem]:hidden sm:w-11 min-[56.25rem]:hidden"
+        class="inline-flex h-11 w-10 shrink-0 items-center justify-center rounded-full text-violeta hover:bg-lavanda-100 max-[22.5rem]:hidden sm:w-11 min-[60rem]:hidden"
         aria-expanded="false"
         aria-controls="mobile_menu"
         data-menu-toggle
@@ -58,7 +58,7 @@ const pathname = Astro.url.pathname;
     </div>
   </div>
 
-  <div id="mobile_menu" class="border-t border-borde bg-nube min-[56.25rem]:hidden" hidden>
+  <div id="mobile_menu" class="border-t border-borde bg-nube min-[60rem]:hidden" hidden>
     <nav aria-label="Menú móvil" class="mx-auto max-w-6xl px-4 pb-8 pt-4 sm:px-6">
       <ul class="flex flex-col">
         {
@@ -117,7 +117,7 @@ const pathname = Astro.url.pathname;
         toggle.focus();
       }
     });
-    window.matchMedia('(min-width: 56.25rem)').addEventListener('change', (event) => {
+    window.matchMedia('(min-width: 60rem)').addEventListener('change', (event) => {
       if (event.matches) setOpen(false);
     });
   }

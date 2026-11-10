@@ -19,7 +19,7 @@ export const faqs: Faq[] = [
     question: '¿Las consultas son online?',
     answer:
       'Sí. Todas las consultas son 100% online, por videollamada, desde la comodidad de tu casa. Atiendo desde Lechería (Anzoátegui) a familias de Venezuela y de otros países.',
-    link: { href: '/agenda', label: 'Cómo agendar tu consulta' },
+    link: { href: '/sesiones-online', label: 'Sesiones online: precios y cómo agendar' },
   },
   {
     id: 'como-comprar',
