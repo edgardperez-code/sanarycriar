@@ -69,6 +69,27 @@ export const sessionTestimonials: SessionTestimonial[] = [
     ],
     time: '8:48 a. m.',
   },
+  // Anonymous at the family's request (2026-11).
+  {
+    name: 'Anónimo',
+    detail: 'mamá de un niño de 4 años',
+    text: [
+      'Acudi a consulta por una situación escolar con mi hijo de 4 años. Siempre es enriquecedor escuchar la perspectiva de un profesional de salud, sobre todo lo vinculado a temas de la infancia.',
+      'Durante la sesión obtuve mucha información valiosa para entender y acompañar a mi hijo en cada uno de sus procesos. Además, el aprender sobre estrategias para manejar situaciones puntuales, nos facilita el dia a dia.',
+      'La consulta fue muy enriquecedora, llena de empatia y orientación... agradecida ❤️',
+    ],
+    time: '4:13 p. m.',
+  },
+  {
+    name: 'Anónimo',
+    detail: 'mamá',
+    text: [
+      'Estar en consulta con Hilda para tratar los temas que me preocupaban de la maternidad, me hizo sentir escuchada y acompañada. Me ayudó a dejar la culpa y entender que puedo con todo, pero no con todo al mismo tiempo. Y que soy merecedora de ese espacio que me hace conectar con mi rol de mujer, sin dejar de ser una gran mamá para mis hijos.',
+      // The original names someone here; left out to keep it anonymous.
+      'En cuanto a las consultas, me enseñó a ver las cosas desde otra perspectiva. A escuchar, observar mejor y entender a mi hija con su manera de ver y sentir. Asi aprendí que la maternidad no siempre cumplirá mis expectativas sino que dependerá de los procesos individuales de cada quien.',
+    ],
+    time: '12:11 p. m.',
+  },
 ];
 
 export interface FaqGroup {
