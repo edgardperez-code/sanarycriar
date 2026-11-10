@@ -2,7 +2,8 @@
  * Payment methods the platform's checkout offers right now:
  *   GET {apiBase}/payments/{orgId}/checkout/providers  (public)
  * Hilda turns methods on and off in the panel (Pago Móvil, bank transfer,
- * Zelle, Binance, PayPal), so the site reads them instead of naming them.
+ * Zelle, Binance), so the site reads them instead of naming them. PayPal is
+ * not offered; its label stays only in case the panel ever turns it on.
  *
  * Sanar y Criar: no imports and erasable-only TypeScript, so
  * `node --test scripts/test-payments.mjs` can import this file as is.

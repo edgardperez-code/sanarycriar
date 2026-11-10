@@ -182,7 +182,7 @@ export const sessionFaqGroups: FaqGroup[] = [
         id: 'como-pago',
         question: '¿Cómo pago?',
         answer:
-          'Puedes pagar por PayPal, Binance o Pago Móvil (en bolívares, a la tasa del día), al menos 24 horas antes de la sesión. Si eliges Pago Móvil, envíame el comprobante por WhatsApp para confirmar tu cita.',
+          'Puedes pagar por Binance o Pago Móvil (en bolívares, a la tasa del día), al menos 24 horas antes de la sesión. Si eliges Pago Móvil, envíame el comprobante por WhatsApp para confirmar tu cita.',
       },
     ],
   },

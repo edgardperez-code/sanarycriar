@@ -65,7 +65,7 @@ export const GET: APIRoute = async () => {
     ...modalities.map((m) => `- [${m.name}](${page(`/sesiones-online#${m.id}`)}): ${m.summary}`),
     `- [Valor](${page('/sesiones-online#valor')}): ${sessionPrices
       .map((p) => `${p.sessions} ${p.sessions === 1 ? 'sesión' : 'sesiones'} por ${p.price} ${SESSION_CURRENCY}`)
-      .join(', ')}. ${SESSION_MINUTES} minutos por sesión; el seguimiento es unos 20 días después de la primera. Pago por PayPal, Binance o Pago Móvil, al menos 24 horas antes.`,
+      .join(', ')}. ${SESSION_MINUTES} minutos por sesión; el seguimiento es unos 20 días después de la primera. Pago por Binance o Pago Móvil, al menos 24 horas antes.`,
     `- [Preguntas frecuentes de las sesiones](${page('/sesiones-online#preguntas')}): para mamás, papás, abuelos, niñeras y profesionales que acompañan a niños de 0 a 8 años; la sesión es solo con los adultos; se puede reprogramar avisando con 12 horas; horario de Caracas, ajustado a tu zona.`,
     '',
     ...(products.length ? ['## Cursos y ebooks disponibles', '', ...products, ''] : []),
