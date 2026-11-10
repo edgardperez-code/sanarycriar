@@ -1,0 +1,336 @@
+---
+import { ArrowRight, Check, X } from 'lucide-react';
+import { Picture } from 'astro:assets';
+import hildaDePie from '@/assets/fotos/hilda-de-pie.webp';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import EbookCover from '@/components/ui/EbookCover.astro';
+import FaqList from '@/components/FaqList.astro';
+import { getServerCatalog } from '@/lib/catalog.server';
+import { breadcrumbJsonLd, ebookJsonLd, faqJsonLd } from '@/lib/seo';
+import { absoluteUrl, site } from '@/site.config';
+import {
+  LIMITES_PAGES,
+  bonuses,
+  formula,
+  forWho,
+  highlights,
+  limitesFaqs,
+  notForWho,
+  outcomes,
+  pains,
+  parts,
+  situations,
+} from '@/data/limites';
+
+// Landing page of the paid ebook, where the Google Ads campaign points. One
+// goal: «Lo quiero» (adds the offer to the platform cart). No pop-up here, so
+// nothing stands between the ad and the offer. Price from the platform catalog
+// at build time, refreshed in the browser (lib/livePrice.ts).
+const catalog = await getServerCatalog();
+const offerUuid = site.funnel.featuredOfferUuid;
+const offer = [...catalog.ebooks, ...catalog.courses].find((item) => item.offerUuid === offerUuid);
+const price = offer?.price ?? '';
+const buyHref = site.platform.cartAddUrl(offerUuid);
+const pageUrl = absoluteUrl('/limites-sin-culpa');
+const description =
+  'Ebook de Hilda Hernández, psicóloga infanto-juvenil, para poner límites a tu hijo de 0 a 8 años con firmeza y conexión, sin gritos ni culpa. PDF con actividades y bonus.';
+
+const jsonLd = [
+  ...(offer
+    ? [
+        ebookJsonLd({
+          item: offer,
+          url: pageUrl,
+          name: 'Límites sin culpa',
+          description:
+            'Una guía práctica para decir «no», sostener la frustración de tu hijo y mantener la conexión sin dejar de ser firme. 9 partes, 9 actividades, frases para 10 situaciones cotidianas y 4 bonus imprimibles.',
+          pages: LIMITES_PAGES,
+          audience: 'Mamás y papás de niños de 0 a 8 años',
+        }),
+      ]
+    : []),
+  faqJsonLd(limitesFaqs),
+  breadcrumbJsonLd([
+    { name: 'Inicio', path: '/' },
+    { name: 'Límites sin culpa', path: '/limites-sin-culpa' },
+  ]),
+];
+
+const steps = [
+  'Toca «Lo quiero» y crea tu cuenta (o entra si ya tienes una).',
+  'Paga con el método que prefieras y envía tu comprobante por WhatsApp.',
+  'Al confirmar tu pago te avisamos por correo y lo lees en tu cuenta.',
+];
+---
+
+<BaseLayout
+  documentTitle="Límites sin culpa: ebook para poner límites sin gritos | Sanar y Criar"
+  description={description}
+  jsonLd={jsonLd}
+  newsletter={false}
+>
+  <!-- Hero -->
+  <section class="watercolor overflow-hidden" aria-labelledby="page-title">
+    <div
+      class="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-14 pt-10 sm:px-6 sm:pt-14 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-14 lg:pb-20 lg:pt-16"
+    >
+      <div>
+        <p class="eyebrow">Ebook · PDF · Niños de 0 a 8 años</p>
+        <h1 id="page-title" class="h1 mt-4 max-w-[18ch] text-balance">
+          Límites sin culpa: firmes, con <em class="title-accent">conexión</em> y sin gritos.
+        </h1>
+        <p class="mt-5 max-w-[56ch] text-violeta-600 sm:text-lg">
+          Una guía práctica de {site.professional.name}, psicóloga infanto-juvenil, para decir «no», sostener la frustración de tu hijo
+          y mantener la conexión sin dejar de ser firme.
+        </p>
+        <ul class="mt-6 flex flex-wrap gap-2.5" aria-label="Qué trae el ebook">
+          {
+            highlights.map((h) => (
+              <li class="rounded-full border border-borde bg-blanco-calido px-3.5 py-1.5 text-[0.875rem] text-violeta-600">
+                <strong class="font-serif text-[1.0625rem] font-semibold text-violeta">{h.value}</strong> {h.label}
+              </li>
+            ))
+          }
+        </ul>
+        <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+          <p class="font-serif text-[2.75rem] font-bold leading-none text-violeta" data-precio-bloque hidden={!price}>
+            <span data-precio>{price}</span><span class="ml-1.5 font-sans text-sm font-medium text-violeta-400">USD</span>
+          </p>
+          <a href={buyHref} class="btn btn-primary max-sm:w-full">
+            <span data-precio-cta data-label="Lo quiero">{price ? `Lo quiero · ${price}` : 'Lo quiero'}</span>
+            <ArrowRight size={18} strokeWidth={2} aria-hidden="true" />
+          </a>
+        </div>
+        <ul class="mt-4 flex flex-wrap gap-2" aria-label="Formas de pago" data-formas-pago>
+          {
+            site.payments.methods.map((method) => (
+              <li class="rounded-full border border-borde bg-nube px-3 py-2 text-[0.8125rem] font-medium leading-snug text-violeta-600">
+                {method}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <EbookCover variant="paid" price={price} />
+    </div>
+  </section>
+
+  <!-- ¿Te pasa esto? -->
+  <section class="bg-blanco-calido" aria-labelledby="dolor-title">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+      <div class="max-w-3xl">
+        <p class="eyebrow">Si te pasa esto, esta guía es para ti</p>
+        <h2 id="dolor-title" class="h2 mt-4">¿Sabes qué límite poner, pero te <em class="title-accent">cuesta sostenerlo</em>?</h2>
+      </div>
+      <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          pains.map((pain) => (
+            <li class="card p-5 text-[0.9875rem] leading-relaxed text-violeta-600">{pain}</li>
+          ))
+        }
+      </ul>
+      <p class="mt-10 font-serif text-[1.5rem] font-medium italic leading-snug text-violeta sm:text-[1.75rem]">
+        No te falta información. Casi siempre, lo que pesa es la culpa.
+      </p>
+    </div>
+  </section>
+
+  <!-- Lo que vas a lograr + fórmula -->
+  <section class="bg-lavanda-100" aria-labelledby="lograr-title">
+    <div class="mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-2 lg:gap-14">
+      <div>
+        <p class="eyebrow">Al terminar la guía</p>
+        <h2 id="lograr-title" class="h2 mt-4">Lo que vas a <em class="title-accent">lograr</em></h2>
+        <ul class="check-list check-list-lavanda mt-6 space-y-2.5">
+          {outcomes.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+      <div>
+        <div class="card p-6 shadow-[0_18px_40px_-32px_rgba(25,9,51,0.5)] sm:p-7">
+          <p class="eyebrow">Un adelanto</p>
+          <h3 class="mt-3 font-serif text-[1.5rem] font-semibold leading-tight text-violeta">La fórmula de 4 pasos para un límite firme y cálido</h3>
+          <ol class="mt-5 space-y-4">
+            {
+              formula.map((f, index) => (
+                <li class="flex gap-4">
+                  <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-rosa-200 font-serif font-semibold text-rosa-600" aria-hidden="true">
+                    {index + 1}
+                  </span>
+                  <span>
+                    <strong class="block font-semibold text-violeta">{f.step}</strong>
+                    <span class="text-violeta-600">{f.phrase}</span>
+                  </span>
+                </li>
+              ))
+            }
+          </ol>
+          <p class="mt-5 rounded-[var(--radius-field)] bg-nube px-4 py-3 text-[0.9375rem] text-violeta-600">
+            La firmeza no está en el volumen, sino en la consistencia. Puedes ser firme con voz suave.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contenido -->
+  <section class="bg-blanco-calido" aria-labelledby="contenido-title">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+      <div class="max-w-3xl">
+        <p class="eyebrow">{LIMITES_PAGES} páginas · PDF</p>
+        <h2 id="contenido-title" class="h2 mt-4">Lo que hay <em class="title-accent">dentro</em></h2>
+        <p class="lead mt-5">Cada parte trae una actividad para escribir y aplicar ese mismo día.</p>
+      </div>
+      <div class="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:gap-14">
+        <ol class="space-y-3">
+          {
+            parts.map((part, index) => (
+              <li class="flex items-baseline gap-4 border-b border-borde pb-3">
+                <span class="font-serif text-[1.25rem] font-semibold text-rosa-500" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+                <span class="text-violeta">
+                  <span class="sr-only">Parte {index + 1}: </span>
+                  {part}
+                </span>
+              </li>
+            ))
+          }
+          <li class="flex items-baseline gap-4 pb-1">
+            <span class="font-serif text-[1.25rem] font-semibold text-lavanda-500" aria-hidden="true">+</span>
+            <span class="font-semibold text-violeta">Mi plan de límites conscientes</span>
+          </li>
+        </ol>
+        <div class="space-y-6">
+          <div class="card p-6">
+            <h3 class="font-serif text-[1.25rem] font-semibold text-violeta">4 bonus imprimibles</h3>
+            <ul class="check-list check-list-lavanda mt-4 space-y-2">
+              {bonuses.map((b) => <li>{b}</li>)}
+            </ul>
+          </div>
+          <div class="card p-6">
+            <h3 class="font-serif text-[1.25rem] font-semibold text-violeta">Frases para 10 situaciones cotidianas</h3>
+            <ul class="mt-4 flex flex-wrap gap-2" aria-label="Situaciones">
+              {
+                situations.map((s) => (
+                  <li class="rounded-full bg-lavanda-100 px-3 py-1.5 text-[0.8125rem] font-medium text-violeta-600">{s}</li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Para quién -->
+  <section class="bg-nube" aria-labelledby="quien-title">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+      <h2 id="quien-title" class="h2">¿Es para <em class="title-accent">ti</em>?</h2>
+      <div class="mt-8 grid gap-5 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+        <div class="card p-6">
+          <h3 class="font-semibold text-violeta">Es para</h3>
+          <ul class="mt-4 space-y-2.5">
+            {
+              forWho.map((item) => (
+                <li class="flex gap-3 text-violeta-600">
+                  <Check size={18} strokeWidth={2.25} className="mt-1 shrink-0 text-lavanda-600" aria-hidden="true" />
+                  {item}
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <div class="card p-6">
+          <h3 class="font-semibold text-violeta">No es para</h3>
+          <p class="mt-4 flex gap-3 text-violeta-600">
+            <X size={18} strokeWidth={2.25} className="mt-1 shrink-0 text-rosa-600" aria-hidden="true" />
+            {notForWho}
+          </p>
+          <p class="mt-6 font-serif text-[1.125rem] italic leading-snug text-violeta">
+            Este libro no promete que nunca volverás a gritar. Promete algo más real: que sabrás qué hacer antes, durante y después.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sobre Hilda -->
+  <section class="bg-blanco-calido" aria-labelledby="autora-title">
+    <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 sm:px-6 sm:py-20 md:grid-cols-[minmax(0,0.6fr)_minmax(0,1.4fr)]">
+      <Picture
+        src={hildaDePie}
+        formats={['avif', 'webp']}
+        fallbackFormat="webp"
+        widths={[240, 360, 480, 640]}
+        sizes="(min-width: 768px) 280px, 60vw"
+        alt="Hilda Hernández, psicóloga infanto-juvenil"
+        loading="lazy"
+        decoding="async"
+        pictureAttributes={{ class: 'mx-auto block w-[min(17rem,60%)] md:w-full' }}
+        class="aspect-[4/5] w-full rounded-[var(--radius-card)] object-cover object-top"
+      />
+      <div>
+        <p class="eyebrow">Quién lo escribió</p>
+        <h2 id="autora-title" class="h2 mt-4">{site.professional.name}</h2>
+        <p class="mt-4 text-violeta-600 sm:text-lg">
+          Psicóloga infanto-juvenil ({site.professional.license}) y mamá. Acompaño a familias de niños de 0 a 8 años desde una mirada de
+          crianza consciente: límites claros, pero desde la empatía. Escribí esta guía para las mamás que saben qué límite quieren poner y
+          se desorganizan cuando su hijo llora, grita o insiste.
+        </p>
+        <a href="/sesiones-online" class="text-link mt-5 inline-block">¿Prefieres acompañamiento directo? Conoce las sesiones online</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Compra + FAQ -->
+  <section id="comprar" class="bg-lavanda-100" aria-labelledby="comprar-title">
+    <div class="mx-auto max-w-4xl px-4 py-16 sm:px-6 sm:py-24">
+      <div class="card p-6 text-center shadow-[0_18px_40px_-32px_rgba(25,9,51,0.5)] sm:p-9">
+        <p class="eyebrow">Límites sin culpa · Ebook en PDF</p>
+        <h2 id="comprar-title" class="h2 mt-4">Empieza esta semana, a tu <em class="title-accent">ritmo</em></h2>
+        <p class="mx-auto mt-4 max-w-[46ch] text-violeta-600">
+          9 partes, 9 actividades, frases para 10 situaciones, tu plan de límites conscientes y 4 bonus imprimibles.
+        </p>
+        <p class="mt-6 font-serif text-[3rem] font-bold leading-none text-violeta" data-precio-bloque hidden={!price}>
+          <span data-precio>{price}</span><span class="ml-1.5 font-sans text-sm font-medium text-violeta-400">USD</span>
+        </p>
+        <a href={buyHref} class="btn btn-primary mt-6 max-sm:w-full">
+          <span data-precio-cta data-label="Lo quiero">{price ? `Lo quiero · ${price}` : 'Lo quiero'}</span>
+          <ArrowRight size={18} strokeWidth={2} aria-hidden="true" />
+        </a>
+        <ol class="mx-auto mt-8 grid max-w-3xl gap-3 text-left md:grid-cols-3" aria-label="Cómo lo compras">
+          {
+            steps.map((step, index) => (
+              <li class="flex items-center gap-3.5 rounded-[var(--radius-field)] border border-borde bg-blanco-calido/85 p-4 md:block">
+                <span class="font-serif text-[1.375rem] font-bold leading-none text-rosa-500 md:mb-2 md:block" aria-hidden="true">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <span class="text-[0.9rem] leading-snug text-violeta-600">{step}</span>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+
+      <h2 class="h2 mt-16">Preguntas <em class="title-accent">frecuentes</em></h2>
+      <div class="mt-8">
+        <FaqList items={limitesFaqs} />
+      </div>
+    </div>
+  </section>
+
+  <!-- Barra fija en el teléfono -->
+  <div
+    class="fixed inset-x-0 bottom-0 z-30 border-t border-borde bg-blanco-calido/95 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur md:hidden"
+    data-barra-compra
+  >
+    <a href={buyHref} class="btn btn-primary w-full">
+      <span data-precio-cta data-label="Quiero «Límites sin culpa»">{price ? `Quiero «Límites sin culpa» · ${price}` : 'Quiero «Límites sin culpa»'}</span>
+    </a>
+  </div>
+  <div class="h-20 md:hidden" aria-hidden="true"></div>
+</BaseLayout>
+
+<script>
+  import { refreshEbookPriceAndPayments } from '@/lib/livePrice';
+
+  refreshEbookPriceAndPayments();
+</script>

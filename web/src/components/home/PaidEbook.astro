@@ -61,6 +61,7 @@ const faqs = ebookFaqs;
             <span data-precio-cta data-label="Lo quiero">{price ? `Lo quiero · ${price}` : 'Lo quiero'}</span>
             <ArrowRight size={18} strokeWidth={2} aria-hidden="true" />
           </a>
+          <a href="/limites-sin-culpa" class="text-link text-[0.9375rem]">Ver todo lo que incluye</a>
         </div>
         <ul class="mt-4 flex flex-wrap gap-2" aria-label="Formas de pago" data-formas-pago>
           {
@@ -96,48 +97,7 @@ const faqs = ebookFaqs;
 </section>
 
 <script>
-  import { fetchCatalog } from '@/lib/catalog';
-  import { fetchPaymentLabels } from '@/lib/payments';
-  import { site } from '@/site.config';
+  import { refreshEbookPriceAndPayments } from '@/lib/livePrice';
 
-  // Payment chips: the methods Hilda has turned on in the panel. The HTML
-  // keeps a safe fallback (Pago Móvil) when the platform doesn't answer.
-  fetchPaymentLabels({ apiBase: site.platform.apiBase, orgId: site.platform.orgId }).then((labels) => {
-    if (!labels.length) return;
-    document.querySelectorAll<HTMLUListElement>('[data-formas-pago]').forEach((list) => {
-      const template = list.querySelector('li');
-      if (!template) return;
-      list.replaceChildren(
-        ...labels.map((label) => {
-          const chip = template.cloneNode(false) as HTMLLIElement;
-          chip.textContent = label;
-          return chip;
-        }),
-      );
-    });
-  });
-
-  // The HTML carries the build-time price; refresh it from the platform so a
-  // change in the panel shows without rebuilding the site.
-  fetchCatalog({
-    apiBase: site.platform.apiBase,
-    orgId: site.platform.orgId,
-    offerUrl: site.platform.offerUrl,
-    courseUrl: site.platform.courseUrl,
-  }).then((catalog) => {
-    if (catalog.status !== 'ok') return;
-    const offer = [...catalog.ebooks, ...catalog.courses].find((item) => item.offerUuid === site.funnel.featuredOfferUuid);
-    const price = offer?.price ?? '';
-    if (!price) return;
-    document.querySelectorAll<HTMLElement>('[data-precio]').forEach((el) => {
-      el.textContent = price;
-      el.hidden = false;
-    });
-    document.querySelectorAll<HTMLElement>('[data-precio-bloque]').forEach((el) => {
-      el.hidden = false;
-    });
-    document.querySelectorAll<HTMLElement>('[data-precio-cta]').forEach((el) => {
-      el.textContent = `${el.dataset.label ?? 'Lo quiero'} · ${price}`;
-    });
-  });
+  refreshEbookPriceAndPayments();
 </script>

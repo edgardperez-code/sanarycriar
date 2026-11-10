@@ -9,6 +9,8 @@ export interface Faq {
   id: string;
   question: string;
   answer: string;
+  /** Optional items shown as a list after the answer (and appended to it in structured data). */
+  list?: string[];
   /** Optional link shown after the answer. Paths starting with "/" are internal. */
   link?: { href: string; label: string };
 }

@@ -79,14 +79,18 @@ export function websiteJsonLd() {
   };
 }
 
-export function faqJsonLd(items: { question: string; answer: string }[]) {
+export function faqJsonLd(items: { question: string; answer: string; list?: string[] }[]) {
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     mainEntity: items.map((item) => ({
       '@type': 'Question',
       name: item.question,
-      acceptedAnswer: { '@type': 'Answer', text: item.answer },
+      acceptedAnswer: {
+        '@type': 'Answer',
+        // Lists shown under the answer are part of it for search engines too.
+        text: item.list?.length ? `${item.answer} ${item.list.join('; ')}.` : item.answer,
+      },
     })),
   };
 }
@@ -171,6 +175,51 @@ export function sessionsJsonLd(input: {
         url: input.url,
       })),
     },
+  };
+}
+
+/**
+ * A paid ebook on its own landing page (/limites-sin-culpa): Book + Product,
+ * so it reads as an ebook by Hilda (author, pages, language, audience) and as
+ * a product with its price. `item` is the platform catalog entry (build time).
+ */
+export function ebookJsonLd(input: {
+  item: CatalogItem;
+  url: string;
+  name: string;
+  description: string;
+  pages: number;
+  audience: string;
+}) {
+  const { item } = input;
+  return {
+    '@context': 'https://schema.org',
+    '@type': ['Book', 'Product'],
+    '@id': `${input.url}#ebook`,
+    name: input.name,
+    description: input.description,
+    url: input.url,
+    image: item.thumbnailUrl || absoluteUrl(OG_IMAGE),
+    inLanguage: 'es',
+    bookFormat: 'https://schema.org/EBook',
+    numberOfPages: input.pages,
+    author: { '@type': 'Person', '@id': personId, name: site.professional.name, url: absoluteUrl('/sobre-mi') },
+    publisher: { '@type': 'Organization', '@id': businessId, name: site.name, url: `${site.url}/` },
+    brand: { '@type': 'Brand', name: site.name },
+    audience: { '@type': 'PeopleAudience', audienceType: input.audience },
+    category: 'Ebook (PDF)',
+    ...(item.amount > 0
+      ? {
+          offers: {
+            '@type': 'Offer',
+            price: String(item.amount),
+            priceCurrency: item.currency || 'USD',
+            availability: 'https://schema.org/InStock',
+            url: input.url,
+            seller: { '@type': 'Organization', '@id': businessId, name: site.name, url: `${site.url}/` },
+          },
+        }
+      : {}),
   };
 }
 

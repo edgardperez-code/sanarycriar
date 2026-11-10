@@ -10,8 +10,7 @@ import CitaCta from '@/components/home/CitaCta.astro';
 import Ayuda from '@/components/home/Ayuda.astro';
 import TestimonialCards from '@/components/TestimonialCards.astro';
 import { getTestimonials } from '@/lib/content';
-import { businessJsonLd, faqJsonLd, productsJsonLd, websiteJsonLd } from '@/lib/seo';
-import { ebookFaqs } from '@/data/faqs';
+import { businessJsonLd, productsJsonLd, websiteJsonLd } from '@/lib/seo';
 import { site } from '@/site.config';
 import { getServerCatalog } from '@/lib/catalog.server';
 
@@ -20,16 +19,16 @@ import { getServerCatalog } from '@/lib/catalog.server';
 // session at the end. Talleres, blog and FAQ stay on their own pages.
 const testimonials = getTestimonials().slice(0, 3);
 
-// Structured data: who Hilda is, the site, the ebook's questions (the general
-// ones are marked up once, on /preguntas-frecuentes), and the two ebooks this
-// page shows, with their price (read at build time).
+// Structured data: who Hilda is, the site and the free ebook. «Límites sin
+// culpa» (product and FAQs) is marked up once, on its page /limites-sin-culpa;
+// the general questions, on /preguntas-frecuentes.
 const catalog = await getServerCatalog();
 const giftPathPart = `/course/${site.funnel.giftCourseUuid.replace(/^course_/, '')}`;
 const shown = [...catalog.ebooks, ...catalog.courses].filter(
-  (item) => item.offerUuid === site.funnel.featuredOfferUuid || (item.free && item.href.endsWith(giftPathPart)),
+  (item) => item.free && item.href.endsWith(giftPathPart),
 );
 const products = productsJsonLd(shown);
-const jsonLd = [businessJsonLd(), websiteJsonLd(), faqJsonLd(ebookFaqs), ...(products ? [products] : [])];
+const jsonLd = [businessJsonLd(), websiteJsonLd(), ...(products ? [products] : [])];
 ---
 
 <BaseLayout

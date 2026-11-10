@@ -29,7 +29,9 @@ export const GET: APIRoute = async () => {
       const kind = item.productType === 'ebook' ? 'ebook en PDF' : 'curso en video';
       const price = item.free ? 'gratis con una cuenta' : `${item.price} ${item.currency}`;
       const summary = item.description ? `: ${shorten(item.description, 220)}` : '';
-      return `- [${item.title}](${item.href}) (${kind}, ${price})${summary}`;
+      // «Límites sin culpa» has its own page on the site: link there, it tells more than the store.
+      const href = item.offerUuid && item.offerUuid === site.funnel.featuredOfferUuid ? page('/limites-sin-culpa') : item.href;
+      return `- [${item.title}](${href}) (${kind}, ${price})${summary}`;
     });
 
   const areas = [...mainAreas, ...otherAreas].map((area) => `- ${area.title}: ${area.description}`);
