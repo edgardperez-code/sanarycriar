@@ -113,6 +113,34 @@ export function faqJsonLd(items: { question: string; answer: string; list?: stri
 }
 
 /**
+ * Shipping and returns of a digital product, for Google's merchant listings
+ * (Search Console asked for both). Nothing ships: the content is delivered to
+ * the buyer's account at no cost once the payment is confirmed (handling up to
+ * a day, as payments are checked by hand). Returns: once opened or downloaded
+ * the purchase is not refundable, with the exceptions on /reembolsos.
+ */
+function digitalOfferDetails(currency: string) {
+  return {
+    shippingDetails: {
+      '@type': 'OfferShippingDetails',
+      shippingRate: { '@type': 'MonetaryAmount', value: '0', currency },
+      shippingDestination: { '@type': 'DefinedRegion', addressCountry: site.professional.countryCode },
+      deliveryTime: {
+        '@type': 'ShippingDeliveryTime',
+        handlingTime: { '@type': 'QuantitativeValue', minValue: 0, maxValue: 1, unitCode: 'DAY' },
+        transitTime: { '@type': 'QuantitativeValue', minValue: 0, maxValue: 0, unitCode: 'DAY' },
+      },
+    },
+    hasMerchantReturnPolicy: {
+      '@type': 'MerchantReturnPolicy',
+      applicableCountry: site.professional.countryCode,
+      returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted',
+      merchantReturnLink: absoluteUrl('/reembolsos'),
+    },
+  };
+}
+
+/**
  * The courses and ebooks on sale (and the free ones), as Products with their
  * Offer, so search engines and AI assistants can name them with their price.
  * Built from the platform catalog at build time; items without a price and
@@ -136,6 +164,7 @@ export function productsJsonLd(items: CatalogItem[]) {
         availability: 'https://schema.org/InStock',
         url: item.href,
         seller: { '@type': 'Organization', '@id': businessId, name: site.name, url: `${site.url}/` },
+        ...digitalOfferDetails(item.free ? 'USD' : item.currency || 'USD'),
       },
     }));
   if (products.length === 0) return null;
@@ -234,6 +263,7 @@ export function ebookJsonLd(input: {
             availability: 'https://schema.org/InStock',
             url: input.url,
             seller: { '@type': 'Organization', '@id': businessId, name: site.name, url: `${site.url}/` },
+            ...digitalOfferDetails(item.currency || 'USD'),
           },
         }
       : {}),
