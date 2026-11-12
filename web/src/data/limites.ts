@@ -89,6 +89,30 @@ export const forWho = [
 export const notForWho = 'Quien busca fórmulas para que su hijo «se porte bien» sin mirar la relación.';
 
 /**
+ * Reviews from readers (sent by Hilda, 2026-11). Only spelling and punctuation
+ * were polished. No star ratings were given, so they are shown on the page but
+ * not marked up as Review/aggregateRating (Google requires a real rating).
+ */
+export interface EbookReview {
+  name: string;
+  detail: string;
+  text: string;
+}
+
+export const reviews: EbookReview[] = [
+  {
+    name: 'Ana Pérez',
+    detail: '41 años · mamá de 2 · Valencia, Aragua',
+    text: '¡Me encantó el libro! Es asombroso cuánto no sabemos y cuánto daño les hacemos a nuestros hijos sin darnos cuenta. Este libro es el comienzo de mi aprendizaje para lograr corregir sin herir.',
+  },
+  {
+    name: 'María Bermúdez',
+    detail: '29 años · mamá de un varón',
+    text: 'Muy buen libro. Se aprenden muchísimas cosas para poder corregir a mi hijo sin perder la calma. Se lo recomiendo a todas las mamás.',
+  },
+];
+
+/**
  * FAQs: the seven Hilda wrote for this page (2026-11), then three about buying
  * that an ad visitor needs before clicking «Lo quiero».
  */

@@ -18,6 +18,7 @@ import {
   notForWho,
   outcomes,
   pains,
+  reviews,
   parts,
   situations,
 } from '@/data/limites';
@@ -278,6 +279,32 @@ const steps = [
           se desorganizan cuando su hijo llora, grita o insiste.
         </p>
         <a href="/sesiones-online" class="text-link mt-5 inline-block">¿Prefieres acompañamiento directo? Conoce las sesiones online</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reseñas -->
+  <section class="bg-nube" aria-labelledby="resenas-title">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+      <p class="eyebrow">Reseñas</p>
+      <h2 id="resenas-title" class="h2 mt-4">Lo que dicen las mamás que ya lo <em class="title-accent">leyeron</em></h2>
+      <div class="mt-10 grid gap-6 md:grid-cols-2">
+        {
+          reviews.map((r) => (
+            <figure class="card flex flex-col p-6 sm:p-7">
+              <blockquote class="flex-1 font-serif text-[1.1875rem] italic leading-relaxed text-violeta">«{r.text}»</blockquote>
+              <figcaption class="mt-5 flex items-center gap-3">
+                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-lavanda-100 font-serif font-semibold text-lavanda-700" aria-hidden="true">
+                  {r.name.charAt(0)}
+                </span>
+                <span>
+                  <span class="block font-semibold text-violeta">{r.name}</span>
+                  <span class="block text-[0.8125rem] text-violeta-400">{r.detail}</span>
+                </span>
+              </figcaption>
+            </figure>
+          ))
+        }
       </div>
     </div>
   </section>
