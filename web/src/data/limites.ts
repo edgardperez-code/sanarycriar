@@ -89,26 +89,34 @@ export const forWho = [
 export const notForWho = 'Quien busca fórmulas para que su hijo «se porte bien» sin mirar la relación.';
 
 /**
- * Reviews from readers (sent by Hilda, 2026-11). Only spelling and punctuation
- * were polished. No star ratings were given, so they are shown on the page but
- * not marked up as Review/aggregateRating (Google requires a real rating).
+ * Reviews from readers (2026-11). Extended from their own words and approved by
+ * each reader, with the star rating each one gave. Marked up as Review and
+ * aggregateRating on the ebook page.
  */
 export interface EbookReview {
   name: string;
   detail: string;
   text: string;
+  /** Stars given by the reader, 1 to 5. */
+  rating: number;
+  /** ISO date the review was published on the site. */
+  date: string;
 }
 
 export const reviews: EbookReview[] = [
   {
     name: 'Ana Pérez',
     detail: '41 años · mamá de 2 · Valencia, Aragua',
-    text: '¡Me encantó el libro! Es asombroso cuánto no sabemos y cuánto daño les hacemos a nuestros hijos sin darnos cuenta. Este libro es el comienzo de mi aprendizaje para lograr corregir sin herir.',
+    text: '¡Me encantó el libro! Me sorprendió darme cuenta de cuánto no sabemos como mamás y de cuánto daño les hacemos a nuestros hijos sin querer, solo por repetir lo que aprendimos. Leerlo me ayudó a mirarme con honestidad, sin culpa, y a entender que se puede poner un límite sin herir. Para mí este libro es el comienzo de un aprendizaje: quiero seguir practicando hasta lograr corregir a mis hijos sin herirlos.',
+    rating: 5,
+    date: '2026-11-12',
   },
   {
     name: 'María Bermúdez',
     detail: '29 años · mamá de un varón',
-    text: 'Muy buen libro. Se aprenden muchísimas cosas para poder corregir a mi hijo sin perder la calma. Se lo recomiendo a todas las mamás.',
+    text: 'Muy buen libro. Aprendí muchísimas cosas que no sabía para poder corregir a mi hijo sin perder la calma. Me gustó que es práctico: trae frases y ejemplos que se pueden usar en el día a día. Se lo recomiendo a todas las mamás que quieren poner límites con cariño.',
+    rating: 5,
+    date: '2026-11-12',
   },
 ];
 

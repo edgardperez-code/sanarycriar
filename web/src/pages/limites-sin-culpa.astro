@@ -47,6 +47,7 @@ const jsonLd = [
             'Una guía práctica para decir «no», sostener la frustración de tu hijo y mantener la conexión sin dejar de ser firme. 9 partes, 9 actividades, frases para 10 situaciones cotidianas y 4 bonus imprimibles.',
           pages: LIMITES_PAGES,
           audience: 'Mamás y papás de niños de 0 a 8 años',
+          reviews,
         }),
       ]
     : []),
@@ -292,6 +293,9 @@ const steps = [
         {
           reviews.map((r) => (
             <figure class="card flex flex-col p-6 sm:p-7">
+              <p class="mb-3 text-[1.125rem] leading-none tracking-[0.12em] text-rosa-500" aria-label={`${r.rating} de 5 estrellas`}>
+                <span aria-hidden="true">{'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</span>
+              </p>
               <blockquote class="flex-1 font-serif text-[1.1875rem] italic leading-relaxed text-violeta">«{r.text}»</blockquote>
               <figcaption class="mt-5 flex items-center gap-3">
                 <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-lavanda-100 font-serif font-semibold text-lavanda-700" aria-hidden="true">

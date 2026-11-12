@@ -236,8 +236,12 @@ export function ebookJsonLd(input: {
   description: string;
   pages: number;
   audience: string;
+  /** Real reader reviews with the stars each one gave (shown on the page too). */
+  reviews?: ReadonlyArray<{ name: string; text: string; rating: number; date: string }>;
 }) {
   const { item } = input;
+  const reviews = input.reviews ?? [];
+  const average = reviews.length ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 0;
   return {
     '@context': 'https://schema.org',
     '@type': ['Book', 'Product'],
@@ -254,6 +258,24 @@ export function ebookJsonLd(input: {
     brand: { '@type': 'Brand', name: site.name },
     audience: { '@type': 'PeopleAudience', audienceType: input.audience },
     category: 'Ebook (PDF)',
+    ...(reviews.length
+      ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: String(Math.round(average * 10) / 10),
+            reviewCount: String(reviews.length),
+            bestRating: '5',
+            worstRating: '1',
+          },
+          review: reviews.map((r) => ({
+            '@type': 'Review',
+            author: { '@type': 'Person', name: r.name },
+            datePublished: r.date,
+            reviewBody: r.text,
+            reviewRating: { '@type': 'Rating', ratingValue: String(r.rating), bestRating: '5', worstRating: '1' },
+          })),
+        }
+      : {}),
     ...(item.amount > 0
       ? {
           offers: {
