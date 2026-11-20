@@ -1,16 +1,16 @@
 ---
-import { ArrowUpRight, BookOpen, CalendarDays, ClipboardCheck, Gift, Globe, MessageCircle, Presentation, Sparkles } from 'lucide-react';
+import { ArrowUpRight, BookOpen, CalendarDays, ClipboardCheck, Gift, Globe, MessageCircle, Presentation } from 'lucide-react';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import BrandSeal from '@/components/ui/BrandSeal.astro';
 import OrganicPhoto from '@/components/ui/OrganicPhoto.astro';
 import Wordmark from '@/components/ui/Wordmark.astro';
 import InstagramIcon from '@/components/ui/InstagramIcon.astro';
-import { freeClassHref, giftAuthHref, site } from '@/site.config';
+import { giftAuthHref, site } from '@/site.config';
 
 /** Link-in-bio page for Instagram (@sanarycriarve). */
 const links = [
-  { href: freeClassHref, label: site.freeClass.label, sub: 'Tu primer paso, sin costo', icon: Sparkles, primary: true, external: true },
-  { href: '/sesiones-online', label: 'Sesiones online', sub: '60 minutos por videollamada · desde 80 USD', icon: CalendarDays },
+  // The free-class and the sessions buttons became one (2026-11): the sessions page, highlighted.
+  { href: '/sesiones-online', label: 'Sesiones online', sub: '60 minutos por videollamada · desde 80 USD', icon: CalendarDays, primary: true },
   {
     href: giftAuthHref('guia-gratis'),
     label: 'Ebook gratis: ¿Será que soy una mala mamá?',
@@ -28,7 +28,7 @@ const links = [
 
 <BaseLayout
   title="Links"
-  description="Clase gratuita, sesiones online, ebook gratis, «Límites sin culpa» y test de crianza de Hilda Hernández, psicóloga infanto-juvenil."
+  description="Sesiones online, ebook gratis, «Límites sin culpa» y test de crianza de Hilda Hernández, psicóloga infanto-juvenil."
   bare
 >
   <div class="watercolor min-h-dvh">
