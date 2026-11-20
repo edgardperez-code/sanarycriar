@@ -1,17 +1,24 @@
 ---
-import { ArrowUpRight, BookOpen, CalendarDays, ClipboardCheck, Globe, MessageCircle, Presentation, Sparkles } from 'lucide-react';
+import { ArrowUpRight, BookOpen, CalendarDays, ClipboardCheck, Gift, Globe, MessageCircle, Presentation, Sparkles } from 'lucide-react';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import BrandSeal from '@/components/ui/BrandSeal.astro';
 import OrganicPhoto from '@/components/ui/OrganicPhoto.astro';
 import Wordmark from '@/components/ui/Wordmark.astro';
 import InstagramIcon from '@/components/ui/InstagramIcon.astro';
-import { freeClassHref, site } from '@/site.config';
+import { freeClassHref, giftAuthHref, site } from '@/site.config';
 
 /** Link-in-bio page for Instagram (@sanarycriarve). */
 const links = [
   { href: freeClassHref, label: site.freeClass.label, sub: 'Tu primer paso, sin costo', icon: Sparkles, primary: true, external: true },
   { href: '/sesiones-online', label: 'Sesiones online', sub: '60 minutos por videollamada · desde 80 USD', icon: CalendarDays },
-  { href: '/cursos', label: 'Cursos y ebooks', sub: 'Aprende a tu ritmo · varios métodos de pago', icon: BookOpen },
+  {
+    href: giftAuthHref('guia-gratis'),
+    label: 'Ebook gratis: ¿Será que soy una mala mamá?',
+    sub: 'Crea tu cuenta gratis y léelo hoy mismo',
+    icon: Gift,
+    external: true,
+  },
+  { href: '/limites-sin-culpa', label: 'Ebook «Límites sin culpa»', sub: 'Pon límites con firmeza y conexión, sin gritos ni culpa', icon: BookOpen },
   { href: '/test-de-crianza', label: '¿Desde dónde estás criando?', sub: '7 preguntas · con tu cuenta gratis ves tu resultado y recibes un ebook', icon: ClipboardCheck },
   { href: '/talleres', label: 'Talleres para colegios y empresas', sub: 'Presenciales o virtuales en vivo', icon: Presentation },
   { href: site.contact.whatsappUrl, label: 'WhatsApp', sub: site.contact.whatsappNumber, icon: MessageCircle, external: true },
@@ -21,7 +28,7 @@ const links = [
 
 <BaseLayout
   title="Links"
-  description="Clase gratuita, consultas online, cursos, ebooks y test de crianza de Hilda Hernández, psicóloga infanto-juvenil."
+  description="Clase gratuita, sesiones online, ebook gratis, «Límites sin culpa» y test de crianza de Hilda Hernández, psicóloga infanto-juvenil."
   bare
 >
   <div class="watercolor min-h-dvh">
