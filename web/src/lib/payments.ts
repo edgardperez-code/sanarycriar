@@ -11,6 +11,8 @@
 
 /** What each method is called on the site, in the order it is listed. */
 const METHOD_LABELS: ReadonlyArray<readonly [string, string]> = [
+  // Pago Móvil through Skylink Pay: confirmed by the gateway, access right away.
+  ['skylink', 'Pago Móvil o débito inmediato, con acceso al instante'],
   ['pago_movil', 'Pago Móvil, en bolívares, a la tasa del día'],
   ['transferencia', 'Transferencia bancaria, en bolívares'],
   ['zelle', 'Zelle'],
